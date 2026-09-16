@@ -15,6 +15,9 @@ Rules (from the Agent Skills format notes and this collection's publishing rules
   L07 scripts referenced via ${CLAUDE_SKILL_DIR}, referenced scripts exist, shipped scripts are referenced
   L08 every shipped script supports --selftest L09 no post-kit/ inside the skill dir (it stays in the lab)
   L10 license field present                    L11 no local absolute paths (macOS/Linux home dirs, a home Desktop, Windows user dirs)
+  L12 a skill that uses ${CLAUDE_SKILL_DIR} carries a path note for other agents (the placeholder written as
+      ${…SKILL_DIR}, telling them to put in the skill folder's absolute path), placed before the first use —
+      Codex, Cursor and Gemini CLI do not fill the variable in (format notes, appendix D)
 """
 import os, re, sys, tempfile, shutil
 
@@ -102,6 +105,13 @@ def check_skill(d):
         out.append(("L09", "post-kit/ must not ship inside the skill dir"))
     if not fm.get("license"):
         out.append(("L10", "license field missing"))
+    first_use = body.find("${CLAUDE_SKILL_DIR}")
+    if first_use >= 0:
+        note = body.find("${…SKILL_DIR}")
+        if note < 0 or "absolute path" not in body[note:note + 600]:
+            out.append(("L12", "uses ${CLAUDE_SKILL_DIR} but has no path note for other agents (${…SKILL_DIR} … absolute path)"))
+        elif note > first_use:
+            out.append(("L12", "the path note for other agents comes after the first ${CLAUDE_SKILL_DIR} use"))
     for root, _, files in os.walk(d):
         for f in files:
             p = os.path.join(root, f)
@@ -117,7 +127,8 @@ def check_skill(d):
 # ── selftest: one sample per rule, each must trip exactly that rule; clean control must be empty ──
 CLEAN_FM = ('---\nname: {n}\ndescription: Checks X. Use when you need Y and not when Z.\nlicense: MIT\n'
             'metadata:\n  provenance: own practice\n---\n')
-CLEAN_BODY = '# T\n\nRun `python3 ${CLAUDE_SKILL_DIR}/scripts/tool.py --selftest`.\n\n## Provenance\n\nown practice.\n'
+PATH_NOTE = '> **Paths.** Commands start with `${…SKILL_DIR}`, this skill\'s folder. If your agent shows it as written, put in that folder\'s absolute path.\n\n'
+CLEAN_BODY = '# T\n\n' + PATH_NOTE + 'Run `python3 ${CLAUDE_SKILL_DIR}/scripts/tool.py --selftest`.\n\n## Provenance\n\nown practice.\n'
 CLEAN_SCRIPT = '#!/usr/bin/env python3\nimport sys\nif "--selftest" in sys.argv: print("ok")\n'
 
 
@@ -151,6 +162,8 @@ def selftest():
         ("L09 post-kit inside", _mk(tmp, "has-kit", extra=lambda d: os.makedirs(os.path.join(d, "post-kit"))), {"L09"}),
         ("L10 no license", _mk(tmp, "no-license", fm=CLEAN_FM.format(n="no-license").replace("license: MIT\n", "")), {"L10"}),
         ("L11 private path", _mk(tmp, "priv-path", body=CLEAN_BODY + "\nsee \x2fUsers\x2fsomeone/x\n"), {"L11"}),
+        ("L12 no path note for other agents", _mk(tmp, "no-note", body=CLEAN_BODY.replace(PATH_NOTE, "")), {"L12"}),
+        ("L12 path note after the first use", _mk(tmp, "late-note", body=CLEAN_BODY.replace(PATH_NOTE, "").replace("## Provenance", PATH_NOTE + "## Provenance")), {"L12"}),
         ("W01 unknown key", _mk(tmp, "odd-key", fm=CLEAN_FM.format(n="odd-key").replace("license: MIT\n", "license: MIT\nfoo: bar\n")), {"W01"}),
     ]
     for label, d, want in cases:

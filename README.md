@@ -1,6 +1,6 @@
 # nickkk-skills
 
-Skills for Claude Code that stop an AI coding agent's "done, tested, safe" from being taken on faith:
+Skills for Claude Code, tested in OpenAI Codex too, that stop an AI coding agent's "done, tested, safe" from being taken on faith:
 evidence bundles, breakable checks, guardrails, memory and handoff discipline.
 
 <!-- gallery:start -->
@@ -33,7 +33,7 @@ evidence bundles, breakable checks, guardrails, memory and handoff discipline.
 
 ## Install (example: nk-evidence-audit)
 
-Pick one of three ways. Skills load when a session starts, so open a **new** session after installing.
+Pick one of four ways: three for Claude Code, one for OpenAI Codex. Skills load when a session starts, so open a **new** session after installing.
 
 ### 1 · Terminal, one command
 
@@ -82,13 +82,34 @@ Without opening a session, the same two steps work from a shell: `claude plugin 
 
 To try it for one session without installing anything: `claude --plugin-dir ./nk-evidence-audit` from a clone.
 
+### 4 · OpenAI Codex CLI
+
+```bash
+git clone https://github.com/NickkkLian/nk-evidence-audit.git ~/.agents/skills/nk-evidence-audit
+```
+
+1. Run the command above (for one project only, clone into `.agents/skills/nk-evidence-audit` inside that project).
+2. Start a new Codex session.
+3. Check it loaded, without spending a model call: `codex debug prompt-input | grep -o -- '- nk-evidence-audit[a-z0-9:-]*' | sort -u` prints `- nk-evidence-audit:nk-evidence-audit:`. Codex adds the `nk-evidence-audit:` prefix because this repository also carries a Claude Code plugin manifest. Ask for the task and the skill triggers on its own, or type `$` and pick it from the list.
+
 Every skill's own README repeats these steps with its own name.
+
+## Compatibility
+
+| Agent | Tested | What was checked |
+|---|---|---|
+| Claude Code (CLI 2.1.173, macOS) | 10 of 10 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config: marketplace add, install, list. |
+| OpenAI Codex CLI (0.154.0-alpha.6.2, gpt-5.6-sol, low reasoning, macOS) | 10 of 10 | 10 of 10 skills: a plain request that never names the skill triggered it and it ran its bundled script. 9 are a plain yes. Partly: nk-git-guardrail-hook (see its README for why). |
+| Cursor, Gemini CLI | no | Not tested. Their documentation says both read `~/.agents/skills`, the folder route 4 clones into; Gemini CLI asks before it activates a skill. |
+
+Each skill's README has its own row with what that run did.
 
 ## Tools
 
 `tools/skill_lint.py <skill-dir>` checks a skill folder the way these were checked before publishing:
 frontmatter, name = folder, description length and a "when to use" clause, body length, a Provenance section,
-scripts referenced through `${CLAUDE_SKILL_DIR}`, every script with a `--selftest`, no local paths.
+scripts referenced through `${CLAUDE_SKILL_DIR}` with a path note for agents that do not fill it in,
+every script with a `--selftest`, no local paths.
 It has its own `--selftest`.
 
 ## Verify
@@ -106,8 +127,8 @@ python3 tools/skill_lint.py --selftest
 
 ## Limits
 
-- Tested with Claude Code on macOS; the scripts are stdlib Python and should run elsewhere, but Linux and
-  Windows were not exercised.
+- Tested with Claude Code and OpenAI Codex CLI on macOS (see Compatibility); Cursor and Gemini CLI were not
+  tested. The scripts are stdlib Python and should run elsewhere, but Linux and Windows were not exercised.
 - The self-tests prove each check reacts to the breaks that were tried; they do not prove there are no
   other failure modes.
 - The demo GIFs are recordings of real runs on synthetic data, not of anyone's production repository.
