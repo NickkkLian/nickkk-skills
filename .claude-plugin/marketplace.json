@@ -1,0 +1,168 @@
+{
+  "name": "nickkk-skills",
+  "owner": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "description": "Skills that stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "plugins": [
+    {
+      "name": "nk-evidence-audit",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-evidence-audit"
+      },
+      "description": "Turn \"done, fixed, tested\" into evidence a second agent judges.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "evidence",
+        "audit",
+        "verification"
+      ]
+    },
+    {
+      "name": "nk-git-guardrail-hook",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-git-guardrail-hook"
+      },
+      "description": "A PreToolUse hook for Claude Code that stops before the git and shell commands that have actually destroyed work \u2014 force push, git add -A in a shared checkout, making a repo public, pushing while behind the remote, a push that records a mass deletion, rm -rf on a project root, curl piped into a shell \u2014 and names the incident in the prompt.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "git",
+        "hook",
+        "guardrail"
+      ]
+    },
+    {
+      "name": "nk-publish-gate",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-publish-gate"
+      },
+      "description": "Privacy and secret gate to run before anything goes public \u2014 a repo, a release zip, a demo folder, a PDF.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "privacy",
+        "secrets",
+        "publish"
+      ]
+    },
+    {
+      "name": "nk-indent-guard",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-indent-guard"
+      },
+      "description": "Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "json",
+        "yaml",
+        "diff"
+      ]
+    },
+    {
+      "name": "nk-breakable-selftest",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-breakable-selftest"
+      },
+      "description": "Make a checker, validator, linter, gate or test suite prove it can fail.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "selftest",
+        "mutation",
+        "testing"
+      ]
+    },
+    {
+      "name": "nk-memory-with-conditions",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-memory-with-conditions"
+      },
+      "description": "Write agent memories that say when they hold, and keep the memory directory honest.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "memory",
+        "sentinel"
+      ]
+    },
+    {
+      "name": "nk-rules-that-land",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-rules-that-land"
+      },
+      "description": "Write rules for an AI agent that actually change what it does.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "rules",
+        "claude-md",
+        "enforcement"
+      ]
+    },
+    {
+      "name": "nk-regression-baseline",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-regression-baseline"
+      },
+      "description": "Freeze the byte-exact output of production code on its default inputs before you change it, and compare after.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "regression",
+        "baseline"
+      ]
+    },
+    {
+      "name": "nk-rewrite-coverage",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-rewrite-coverage"
+      },
+      "description": "After rewriting a long document \u2014 a spec, a research report, a handbook \u2014 list what the old version had that the new one no longer mentions, and account for every item with a three-state verdict before the rewrite is accepted.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "documents",
+        "rewrite",
+        "coverage"
+      ]
+    },
+    {
+      "name": "nk-handoff-package",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-handoff-package"
+      },
+      "description": "Hand a line of work to an executor that has no context \u2014 another agent, a contractor, a future session \u2014 so that the work comes back checkable.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "handoff",
+        "delegation",
+        "acceptance"
+      ]
+    }
+  ]
+}
