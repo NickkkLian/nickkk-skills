@@ -1,0 +1,313 @@
+/* ============================================================
+   evidence-ui — design tokens (starter palette; swap the raw scales for your brand, keep the pairs)
+   ------------------------------------------------------------
+   · Single source of values. Pages consume SEMANTIC tokens only (--bg / --surface / --text / --accent /
+     --success …); raw scales (--stone-* / --rose-* / --sage-*) are referenced only inside this file.
+   · Light is the default. Dark is defined twice: system preference (prefers-color-scheme) and the page
+     switch (<html data-theme="dark">); the switch wins in both directions.
+   · Every colour is derived in OKLCH at a fixed hue per role; text-level colours are the same hue darkened
+     until they reach ≥ 4.6:1. Each semantic colour carries its measured ratio in a comment — re-measure
+     after changing any raw value.
+   · Three faces: a display serif for headings, a sans for body and controls, a monospace for numbers,
+     identifiers, timestamps and chips. Each has an offline fallback chain; the page must stay usable when
+     no web font loads.
+   · Motion: only transform / opacity; transitions are written per property, never `transition: all`.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- 0. raw scales (referenced only inside this file; one hue, many lightnesses) ---------- */
+  --stone-0:   #ffffff;  --stone-50:  #fdfaf4;  --stone-100: #f6f3ee;  --stone-150: #ece7dc;
+  --stone-200: #e1ddd8;  --stone-300: #c0bdb8;  --stone-400: #928f8a;  --stone-450: #8a8781;
+  --stone-500: #7d7a75;  --stone-550: #6b6864;  --stone-600: #585550;  --stone-700: #3d3a36;
+  --stone-750: #332f2b;  --stone-800: #302d29;  --stone-850: #2a2622;  --stone-875: #201d1a;
+  --stone-900: #1c1a17;  --stone-950: #171513;
+  --rose-50:   #fff4f2;  --rose-100: #ffede9;  --rose-150: #fbe8e4;  --rose-300: #c08d7c;
+  --rose-350:  #d2a190;  --rose-400: #e3a69a;  --rose-450: #de9687;  --rose-600: #b55b4a;
+  --rose-650:  #ab5242;  --rose-700: #a14939;  --rose-750: #913b2b;  --rose-800: #7a3528;
+  --rose-900:  #3e2723;  --rose-200: #f0c6bd;
+  --sage-100:  #e9f3de;  --sage-150: #ddeace;  --sage-200: #c7d8b5;  --sage-300: #93a385;
+  --sage-400:  #7c8b6f;  --sage-600: #5c733f;  --sage-800: #3d4f23;  --sage-850: #2a341e;
+  --sage-900:  #24281e;
+  --green-100: #bdf4d5;  --green-200: #a3e2bf;  --green-300: #50b584;  --green-600: #157b51;  --green-800: #0c4f33;  --green-900: #143525;
+  --amber-100: #fee4bc;  --amber-200: #f2ca8d;  --amber-300: #d4a14a;  --amber-600: #8f6304;  --amber-800: #5f4106;  --amber-900: #3c2a0d;
+  --red-100:   #fed9e8;  --red-200: #f6bfd6;  --red-300: #ea7aae;  --red-350: #f78dbe;  --red-600: #bb387e;  --red-700: #a7216c;  --red-800: #7e2754;  --red-900: #442031;
+
+  /* ---------- 1. surfaces and text ---------- */
+  --bg:             var(--rose-100);   /* canvas: page background = light rose (large area) */
+  --surface:        var(--stone-0);    /* panels, cards, table body, inputs: white, so tables read clean */
+  --surface-2:      var(--sage-100);   /* sunken: nav bar, table header, code blocks = light sage (large area) */
+  --surface-raised: var(--stone-0);    /* raised: menus, popovers (paired with --shadow-2) */
+  --surface-hover:  var(--rose-50);    /* row / item hover: very light rose */
+
+  --text:           var(--stone-900);  /* 17.36 on surface · 15.33 on bg · 15.16 on surface-2 */
+  --text-2:         var(--stone-600);  /* 7.42 · 6.55 · 6.48 */
+  --text-3:         var(--stone-550);  /* 5.54 · 4.89 · 4.84 — ≥ 4.5 on all three surfaces (v1 failed on surface-2; fixed here) */
+  --text-inverse:   var(--stone-0);
+  --text-disabled:  var(--stone-400);  /* deliberately < 4.5: disabled states are exempt under WCAG */
+  --neutral-tint:   var(--stone-100);  /* fill for neutral tags, chips, disabled controls, customer chat bubbles: warm grey with no rose or sage (rose and sage are reserved for brand surfaces and selection) */
+  --neutral-tint-text: var(--stone-600); /* 6.98 on tint */
+
+  /* ---------- 2. borders ---------- */
+  --border:        var(--stone-200);   /* dividers, card edges (decorative) */
+  --border-strong: var(--stone-300);
+  --border-input:  var(--stone-450);   /* 3.58 on surface · 3.16 on bg · 3.13 on surface-2 — ≥ 3:1 on all three, so controls can sit directly on the canvas */
+  --border-width:  1px;
+  --border-focus-width: 2px;
+
+  /* ---------- 3. accent (a darkened rose) and semantic colours ---------- */
+  --accent:        var(--rose-600);    /* fill: primary button, progress · white text on it 4.61 */
+  --accent-hover:  var(--rose-700);
+  --accent-active: var(--rose-750);
+  --accent-text:   var(--rose-650);    /* links, icons, focus ring · 5.23 on surface · 4.62 on bg · 4.57 on surface-2 */
+  --on-accent:     var(--stone-0);
+  --accent-tint:   var(--rose-150);    /* selected-row fill, info tag fill (a selected row also gets a 3px --accent bar on its left edge, so the fill is never the only signal) */
+  --accent-tint-text: var(--rose-800); /* 7.50 on tint */
+
+  --brand-rose:    var(--rose-300);    /* raw brand colour: decoration only (the mark's seal, charts, illustrations), never text */
+  --brand-sage:    var(--sage-400);    /* same as above */
+  --sage-tint:     var(--sage-150);    /* secondary tag fill / group band (brand sage, not a semantic colour) */
+  --sage-tint-text: var(--sage-800);   /* 7.15 on tint */
+  --sage-text:     var(--sage-600);    /* brand sage text (small decorative labels) 5.28 on surface · 4.61 on surface-2; never a status colour */
+
+  --success:       var(--green-600);   /* 5.27 on surface · 4.60 on surface-2 · told apart from the brand sage by a 32° hue gap, ≥ 1.5× the saturation, and a ✓ on every success tag */
+  --success-tint:  var(--green-100);
+  --success-tint-text: var(--green-800); /* 7.82 on tint */
+
+  --warning:       var(--amber-600);   /* 5.31 on surface · 4.64 on surface-2 */
+  --warning-tint:  var(--amber-100);
+  --warning-tint-text: var(--amber-800); /* 7.59 on tint */
+
+  --danger:        var(--red-600);     /* 5.28 on surface · 4.61 on surface-2 · hue 352° (a magenta-leaning red), 40° away from the accent's 32°, ΔE 11.8 */
+  --danger-hover:  var(--red-700);
+  --danger-tint:   var(--red-100);
+  --danger-tint-text: var(--red-800);  /* 7.07 on tint */
+  --on-danger:     var(--stone-0);
+
+  --info:          var(--accent);      /* info = accent */
+  --info-tint:     var(--accent-tint);
+  --info-tint-text: var(--accent-tint-text);
+
+  --focus:         var(--accent-text); /* focus ring · ≥ 4.57 on all three surfaces */
+  --overlay:       rgb(28 26 23 / 0.45);
+  --selection-bg:  var(--accent-tint);
+
+  /* ---------- 4. data visualisation (starts from the rose and sage hues, extended to 8; fixed order, assigned in order, never cycled) ---------- */
+  /* measured with the dataviz validator (light on #ffffff): worst adjacent pair ΔE 10.4 under CVD, 19.0 with normal vision, all PASS; slot 4 ochre is 2.51:1 and needs relief (direct labels or a table view) */
+  --viz-1: #dd7764;  /* pink   H32  = saturated step of the brand rose */
+  --viz-2: #55751d;  /* olive  H128 = saturated step of the brand sage */
+  --viz-3: #a25089;  /* plum   H340 */
+  --viz-4: #ca9d33;  /* ochre  H85  · 2.51:1 relief */
+  --viz-5: #3c7ebe;  /* blue   H250 */
+  --viz-6: #ab2e45;  /* brick  H15  */
+  --viz-7: #14938d;  /* teal   H190 */
+  --viz-8: #7860b5;  /* violet H295 */
+  /* sequential: one hue, rose (H32), light → dark; for ordinal use the light end starts no lighter than 250 (2.07:1) */
+  --viz-seq-100: #fbe1dc; --viz-seq-150: #fbcfc6; --viz-seq-200: #fabdb0;
+  --viz-seq-250: #f0a08f; --viz-seq-300: #df9080; --viz-seq-350: #ce8171;
+  --viz-seq-400: #be7262; --viz-seq-450: #ad6354; --viz-seq-500: #9d5446;
+  --viz-seq-550: #8d4638; --viz-seq-600: #7d382b; --viz-seq-650: #6b271b;
+  --viz-seq-700: #551207;
+  /* diverging: rose ↔ blue, neutral warm grey midpoint */
+  --viz-div-neg: var(--viz-5); --viz-div-mid: #efece6; --viz-div-pos: var(--viz-1);
+  --viz-grid: var(--stone-200);
+  --viz-axis: var(--stone-550);
+  --viz-unknown: repeating-linear-gradient(135deg, var(--stone-300) 0 3px, transparent 3px 7px); /* "unknown" is shown by hatching, not by a colour */
+
+  /* ---------- 5. type (three brand families) ---------- */
+  /* Headings and captions: Fraunces (variable: opsz 9–144, wght); body and controls: Inter; numbers, IDs,
+     timestamps, chips and code: Space Mono.
+     Offline fallback: Fraunces → Georgia → Songti SC; Inter → system-ui (SF / Segoe) → PingFang SC;
+     Space Mono → ui-monospace / Menlo / Consolas.
+     To keep the layout from shifting when a face falls back, define the "… Fallback" faces with
+     size-adjust (starter.html does this). */
+  --font-display: "Fraunces", "Fraunces Fallback", Georgia, "Noto Serif SC", "Songti SC", serif;
+  --font-sans:    "Inter", "Inter Fallback", system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-mono:    "Space Mono", "Space Mono Fallback", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  /* Fraunces axes: headings use font-optical-sizing:auto (the browser picks opsz from the px size); captions italic 400; WONK is not used */
+  --display-weight: 600;
+  --caption-style:  italic;
+
+  /* Type scale (rem on a 16px base; comments give the px equivalent). Table body 13, interface body 14, long-form text 16. */
+  --text-2xs: 0.6875rem; /* 11 · chips, legends, table footnotes */
+  --text-xs:  0.75rem;   /* 12 · labels, helper text, timestamps */
+  --text-sm:  0.8125rem; /* 13 · table cells, compact controls */
+  --text-md:  0.875rem;  /* 14 · interface body text, controls */
+  --text-lg:  1rem;      /* 16 · long-form body text, panel titles */
+  --text-xl:  1.25rem;   /* 20 · page titles (Fraunces) */
+  --text-2xl: 1.5rem;    /* 24 · product name on the first screen (Fraunces) */
+  --text-3xl: 2rem;      /* 32 · hero numbers (Space Mono) */
+  --leading-tight:   1.2;
+  --leading-normal:  1.45;
+  --leading-relaxed: 1.6;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --tracking-caps:   0.06em; /* 11–12px all-caps labels (Inter) */
+
+  /* ---------- 6. spacing (4px grid) ---------- */
+  --space-0-5: 0.125rem; --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem;
+  --gutter: var(--space-4);
+
+  /* ---------- 7. radii ---------- */
+  --radius-xs: 3px; --radius-sm: 4px; --radius-md: 6px; --radius-lg: 10px; --radius-full: 999px;
+
+  /* ---------- 8. shadows (warm ink; raised layers only) ---------- */
+  --shadow-1: 0 1px 2px rgb(28 26 23 / 0.06), 0 2px 6px rgb(28 26 23 / 0.08);
+  --shadow-2: 0 4px 12px rgb(28 26 23 / 0.10), 0 16px 40px -12px rgb(28 26 23 / 0.22);
+
+  /* ---------- 9. motion ---------- */
+  --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 300ms; --dur-exit: 150ms;
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1); --ease-soft: cubic-bezier(0.23, 1, 0.32, 1); --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --motion-distance: 8px; --flash-dur: 600ms;
+
+  /* ---------- 10. layers (z-index) ---------- */
+  --z-sticky: 10; --z-drawer: 20; --z-overlay: 30; --z-modal: 40; --z-toast: 50;
+
+  /* ---------- 11. layout sizes ---------- */
+  --topbar-h: 48px; --nav-w: 232px; --nav-w-min: 56px; --inspector-w: 360px; --content-max: 1440px;
+  --control-h: 32px; --row-h: 36px; --touch-min: 44px;
+  /* breakpoints: 640 one column → two · 900 inspector becomes a drawer · 1200 three columns */
+}
+
+@media (pointer: coarse) {
+  :root { --control-h: 40px; --row-h: 44px; }
+}
+/* ============================================================
+   Dark theme: redefines semantic tokens only, in two places: (1) system preference, (2) the page switch
+   (the switch wins). Rose and sage on a dark ground: the canvas stays warm charcoal (large areas of dark
+   rose or dark sage look dirty); rose and sage appear in two forms only: very dark tints (selection, tag
+   fills, table header) and lightened rose / sage text and fills.
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg:             var(--stone-950);  /* warm charcoal ground */
+    --surface:        var(--stone-875);
+    --surface-2:      var(--sage-900);   /* the dark theme's "light sage surface" = very dark green ink (nav / table header), ΔE 7.4 from the canvas: visibly green, not dirty */
+    --surface-raised: var(--stone-800);
+    --surface-hover:  #2c2321;   /* very dark rose */
+
+    --text:           var(--stone-150);  /* 13.60 on surface */
+    --text-2:         #b8b1a4;   /* 7.88 */
+    --text-3:         #9a948a;   /* 5.57 on surface · 4.99 on surface-2 */
+    --text-inverse:   var(--stone-950);
+    --text-disabled:  var(--stone-550);
+  --neutral-tint:   var(--stone-850);
+  --neutral-tint-text: #b8b1a4;      /* 7.06 on tint */
+    --neutral-tint:   var(--stone-850);
+    --neutral-tint-text: #b8b1a4;      /* 7.06 on tint */
+
+    --border:         var(--stone-750);
+    --border-strong:  var(--stone-700);
+    --border-input:   var(--stone-500);  /* 3.92 on surface · 3.52 on surface-2 */
+
+    --accent:         var(--rose-400);   /* dark-theme primary button = light rose fill + dark text (8.83), not white text on dark rose */
+    --accent-hover:   #f1b7ab;
+    --accent-active:  #d59588;
+    --accent-text:    var(--rose-450);   /* 7.04 on surface */
+    --on-accent:      var(--stone-950);
+    --accent-tint:    var(--rose-900);
+    --accent-tint-text: var(--rose-200); /* 8.90 on tint */
+
+    --brand-rose:     var(--rose-350);   /* brand rose for dark grounds */
+    --brand-sage:     var(--sage-300);   /* brand sage for dark grounds */
+    --sage-tint:      var(--sage-850);
+    --sage-tint-text: var(--sage-200);   /* 8.65 on tint */
+    --sage-text:      var(--sage-300);   /* 6.24 on surface */
+
+    --success:        var(--green-300);  /* 6.65 — in the dark theme semantic colours are text, icons and outlines only, never a fill behind white text */
+    --success-tint:   var(--green-900);
+    --success-tint-text: var(--green-200); /* 8.96 */
+    --warning:        var(--amber-300);  /* 7.19 */
+    --warning-tint:   var(--amber-900);
+    --warning-tint-text: var(--amber-200); /* 8.90 */
+    --danger:         var(--red-300);    /* 6.30 · danger button = light red fill with dark text (6.85) */
+    --danger-hover:   var(--red-350);
+    --danger-tint:    var(--red-900);
+    --danger-tint-text: var(--red-200);  /* 8.91 */
+    --on-danger:      var(--stone-950);
+
+    --focus:          var(--rose-450);
+    --overlay:        rgb(0 0 0 / 0.6);
+    --selection-bg:   var(--rose-900);
+
+    /* categorical colours, dark steps (validator, dark on #201d1a: worst adjacent pair ΔE ≥ 8 under CVD, 19.0 with normal vision, PASS; slot 2 olive needs relief) */
+    --viz-1: #d97461; --viz-2: #55751d; --viz-3: #b25e98; --viz-4: #b3880f;
+    --viz-5: #488acb; --viz-6: #b84455; --viz-7: #169d97; --viz-8: #866ec5;
+    --viz-div-mid: #3a3632;
+    --viz-grid: var(--stone-750);
+    --viz-axis: var(--stone-400);
+    --viz-unknown: repeating-linear-gradient(135deg, var(--stone-550) 0 3px, transparent 3px 7px);
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.45);
+    --shadow-2: 0 4px 16px rgb(0 0 0 / 0.55), 0 20px 48px -12px rgb(0 0 0 / 0.7);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:             var(--stone-950);  /* warm charcoal ground */
+  --surface:        var(--stone-875);
+  --surface-2:      var(--sage-900);   /* the dark theme's "light sage surface" = very dark green ink (nav / table header), ΔE 7.4 from the canvas: visibly green, not dirty */
+  --surface-raised: var(--stone-800);
+  --surface-hover:  #2c2321;   /* very dark rose */
+
+  --text:           var(--stone-150);  /* 13.60 on surface */
+  --text-2:         #b8b1a4;   /* 7.88 */
+  --text-3:         #9a948a;   /* 5.57 on surface · 4.99 on surface-2 */
+  --text-inverse:   var(--stone-950);
+  --text-disabled:  var(--stone-550);
+
+  --border:         var(--stone-750);
+  --border-strong:  var(--stone-700);
+  --border-input:   var(--stone-500);  /* 3.92 on surface · 3.52 on surface-2 */
+
+  --accent:         var(--rose-400);   /* dark-theme primary button = light rose fill + dark text (8.83), not white text on dark rose */
+  --accent-hover:   #f1b7ab;
+  --accent-active:  #d59588;
+  --accent-text:    var(--rose-450);   /* 7.04 on surface */
+  --on-accent:      var(--stone-950);
+  --accent-tint:    var(--rose-900);
+  --accent-tint-text: var(--rose-200); /* 8.90 on tint */
+
+  --brand-rose:     var(--rose-350);   /* brand rose for dark grounds */
+  --brand-sage:     var(--sage-300);   /* brand sage for dark grounds */
+  --sage-tint:      var(--sage-850);
+  --sage-tint-text: var(--sage-200);   /* 8.65 on tint */
+  --sage-text:      var(--sage-300);   /* 6.24 on surface */
+
+  --success:        var(--green-300);  /* 6.65 — in the dark theme semantic colours are text, icons and outlines only, never a fill behind white text */
+  --success-tint:   var(--green-900);
+  --success-tint-text: var(--green-200); /* 8.96 */
+  --warning:        var(--amber-300);  /* 7.19 */
+  --warning-tint:   var(--amber-900);
+  --warning-tint-text: var(--amber-200); /* 8.90 */
+  --danger:         var(--red-300);    /* 6.30 · danger button = light red fill with dark text (6.85) */
+  --danger-hover:   var(--red-350);
+  --danger-tint:    var(--red-900);
+  --danger-tint-text: var(--red-200);  /* 8.91 */
+  --on-danger:      var(--stone-950);
+
+  --focus:          var(--rose-450);
+  --overlay:        rgb(0 0 0 / 0.6);
+  --selection-bg:   var(--rose-900);
+
+  /* categorical colours, dark steps (validator, dark on #201d1a: worst adjacent pair ΔE ≥ 8 under CVD, 19.0 with normal vision, PASS; slot 2 olive needs relief) */
+  --viz-1: #d97461; --viz-2: #55751d; --viz-3: #b25e98; --viz-4: #b3880f;
+  --viz-5: #488acb; --viz-6: #b84455; --viz-7: #169d97; --viz-8: #866ec5;
+  --viz-div-mid: #3a3632;
+  --viz-grid: var(--stone-750);
+  --viz-axis: var(--stone-400);
+  --viz-unknown: repeating-linear-gradient(135deg, var(--stone-550) 0 3px, transparent 3px 7px);
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.45);
+  --shadow-2: 0 4px 16px rgb(0 0 0 / 0.55), 0 20px 48px -12px rgb(0 0 0 / 0.7);
+}
+
+/* reduced motion: durations drop to 1ms (0ms never fires transitionend) and travel drops to zero; state changes still happen */
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 1ms; --dur-base: 1ms; --dur-slow: 1ms; --dur-exit: 1ms; --flash-dur: 1ms; --motion-distance: 0px; }
+}
