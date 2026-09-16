@@ -73,7 +73,10 @@ footer{background:var(--anchor);color:var(--on-anchor-2);padding:var(--space-5) 
     document.querySelectorAll('input[name="' + group + '"]').forEach(function (el) {
       var key = group === 'nl-theme' ? 'theme' : 'scheme';
       if (el.value === get()[key]) el.checked = true;
-      el.addEventListener('change', function () { if (el.checked) { var o = {}; o[key] = el.value; set(o); } });
+      /* click as well as change: after a ?theme= link the shown radio can already be checked, and choosing it must still save */
+      ['change', 'click'].forEach(function (type) {
+        el.addEventListener(type, function () { if (el.checked) { var o = {}; o[key] = el.value; set(o); } });
+      });
     });
   });
   syncMeta();
