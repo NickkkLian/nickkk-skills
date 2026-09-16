@@ -4,7 +4,7 @@
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
   },
-  "description": "Skills that stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "description": "Agent skills. nk-novel makes something new from one idea; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
   "plugins": [
     {
       "name": "nk-evidence-audit",
@@ -162,6 +162,22 @@
         "handoff",
         "delegation",
         "acceptance"
+      ]
+    },
+    {
+      "name": "nk-novel",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-novel"
+      },
+      "description": "Turn one story idea into a staged novel plan that holds together, plus a one-page visual story bible.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "writing",
+      "tags": [
+        "writing",
+        "fiction",
+        "story"
       ]
     }
   ]
