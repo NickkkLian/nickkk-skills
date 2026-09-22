@@ -93,7 +93,7 @@
         "repo": "NickkkLian/nk-memory-with-conditions"
       },
       "description": "Write agent memories that say when they hold, and keep the memory directory honest.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "productivity",
       "tags": [
@@ -108,7 +108,7 @@
         "repo": "NickkkLian/nk-rules-that-land"
       },
       "description": "Write rules for an AI agent that actually change what it does.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "productivity",
       "tags": [
