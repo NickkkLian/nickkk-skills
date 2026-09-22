@@ -187,7 +187,7 @@
         "repo": "NickkkLian/nk-design"
       },
       "description": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "MIT",
       "category": "design",
       "tags": [
@@ -203,7 +203,7 @@
         "repo": "NickkkLian/nk-data-story"
       },
       "description": "Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "MIT",
       "category": "data",
       "tags": [
