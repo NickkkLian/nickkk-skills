@@ -4,7 +4,7 @@
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
   },
-  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing make something new from one idea; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck make something new from one idea; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
   "plugins": [
     {
       "name": "nk-evidence-audit",
@@ -242,6 +242,22 @@
         "landing-page",
         "booking",
         "small-business"
+      ]
+    },
+    {
+      "name": "nk-deck",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-deck"
+      },
+      "description": "Turn one sentence \u2014 a topic and who it is for \u2014 into a ten-slide single-file HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "writing",
+      "tags": [
+        "slides",
+        "presentation",
+        "print"
       ]
     }
   ]
