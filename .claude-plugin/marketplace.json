@@ -4,7 +4,7 @@
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
   },
-  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck make something new from one idea; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck make something new; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
   "plugins": [
     {
       "name": "nk-evidence-audit",
@@ -171,7 +171,7 @@
         "repo": "NickkkLian/nk-novel"
       },
       "description": "Turn one story idea into a staged novel plan that holds together, plus a one-page visual story bible.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "writing",
       "tags": [
@@ -187,7 +187,7 @@
         "repo": "NickkkLian/nk-design"
       },
       "description": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "design",
       "tags": [
@@ -203,7 +203,7 @@
         "repo": "NickkkLian/nk-data-story"
       },
       "description": "Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "data",
       "tags": [
