@@ -235,7 +235,7 @@
         "repo": "NickkkLian/nk-landing"
       },
       "description": "Turn a written description of a small business \u2014 hours, services, price ranges, the questions customers actually ask \u2014 into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "MIT",
       "category": "design",
       "tags": [
