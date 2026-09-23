@@ -4,7 +4,7 @@
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
   },
-  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck make something new; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model make something new; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
   "plugins": [
     {
       "name": "nk-evidence-audit",
@@ -258,6 +258,22 @@
         "slides",
         "presentation",
         "print"
+      ]
+    },
+    {
+      "name": "nk-model",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-model"
+      },
+      "description": "Turn a description of a small business and a few assumptions \u2014 price, units sold, costs, the days customers take to pay, equipment, a loan, tax \u2014 into a three-statement financial model in one .xlsx: an income statement, a balance sheet and a cash flow that tie to each other, a checks sheet, charts, and a sheet stating every assumption and the method.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "data",
+      "tags": [
+        "financial-model",
+        "xlsx",
+        "three-statement"
       ]
     }
   ]
