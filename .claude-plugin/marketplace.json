@@ -4,7 +4,7 @@
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
   },
-  "description": "Agent skills. nk-novel, nk-design, nk-data-story make something new from one idea; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing make something new from one idea; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
   "plugins": [
     {
       "name": "nk-evidence-audit",
@@ -219,13 +219,29 @@
         "repo": "NickkkLian/nk-post-kit"
       },
       "description": "Turn a finished repository, tool or skill into a set of posts a person publishes by hand \u2014 a short X post, a 400\u2013800 word build log, a 5\u201310 minute video script, a 60\u201390 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version \u2014 every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details.",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "license": "MIT",
       "category": "productivity",
       "tags": [
         "launch",
         "social",
         "gif"
+      ]
+    },
+    {
+      "name": "nk-landing",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-landing"
+      },
+      "description": "Turn a written description of a small business \u2014 hours, services, price ranges, the questions customers actually ask \u2014 into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "design",
+      "tags": [
+        "landing-page",
+        "booking",
+        "small-business"
       ]
     }
   ]
