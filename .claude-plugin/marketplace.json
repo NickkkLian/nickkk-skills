@@ -211,6 +211,22 @@
         "report",
         "csv"
       ]
+    },
+    {
+      "name": "nk-post-kit",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-post-kit"
+      },
+      "description": "Turn a finished repository, tool or skill into a set of posts a person publishes by hand \u2014 a short X post, a 400\u2013800 word build log, a 5\u201310 minute video script, a 60\u201390 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version \u2014 every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details.",
+      "version": "0.2.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "launch",
+        "social",
+        "gif"
+      ]
     }
   ]
 }
