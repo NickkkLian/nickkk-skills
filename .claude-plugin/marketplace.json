@@ -29,7 +29,7 @@
         "repo": "NickkkLian/nk-git-guardrail-hook"
       },
       "description": "A PreToolUse hook for Claude Code that stops before seven risky git and shell commands \u2014 force push, git add -A in a shared checkout, making a repo public, pushing while behind the remote, a push that records a mass deletion, rm -rf on a project root, curl piped into a shell.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "license": "MIT",
       "category": "productivity",
       "tags": [
@@ -45,7 +45,7 @@
         "repo": "NickkkLian/nk-publish-gate"
       },
       "description": "Privacy and secret gate to run before anything goes public \u2014 a repo, a release zip, a demo folder, a PDF.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "productivity",
       "tags": [
@@ -171,7 +171,7 @@
         "repo": "NickkkLian/nk-novel"
       },
       "description": "Turn one story idea into a staged novel plan that holds together, plus a one-page visual story bible.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "license": "MIT",
       "category": "writing",
       "tags": [
@@ -187,7 +187,7 @@
         "repo": "NickkkLian/nk-design"
       },
       "description": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "license": "MIT",
       "category": "design",
       "tags": [
@@ -203,7 +203,7 @@
         "repo": "NickkkLian/nk-data-story"
       },
       "description": "Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "license": "MIT",
       "category": "data",
       "tags": [
@@ -219,7 +219,7 @@
         "repo": "NickkkLian/nk-post-kit"
       },
       "description": "Turn a finished repository, tool or skill into a set of posts a person publishes by hand \u2014 a short X post, a 400\u2013800 word build log, a 5\u201310 minute video script, a 60\u201390 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version \u2014 every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details.",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "license": "MIT",
       "category": "productivity",
       "tags": [
@@ -235,7 +235,7 @@
         "repo": "NickkkLian/nk-landing"
       },
       "description": "Turn a written description of a small business \u2014 hours, services, price ranges, the questions customers actually ask \u2014 into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "license": "MIT",
       "category": "design",
       "tags": [
@@ -251,7 +251,7 @@
         "repo": "NickkkLian/nk-deck"
       },
       "description": "Turn one sentence \u2014 a topic and who it is for \u2014 into a ten-slide single-file HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "writing",
       "tags": [
@@ -267,7 +267,7 @@
         "repo": "NickkkLian/nk-model"
       },
       "description": "Turn a description of a small business and a few assumptions \u2014 price, units sold, costs, the days customers take to pay, equipment, a loan, tax \u2014 into a three-statement financial model in one .xlsx: an income statement, a balance sheet and a cash flow that tie to each other, a checks sheet, charts, and a sheet stating every assumption and the method.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "data",
       "tags": [

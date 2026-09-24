@@ -9,7 +9,8 @@ Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, n
   that need only the standard library (two nk-post-kit scripts also need Pillow), and reference files such as
   formats, checklists and worked examples; for several skills they also record the incidents or review rounds
   behind the rules.
-- Every script ships a `--selftest` that was broken on purpose before publishing, to prove it reacts.
+- Every script ships a `--selftest`; each skill's README says which of them were broken on purpose before
+  publishing to prove they react.
 - Each skill lives in its own repository; this one is the directory, the plugin marketplace and the shared lint.
 
 <!-- gallery:by-category -->
@@ -181,7 +182,8 @@ python3 tools/skill_lint.py --selftest
 - Every SKILL.md ends with a Provenance section that says where its rules came from; for most skills that is
   the incidents or review rounds behind them. Two guardrail rules (`rm -rf` on a project root, `curl | sh`) have
   no recorded incident; their prompts say why the step is irreversible or dangerous.
-- Every checker's self-test shares the production code path and was broken on purpose to prove it reacts.
+- Before publishing, checks were broken on purpose in a sandbox copy, and each break had to turn its own sample
+  red without a crash; each skill's Verify section says which scripts that covered.
 - Detectors fail loud; the guardrail hook fails open.
 - Every repository went through the nk-publish-gate skill (tree and full history) before its first push.
 

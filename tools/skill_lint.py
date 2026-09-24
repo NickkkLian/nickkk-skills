@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""skill_lint.py — structural gate for the skills in this lab (run before publish_gate.py).
+"""skill_lint.py — structural gate for an agent skill folder (run before publish_gate.py).
 
     python3 skill_lint.py <skill-dir> [<skill-dir> ...]
     python3 skill_lint.py --selftest
@@ -8,16 +8,16 @@ Exit: 0 clean · 1 findings · 2 selftest failed / usage error (fail-loud: no re
 selftest fails). The selftest and the real run share check_skill(); each rule has a sample that only it
 catches, plus a clean control sample that must produce zero findings.
 
-Rules (from the Agent Skills format notes and this collection's publishing rules):
+Rules:
   L01 SKILL.md exists                         L02 frontmatter parses; unknown keys -> W01 (warning only)
   L03 name == dir name, kebab-case, <= 64     L04 description 1..1024 chars and says when to use it
-  L05 body <= 500 lines                        L06 a '## Provenance' section exists (charter §5b)
+  L05 body <= 500 lines                        L06 a '## Provenance' section exists
   L07 scripts referenced via ${CLAUDE_SKILL_DIR}, referenced scripts exist, shipped scripts are referenced
-  L08 every shipped script supports --selftest L09 no post-kit/ inside the skill dir (it stays in the lab)
+  L08 every shipped script supports --selftest L09 no post-kit/ inside the skill dir (launch drafts do not ship)
   L10 license field present                    L11 no local absolute paths (macOS/Linux home dirs, a home Desktop, Windows user dirs)
   L12 a skill that uses ${CLAUDE_SKILL_DIR} carries a path note for other agents (the placeholder written as
       ${…SKILL_DIR}, telling them to put in the skill folder's absolute path), placed before the first use —
-      Codex, Cursor and Gemini CLI do not fill the variable in (format notes, appendix D)
+      Codex, Cursor and Gemini CLI do not fill the variable in
 """
 import os, re, sys, tempfile, shutil
 
