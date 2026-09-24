@@ -235,7 +235,7 @@
         "repo": "NickkkLian/nk-landing"
       },
       "description": "Turn a written description of a small business \u2014 hours, services, price ranges, the questions customers actually ask \u2014 into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "design",
       "tags": [
@@ -251,7 +251,7 @@
         "repo": "NickkkLian/nk-deck"
       },
       "description": "Turn one sentence \u2014 a topic and who it is for \u2014 into a ten-slide single-file HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "MIT",
       "category": "writing",
       "tags": [
@@ -267,7 +267,7 @@
         "repo": "NickkkLian/nk-model"
       },
       "description": "Turn a description of a small business and a few assumptions \u2014 price, units sold, costs, the days customers take to pay, equipment, a loan, tax \u2014 into a three-statement financial model in one .xlsx: an income statement, a balance sheet and a cash flow that tie to each other, a checks sheet, charts, and a sheet stating every assumption and the method.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "MIT",
       "category": "data",
       "tags": [
