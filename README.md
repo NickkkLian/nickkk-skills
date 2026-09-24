@@ -5,8 +5,10 @@
 Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model make something new; the others stop an AI coding agent's
 "done, tested, safe" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.
 
-- Every skill is one folder: a `SKILL.md` that says when to use it and where its rules came from, stdlib-only
-  Python scripts, and references written from things that actually happened (incidents, review rounds).
+- Every skill is one folder: a `SKILL.md` that says when to use it and where its rules came from, Python scripts
+  that need only the standard library (two nk-post-kit scripts also need Pillow), and reference files such as
+  formats, checklists and worked examples; for several skills they also record the incidents or review rounds
+  behind the rules.
 - Every script ships a `--selftest` that was broken on purpose before publishing, to prove it reacts.
 - Each skill lives in its own repository; this one is the directory, the plugin marketplace and the shared lint.
 
@@ -176,8 +178,9 @@ python3 tools/skill_lint.py --selftest
 
 ## How these were built
 
-- Rules cite where they came from, an incident or a review round. Two guardrail rules (`rm -rf` on a project
-  root, `curl | sh`) have no recorded incident; their prompts say why the step is irreversible or dangerous.
+- Every SKILL.md ends with a Provenance section that says where its rules came from; for most skills that is
+  the incidents or review rounds behind them. Two guardrail rules (`rm -rf` on a project root, `curl | sh`) have
+  no recorded incident; their prompts say why the step is irreversible or dangerous.
 - Every checker's self-test shares the production code path and was broken on purpose to prove it reacts.
 - Detectors fail loud; the guardrail hook fails open.
 - Every repository went through the nk-publish-gate skill (tree and full history) before its first push.
@@ -185,7 +188,8 @@ python3 tools/skill_lint.py --selftest
 ## Limits
 
 - Tested with Claude Code and OpenAI Codex CLI on macOS (see Compatibility); Cursor and Gemini CLI were not
-  tested. The scripts are stdlib Python and should run elsewhere, but Linux and Windows were not exercised.
+  tested. The scripts are Python, standard library only apart from nk-post-kit's two that need Pillow, and
+  should run elsewhere, but Linux and Windows were not exercised.
 - The self-tests prove each check reacts to the breaks that were tried; they do not prove there are no
   other failure modes.
 - The demo GIFs are built from real runs on synthetic data, not from anyone's production repository.
