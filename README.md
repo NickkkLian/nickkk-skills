@@ -66,11 +66,11 @@ When an agent says done, tested or unchanged, these turn the claim into evidence
 Stop a destructive command, a leaked secret or a whole-file reformat before it lands.
 
 <table>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-git-guardrail-hook"><img src="gallery/nk-git-guardrail-hook.gif" alt="nk-git-guardrail-hook demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-git-guardrail-hook">nk-git-guardrail-hook</a></b> · discipline<br>Stops before force push, mass delete, repo-gone-public and curl|sh — each prompt names its incident.<br><code>git clone https://github.com/NickkkLian/nk-git-guardrail-hook ~/.claude/skills/nk-git-guardrail-hook</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-publish-gate"><img src="gallery/nk-publish-gate.gif" alt="nk-publish-gate demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-publish-gate">nk-publish-gate</a></b> · discipline<br>Finds the path inside the nested archive and the secret still in your git history.<br><code>git clone https://github.com/NickkkLian/nk-publish-gate ~/.claude/skills/nk-publish-gate</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-git-guardrail-hook"><img src="gallery/nk-git-guardrail-hook.gif" alt="nk-git-guardrail-hook demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-git-guardrail-hook">nk-git-guardrail-hook</a></b> · discipline<br>Stops before force push, mass delete, repo-gone-public and curl|sh; five of its seven prompts name the incident behind the rule.<br><code>git clone https://github.com/NickkkLian/nk-git-guardrail-hook ~/.claude/skills/nk-git-guardrail-hook</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-publish-gate"><img src="gallery/nk-publish-gate.gif" alt="nk-publish-gate demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-publish-gate">nk-publish-gate</a></b> · discipline<br>Finds the path inside the nested archive and the secret still in your git history.<br><code>git clone https://github.com/NickkkLian/nk-publish-gate ~/.claude/skills/nk-publish-gate</code></td></tr>
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-indent-guard"><img src="gallery/nk-indent-guard.gif" alt="nk-indent-guard demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-indent-guard">nk-indent-guard</a></b> · discipline<br>A one-line JSON edit that re-indented the whole file no longer reaches the commit.<br><code>git clone https://github.com/NickkkLian/nk-indent-guard ~/.claude/skills/nk-indent-guard</code></td></tr>
 </table>
 
-- [nk-git-guardrail-hook](https://github.com/NickkkLian/nk-git-guardrail-hook): A PreToolUse hook for Claude Code that stops before the git and shell commands that have actually destroyed work — force push, git add -A in a shared checkout, making a repo public, pushing while behind the remote, a push that records a mass deletion, rm -rf on a project root, curl piped into a shell — and names the incident in the prompt.
+- [nk-git-guardrail-hook](https://github.com/NickkkLian/nk-git-guardrail-hook): A PreToolUse hook for Claude Code that stops before seven risky git and shell commands — force push, git add -A in a shared checkout, making a repo public, pushing while behind the remote, a push that records a mass deletion, rm -rf on a project root, curl piped into a shell.
 - [nk-publish-gate](https://github.com/NickkkLian/nk-publish-gate): Privacy and secret gate to run before anything goes public — a repo, a release zip, a demo folder, a PDF.
 - [nk-indent-guard](https://github.com/NickkkLian/nk-indent-guard): Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.
 
@@ -176,7 +176,8 @@ python3 tools/skill_lint.py --selftest
 
 ## How these were built
 
-- Every rule cites where it came from, an incident or a review round; nothing was added for an imagined risk.
+- Rules cite where they came from, an incident or a review round. Two guardrail rules (`rm -rf` on a project
+  root, `curl | sh`) have no recorded incident; their prompts say why the step is irreversible or dangerous.
 - Every checker's self-test shares the production code path and was broken on purpose to prove it reacts.
 - Detectors fail loud; the guardrail hook fails open.
 - Every repository went through the nk-publish-gate skill (tree and full history) before its first push.
