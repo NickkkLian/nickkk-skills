@@ -1,5 +1,7 @@
 # nickkk-skills
 
+![nickkk-skills](gallery/social/nickkk-skills.png)
+
 Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model make something new; the others stop an AI coding agent's
 "done, tested, safe" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.
 
