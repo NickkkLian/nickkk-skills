@@ -11,6 +11,7 @@
   if (s === 'dark' || s === 'light') d.setAttribute('data-scheme', s);
 })();
 </script>
+<link rel="stylesheet" href="fonts/brand-fonts.css">
 <link rel="stylesheet" href="design-tokens.css">
 <style>
 *,*::before,*::after{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:var(--weight-regular) var(--text-md)/var(--leading-normal) var(--font-sans)}
@@ -25,12 +26,12 @@ a{color:var(--accent-text)}header{padding:var(--space-8) var(--gutter) var(--spa
 .pick:has(input:checked),.seg:has(input:checked){border-color:var(--accent-text);background:var(--accent-tint)}
 .pick input,.seg input{position:absolute;opacity:0;width:1px;height:1px} .pick:has(input:focus-visible),.seg:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
 .swatch{display:grid;grid-template-columns:repeat(3,1fr);width:36px;height:20px;border-radius:4px;overflow:hidden;border:1px solid var(--border)} .swatch i{display:block} .swatch i:nth-child(1){background:var(--bg)} .swatch i:nth-child(2){background:var(--anchor)} .swatch i:nth-child(3){background:var(--point)}
-h1{font-size:var(--text-2xl);margin:0 0 var(--space-2)}.tagline{color:var(--text-2);margin:0 0 var(--space-3)}
+h1{font-family:var(--font-display);font-size:var(--text-2xl);margin:0 0 var(--space-2)}.tagline{color:var(--text-2);margin:0 0 var(--space-3)}
 pre{margin:0;padding:var(--space-2) var(--space-3);background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);white-space:pre-wrap;overflow-wrap:anywhere;font:var(--text-xs)/1.5 var(--font-mono)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--space-4);padding:0 var(--gutter) var(--space-8);max-width:1200px;margin:0 auto}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;display:flex;flex-direction:column}
 .card img{display:block;width:100%;aspect-ratio:2/1;object-fit:contain;object-position:left top;border-bottom:1px solid var(--border);background:#053333 /* why: every GIF opens on a terminal drawn on the v4 band, whatever theme the page is in */}
-.card h2{font-size:var(--text-md);margin:var(--space-3) var(--space-3) 0}.card p{margin:var(--space-2) var(--space-3);color:var(--text-2);font-size:var(--text-sm);flex:1}.card pre{margin:0 var(--space-3) var(--space-3)}
+.card h2{font-family:var(--font-display);font-size:var(--text-md);margin:var(--space-3) var(--space-3) 0}.card p{margin:var(--space-2) var(--space-3);color:var(--text-2);font-size:var(--text-sm);flex:1}.card pre{margin:0 var(--space-3) var(--space-3)}
 .tag{font:500 var(--text-2xs)/1 var(--font-mono);padding:3px 8px;border-radius:999px;vertical-align:middle}.tag.discipline{background:var(--accent-tint);color:var(--accent-text)}.tag.display,.tag.creation{background:var(--success-tint);color:var(--success-tint-text)} .card pre.codex{margin-top:calc(-1 * var(--space-2))}
 footer{background:var(--anchor);color:var(--on-anchor-2);padding:var(--space-5) var(--gutter) var(--space-8);font-size:var(--text-xs)} footer a{color:var(--on-anchor)} footer p{max-width:1200px;margin:0 auto}
 @media (prefers-reduced-motion: reduce){.card img{transition-duration:1ms}}
