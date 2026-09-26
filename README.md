@@ -2,7 +2,7 @@
 
 ![nickkk-skills](gallery/social/nickkk-skills.png)
 
-Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model make something new; the others stop an AI coding agent's
+Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer make something new; the others stop an AI coding agent's
 "done, tested, safe" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.
 
 - Every skill is one folder: a `SKILL.md` that says when to use it and where its rules came from, Python scripts
@@ -16,7 +16,7 @@ Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, n
 <!-- gallery:by-category -->
 ## Contents
 
-- [Work with numbers](#work-with-numbers): nk-design, nk-data-story, nk-model
+- [Work with numbers](#work-with-numbers): nk-design, nk-data-story, nk-model, nk-explorer
 - [Write and present](#write-and-present): nk-novel, nk-deck, nk-landing, nk-post-kit
 - [Check an agent's work](#check-an-agents-work): nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage
 - [Guard a repository](#guard-a-repository): nk-git-guardrail-hook, nk-publish-gate, nk-indent-guard
@@ -25,16 +25,17 @@ Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, n
 
 ## Work with numbers
 
-A data tool, a one-page report and a financial model; every number on them shows where it came from.
+A data tool, a one-page report, a financial model and a formula you can move; every number on them shows where it came from.
 
 <table>
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-design"><img src="gallery/nk-design.gif" alt="nk-design demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-design">nk-design</a></b> · creation<br>One sentence in: a working data tool whose first screen reconciles to the cent and whose every row shows its source.<br><code>git clone https://github.com/NickkkLian/nk-design ~/.claude/skills/nk-design</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-data-story"><img src="gallery/nk-data-story.gif" alt="nk-data-story demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-data-story">nk-data-story</a></b> · creation<br>A messy export in: one page whose headline is the conclusion and where every figure carries its n, window and filter.<br><code>git clone https://github.com/NickkkLian/nk-data-story ~/.claude/skills/nk-data-story</code></td></tr>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-model"><img src="gallery/nk-model.gif" alt="nk-model demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-model">nk-model</a></b> · creation<br>A few assumptions in: a three-statement financial model in one .xlsx, every number a formula, written only if it balances to the penny.<br><code>git clone https://github.com/NickkkLian/nk-model ~/.claude/skills/nk-model</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-model"><img src="gallery/nk-model.gif" alt="nk-model demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-model">nk-model</a></b> · creation<br>A few assumptions in: a three-statement financial model in one .xlsx, every number a formula, written only if it balances to the penny.<br><code>git clone https://github.com/NickkkLian/nk-model ~/.claude/skills/nk-model</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-explorer"><img src="gallery/nk-explorer.gif" alt="nk-explorer demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-explorer">nk-explorer</a></b> · creation<br>One formula in: a page where every slider shows the sum it changes, with practice questions graded on the result.<br><code>git clone https://github.com/NickkkLian/nk-explorer ~/.claude/skills/nk-explorer</code></td></tr>
 </table>
 
 - [nk-design](https://github.com/NickkkLian/nk-design): Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.
 - [nk-data-story](https://github.com/NickkkLian/nk-data-story): Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.
 - [nk-model](https://github.com/NickkkLian/nk-model): Turn a description of a small business and a few assumptions — price, units sold, costs, the days customers take to pay, equipment, a loan, tax — into a three-statement financial model in one .xlsx: an income statement, a balance sheet and a cash flow that tie to each other, a checks sheet, charts, and a sheet stating every assumption and the method.
+- [nk-explorer](https://github.com/NickkkLian/nk-explorer): Turn a concept that can be written as one formula — compound interest, a loan's monthly payment, the chance of at least one success — into one self-contained HTML page where every slider shows the formula it changes, written with names and with the current numbers, beside the result and a curve, plus practice questions graded on the result rather than on how it was reached.
 
 ## Write and present
 
@@ -157,8 +158,8 @@ Every skill's own README repeats these steps with its own name.
 
 | Agent | Tested | What was checked |
 |---|---|---|
-| Claude Code (CLI 2.1.173, macOS) | 17 of 17 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config: marketplace add, install, list. |
-| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 4 on 0.155.0-alpha.9.2; gpt-5.6-sol, low reasoning, macOS) | 17 of 17 | 17 of 17 skills: a plain request that never names the skill triggered it and it ran its bundled script. 15 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck (see its README for why). |
+| Claude Code (CLI 2.1.173, macOS) | 18 of 18 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 17 of 18 skills: marketplace add, install, list. |
+| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2; gpt-5.6-sol, low reasoning, macOS) | 18 of 18 | 18 of 18 skills: a plain request that never names the skill triggered it and it ran its bundled script. 15 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer (see its README for why). |
 | Cursor, Gemini CLI | no | Not tested. Their documentation says both read `~/.agents/skills`, the folder route 4 clones into; Gemini CLI asks before it activates a skill. |
 
 Each skill's README has its own row with what that run did.

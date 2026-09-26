@@ -4,7 +4,7 @@
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
   },
-  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model make something new; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer make something new; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
   "plugins": [
     {
       "name": "nk-evidence-audit",
@@ -274,6 +274,22 @@
         "financial-model",
         "xlsx",
         "three-statement"
+      ]
+    },
+    {
+      "name": "nk-explorer",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-explorer"
+      },
+      "description": "Turn a concept that can be written as one formula \u2014 compound interest, a loan's monthly payment, the chance of at least one success \u2014 into one self-contained HTML page where every slider shows the formula it changes, written with names and with the current numbers, beside the result and a curve, plus practice questions graded on the result rather than on how it was reached.",
+      "version": "0.1.1",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "explainer",
+        "formula",
+        "interactive"
       ]
     }
   ]
