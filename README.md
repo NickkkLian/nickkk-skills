@@ -2,7 +2,7 @@
 
 ![nickkk-skills](gallery/social/nickkk-skills.png)
 
-Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer, nk-jubensha make something new; the others stop an AI coding agent's
+Agent skills for Claude Code. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer, nk-jubensha make something new; the others stop an AI coding agent's
 "done, tested, safe" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.
 
 - Every skill is one folder: a `SKILL.md` that says when to use it and where its rules came from, Python scripts
@@ -18,7 +18,7 @@ Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, n
 
 - [Work with numbers](#work-with-numbers): nk-design, nk-data-story, nk-model, nk-explorer
 - [Write and present](#write-and-present): nk-novel, nk-jubensha, nk-deck, nk-landing, nk-post-kit
-- [Check an agent's work](#check-an-agents-work): nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage
+- [Check an agent's work](#check-an-agents-work): nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage, nk-two-brain
 - [Guard a repository](#guard-a-repository): nk-git-guardrail-hook, nk-publish-gate, nk-indent-guard
 - [Keep agents on track between sessions](#keep-agents-on-track-between-sessions): nk-memory-with-conditions, nk-rules-that-land, nk-handoff-package
 - [Install](#install-example-nk-evidence-audit) · [Compatibility](#compatibility) · [Tools](#tools) · [Verify](#verify) · [How these were built](#how-these-were-built) · [Limits](#limits)
@@ -60,12 +60,14 @@ When an agent says done, tested or unchanged, these turn the claim into evidence
 <table>
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-evidence-audit"><img src="gallery/nk-evidence-audit.gif" alt="nk-evidence-audit demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-evidence-audit">nk-evidence-audit</a></b> · discipline<br>&quot;Fixed and tested&quot; becomes raw output a second agent judges: supported, not supported, insufficient.<br><code>git clone https://github.com/NickkkLian/nk-evidence-audit ~/.claude/skills/nk-evidence-audit</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-breakable-selftest"><img src="gallery/nk-breakable-selftest.gif" alt="nk-breakable-selftest demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-breakable-selftest">nk-breakable-selftest</a></b> · discipline<br>Breaks the code your self-test guards, one line at a time, and names the checks that never react.<br><code>git clone https://github.com/NickkkLian/nk-breakable-selftest ~/.claude/skills/nk-breakable-selftest</code></td></tr>
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-regression-baseline"><img src="gallery/nk-regression-baseline.gif" alt="nk-regression-baseline demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-regression-baseline">nk-regression-baseline</a></b> · discipline<br>Freezes what production code prints today so tomorrow&#x27;s refactor has to prove it changed nothing.<br><code>git clone https://github.com/NickkkLian/nk-regression-baseline ~/.claude/skills/nk-regression-baseline</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-rewrite-coverage"><img src="gallery/nk-rewrite-coverage.gif" alt="nk-rewrite-coverage demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-rewrite-coverage">nk-rewrite-coverage</a></b> · discipline<br>After a rewrite, lists what the old version had and the new one lost — with a verdict required for each.<br><code>git clone https://github.com/NickkkLian/nk-rewrite-coverage ~/.claude/skills/nk-rewrite-coverage</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-two-brain"><img src="gallery/nk-two-brain.gif" alt="nk-two-brain demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-two-brain">nk-two-brain</a></b> · discipline<br>Claude writes the handoff, Codex builds, and a run that did no building judges every claim: supported, not supported or insufficient.<br><code>git clone https://github.com/NickkkLian/nk-two-brain ~/.claude/skills/nk-two-brain</code></td></tr>
 </table>
 
 - [nk-evidence-audit](https://github.com/NickkkLian/nk-evidence-audit): Turn "done, fixed, tested" into evidence a second agent judges.
 - [nk-breakable-selftest](https://github.com/NickkkLian/nk-breakable-selftest): Make a checker, validator, linter, gate or test suite prove it can fail.
 - [nk-regression-baseline](https://github.com/NickkkLian/nk-regression-baseline): Freeze the byte-exact output of production code on its default inputs before you change it, and compare after.
 - [nk-rewrite-coverage](https://github.com/NickkkLian/nk-rewrite-coverage): After rewriting a long document — a spec, a research report, a handbook — list what the old version had that the new one no longer mentions, and account for every item with a three-state verdict before the rewrite is accepted.
+- [nk-two-brain](https://github.com/NickkkLian/nk-two-brain): Run a coding task through two different AI agents with proof at the end: Claude writes a handoff package (goal, boundaries as orders, what the builder cannot see, acceptance checks kept from the builder), OpenAI Codex builds it in a fresh clone, the acceptor re-runs its own checks (including one with the code broken on purpose), a separate model run that did no building judges each claim from the evidence alone with exactly three verdicts (supported, not supported, insufficient), and a post draft is written from the run's files.
 
 ## Guard a repository
 
@@ -173,8 +175,8 @@ Other agents: see [docs/other-agents.md](docs/other-agents.md).
 
 | Agent | Tested | What was checked |
 |---|---|---|
-| Claude Code (CLI 2.1.173, macOS) | 19 of 19 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 18 of 19 skills: marketplace add, install, list. |
-| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.0) | 19 of 19 | 19 of 19 skills: a plain request that never names the skill triggered it and it ran its bundled script. 15 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer, nk-jubensha (see its README for why). |
+| Claude Code (CLI 2.1.173, macOS) | 19 of 20 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 18 of 20 skills: marketplace add, install, list. |
+| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.0) | 19 of 20 | 19 of 20 skills: a plain request that never names the skill triggered it and it ran its bundled script. 15 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer, nk-jubensha (see its README for why). Not run yet: nk-two-brain. |
 | Cursor, Gemini CLI | no | Not tested. Their documentation says both read `~/.agents/skills`, the folder route 4 clones into; Gemini CLI asks before it activates a skill. |
 
 Each skill's README has its own row with what that run did.

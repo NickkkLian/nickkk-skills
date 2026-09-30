@@ -1,0 +1,28 @@
+{
+  "name": "nk-two-brain",
+  "version": "0.1.0",
+  "description": "Run a coding task through two different AI agents with proof at the end: Claude writes a handoff package (goal, boundaries as orders, what the builder cannot see, acceptance checks kept from the builder), OpenAI Codex builds it in a fresh clone, the acceptor re-runs its own checks (including one with the code broken on purpose), a separate model run that did no building judges each claim from the evidence alone with exactly three verdicts (supported, not supported, insufficient), and a post draft is written from the run's files.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-two-brain",
+  "repository": "https://github.com/NickkkLian/nk-two-brain",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "codex",
+    "delegation",
+    "evidence",
+    "multi-agent"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-two-brain",
+    "shortDescription": "Codex builds, a judge checks",
+    "longDescription": "Run a coding task through two different AI agents with proof at the end: Claude writes a handoff package (goal, boundaries as orders, what the builder cannot see, acceptance checks kept from the builder), OpenAI Codex builds it in a fresh clone, the acceptor re-runs its own checks (including one with the code broken on purpose), a separate model run that did no building judges each claim from the evidence alone with exactly three verdicts (supported, not supported, insufficient), and a post draft is written from the run's files. Use when handing a real change to a second agent and you need to know what actually got proven, when you want a builder and a judge that are not the same session, or when you want a record of a delegated task that someone else can re-check. Works from Claude Code; falls back to Claude as the builder when Codex is not installed, and to a manual stage when neither CLI is there. Not an autopilot: nothing is committed or pushed.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}
