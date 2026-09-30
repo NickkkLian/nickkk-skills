@@ -38,6 +38,9 @@ people from doubting.
      or write the breaks with `--spec`.
    - Any language, hand-picked breaks: write `mutations.json`
      (`{"mutations":[{"name":..,"file":..,"find":..,"replace":..,"must_mention":..}]}`) and run with `--spec`.
+     `must_mention` counts only on failure lines: the first non-space character is `✘`, `✗` or `×`, or
+     the first word is FAIL, FAILED, FAILURE or ERROR (any case, optionally followed by `:`).
+     A name on a passing line cannot satisfy it; output with no failure lines cannot satisfy it either.
    - The script's own `--selftest` runs first and aborts everything if it fails.
 5. **Read the verdicts.** `CAUGHT` is the only good one.
    `UNCOVERED` = the line is decorative or no sample exercises it → add an exclusive sample or delete the line.
