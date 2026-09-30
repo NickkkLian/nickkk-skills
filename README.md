@@ -154,6 +154,19 @@ git clone https://github.com/NickkkLian/nk-evidence-audit.git ~/.agents/skills/n
 
 Every skill's own README repeats these steps with its own name.
 
+## Install in OpenAI Codex (plugin marketplace)
+
+Every skill except nk-git-guardrail-hook (a Claude Code hook) is also a Codex plugin. Add the marketplace once, then one command per skill:
+
+```bash
+codex plugin marketplace add NickkkLian/nickkk-skills
+codex plugin add nk-evidence-audit@nickkk-skills
+```
+
+Check it loaded, without spending a model call: `codex debug prompt-input | grep -o -- '- nk-evidence-audit:nk-evidence-audit'`. `codex plugin list` shows every skill in the marketplace. The plugin copies live in `plugins/` here and are generated from the skill repositories; in them the command paths read `<skill-dir>`, which the agent replaces with the skill folder's path.
+
+Other agents: see [docs/other-agents.md](docs/other-agents.md).
+
 ## Compatibility
 
 | Agent | Tested | What was checked |

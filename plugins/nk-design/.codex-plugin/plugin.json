@@ -1,0 +1,27 @@
+{
+  "name": "nk-design",
+  "version": "0.1.5",
+  "description": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-design",
+  "repository": "https://github.com/NickkkLian/nk-design",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "design-system",
+    "dashboard",
+    "provenance"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-design",
+    "shortDescription": "Data tools that show sources",
+    "longDescription": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked. The page carries provenance chips beside derived values, a reconciliation bar on the first screen whose parts are computed live and add up, a fixed status vocabulary that never relies on colour alone, a Demo marker for synthetic data and a footer that says what is not verified. Three palettes and light/dark come from one token file, restored before first paint. Ships the token file, a working starter page and scripts/ui_check.py with fifteen machine rules. Use when asked for a dashboard, queue, ledger, tracker or internal tool, when a demo has to read as a real product in thirty seconds, or to review such a page. Not a marketing-site style and not a component library.",
+    "developerName": "Nick Lian",
+    "category": "Productivity",
+    "capabilities": []
+  }
+}

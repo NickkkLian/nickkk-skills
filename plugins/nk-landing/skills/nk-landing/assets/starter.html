@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fernwood Bicycle Workshop — booking</title>
+<meta name="description" content="Starter page for nk-landing: a small workshop's services, questions and booking door, where every message and every calendar write waits for a person to approve it.">
+<!-- why: a favicon is a separate image and cannot read CSS variables. Literal colours from the default palette
+     (band, point, on-band); the band is dark in both schemes, so one icon reads on a light and a dark tab strip. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http%3A//www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Crect%20x='1'%20y='1'%20width='22'%20height='22'%20rx='5'%20fill='%23053333'/%3E%3Ccircle%20cx='8'%20cy='16'%20r='4'%20fill='none'%20stroke='%23f7f0e9'%20stroke-width='1.7'/%3E%3Ccircle%20cx='17'%20cy='16'%20r='4'%20fill='none'%20stroke='%23f7f0e9'%20stroke-width='1.7'/%3E%3Cpath%20d='M8%2016l4-7h3'%20stroke='%23ca6980'%20stroke-width='1.7'%20stroke-linecap='round'%20fill='none'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#053333">
+<script>
+/* Appearance contract, before the first stylesheet so a reload never flashes the default. */
+(function () {
+  try {
+    var t = localStorage.getItem("theme"), s = localStorage.getItem("scheme");
+    if (t) document.documentElement.setAttribute("data-theme", t);
+    if (s) document.documentElement.setAttribute("data-scheme", s);
+  } catch (e) { /* private window: the defaults are fine */ }
+})();
+</script>
+<link rel="stylesheet" href="design-tokens.css">
+<style>
+  body { background: var(--bg); color: var(--text); font-family: var(--font-sans); margin: 0; }
+  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 var(--gutter, 1.25rem) 4rem; }
+  .demo-note { background: var(--warning-tint); color: var(--warning-tint-text); border-bottom: 1px solid var(--border);
+               padding: .55rem var(--gutter, 1.25rem); font-size: var(--text-sm, .875rem); }
+  .demo-note b { font-weight: 600; }
+  header.masthead { padding: 2.6rem 0 1.4rem; border-bottom: 1px solid var(--hairline, var(--border)); }
+  h1 { font-family: var(--font-display); font-size: var(--text-4xl, 2.2rem); line-height: 1.1; margin: 0 0 .5rem; }
+  .tagline { color: var(--text-2); margin: 0 0 1rem; max-width: var(--measure, 62ch); }
+  .facts { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; color: var(--text-2); font-size: var(--text-sm, .875rem); margin: 0; padding: 0; list-style: none; }
+  main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.2rem; padding-top: 2rem; }
+  @media (min-width: 60rem) { main { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+  section { min-width: 0; }
+  h2 { font-family: var(--font-display); font-size: var(--text-xl, 1.35rem); margin: 0 0 .9rem; }
+  h3 { font-size: var(--text-base, 1rem); margin: 0 0 .25rem; }
+  .card { background: var(--surface, var(--bg)); border: 1px solid var(--border); border-radius: var(--radius, 10px); padding: 1.1rem 1.2rem; }
+  .services { display: grid; gap: .8rem; padding: 0; margin: 0 0 2rem; list-style: none; }
+  .services li { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--hairline, var(--border)); padding-bottom: .8rem; }
+  .services p { margin: .15rem 0 0; color: var(--text-2); font-size: var(--text-sm, .875rem); max-width: 42ch; }
+  .price { font-family: var(--font-mono); font-size: var(--text-sm, .875rem); white-space: nowrap; color: var(--text-2); }
+  details { border-bottom: 1px solid var(--hairline, var(--border)); padding: .7rem 0; }
+  details summary { cursor: pointer; font-weight: 500; }
+  details p { color: var(--text-2); margin: .5rem 0 0; max-width: var(--measure, 62ch); }
+  form { display: grid; gap: .85rem; }
+  label { display: grid; gap: .3rem; font-size: var(--text-sm, .875rem); }
+  input, select, textarea { font: inherit; font-size: var(--text-sm, .9rem); color: var(--text); background: var(--bg);
+    border: 1px solid var(--border-input, var(--border)); border-radius: var(--radius-sm, 7px); padding: .5rem .6rem; min-height: var(--control-h, 2.4rem); }
+  textarea { min-height: 4.5rem; resize: vertical; }
+  :focus-visible { outline: var(--border-focus-width, 2px) solid var(--focus, var(--accent)); outline-offset: 2px; }
+  .slots { display: flex; flex-wrap: wrap; gap: .45rem; }
+  .slot { font: inherit; font-size: var(--text-sm, .85rem); padding: .42rem .7rem; border-radius: 999px; cursor: pointer;
+          border: 1px solid var(--border); background: transparent; color: var(--text); }
+  .slot[aria-pressed="true"] { background: var(--accent); color: var(--on-accent, var(--accent-text)); border-color: var(--accent); }
+  button.primary { font: inherit; font-weight: 600; padding: .6rem 1.05rem; border-radius: var(--radius-sm, 7px);
+                   border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent, var(--accent-text)); cursor: pointer; }
+  button.quiet { font: inherit; font-size: var(--text-sm, .85rem); padding: .38rem .7rem; border-radius: var(--radius-sm, 7px);
+                 border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; }
+  button.danger { border-color: var(--danger); color: var(--danger-tint-text, var(--danger)); }
+  .desk { position: sticky; top: 1rem; display: grid; gap: 1rem; }
+  .req { border: 1px solid var(--border); border-radius: var(--radius, 10px); padding: .9rem 1rem; display: grid; gap: .55rem; }
+  .req .meta { font-size: var(--text-xs, .8rem); color: var(--text-3); font-family: var(--font-mono); }
+  .draft { background: var(--band); color: var(--on-band); border-radius: var(--radius-sm, 7px); padding: .65rem .75rem;
+           font-size: var(--text-sm, .875rem); white-space: pre-wrap; }
+  .row { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .status { font-size: var(--text-sm, .875rem); border-radius: var(--radius-sm, 7px); padding: .55rem .7rem; }
+  .status.wait { background: var(--info-tint); color: var(--info-tint-text); }
+  .status.ok { background: var(--accent-tint); color: var(--accent-tint-text); }
+  .status.no { background: var(--danger-tint); color: var(--danger-tint-text); }
+  .outbox { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
+  .outbox li { border: 1px dashed var(--border); border-radius: var(--radius-sm, 7px); padding: .55rem .7rem; font-size: var(--text-sm, .875rem); }
+  .outbox .not-sent { font-family: var(--font-mono); font-size: var(--text-xs, .78rem); color: var(--text-3); display: block; margin-top: .25rem; }
+  .empty { color: var(--text-3); font-size: var(--text-sm, .875rem); margin: 0; }
+  footer { border-top: 1px solid var(--hairline, var(--border)); margin-top: 3rem; padding-top: 1.1rem;
+           color: var(--text-3); font-size: var(--text-sm, .85rem); }
+  footer p { max-width: var(--measure, 62ch); }
+  .appearance { display: flex; gap: .5rem; align-items: center; margin-left: auto; }
+  .head-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="demo-note" id="demo-note">
+  <b>Demo mode.</b> This page has no backend configured, so nothing is sent to anybody. Booking requests, approvals
+  and the outbox live in this browser tab and disappear when you close it.
+</div>
+
+<div class="wrap">
+<header class="masthead">
+  <div class="head-row">
+    <div>
+      <h1 id="biz-name">Fernwood Bicycle Workshop</h1>
+      <p class="tagline" id="biz-tagline">Repairs and tune-ups while you wait, and a fitting session that takes the morning.</p>
+    </div>
+    <div class="appearance">
+      <label for="scheme" style="font-size:var(--text-xs,.8rem)">Appearance</label>
+      <select id="scheme"><option value="">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+    </div>
+  </div>
+  <ul class="facts" id="biz-facts"></ul>
+</header>
+
+<main>
+  <section aria-labelledby="h-services">
+    <h2 id="h-services">What we do</h2>
+    <ul class="services" id="services"></ul>
+
+    <h2 id="h-faq">Questions we get</h2>
+    <div id="faq"></div>
+
+    <h2 id="h-book" style="margin-top:2rem">Book a slot</h2>
+    <form id="booking" class="card" novalidate>
+      <label>Your name<input id="f-name" name="name" autocomplete="name" required></label>
+      <label>How we reach you<input id="f-contact" name="contact" placeholder="phone or e-mail" required></label>
+      <label>What for
+        <select id="f-service" name="service"></select>
+      </label>
+      <div>
+        <span style="font-size:var(--text-sm,.875rem)">Pick a slot</span>
+        <div class="slots" id="slots" role="group" aria-label="Available slots"></div>
+      </div>
+      <label>Anything we should know <span style="color:var(--text-3)">(optional)</span>
+        <textarea id="f-note" name="note" rows="3"></textarea>
+      </label>
+      <div class="row">
+        <button class="primary" type="submit" id="send">Request this slot</button>
+        <button class="quiet" type="button" id="change-slot">Change my slot</button>
+      </div>
+      <p class="status wait" id="visitor-status" role="status" aria-live="polite">Nothing requested yet.</p>
+    </form>
+  </section>
+
+  <section aria-labelledby="h-desk">
+    <div class="desk">
+      <div>
+        <h2 id="h-desk">Staff desk</h2>
+        <p class="empty" id="desk-note">Requests wait here. Nothing goes out until someone approves the draft in front of them.</p>
+        <div id="requests"></div>
+      </div>
+      <div>
+        <h2 id="h-outbox">Outbox</h2>
+        <ul class="outbox" id="outbox"></ul>
+        <p class="empty" id="outbox-empty">Empty. An approved draft appears here with what would have been sent.</p>
+      </div>
+      <div class="card">
+        <h3>Try the guard</h3>
+        <p class="empty">Three things the approval check exists to refuse. Each one prints what happened.</p>
+        <div class="row" style="margin-top:.6rem">
+          <button class="quiet danger" type="button" id="attack-replay">Replay the last approval</button>
+          <button class="quiet danger" type="button" id="attack-forge">Approve from the customer side</button>
+          <button class="quiet danger" type="button" id="attack-swap">Change the draft after approval</button>
+        </div>
+        <p class="status no" id="guard-log" role="status" aria-live="polite" style="margin-top:.7rem">No attempt yet.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p id="honesty">
+    This page is a demo built from a written description of a business. The business, the prices and the slots on it
+    are made up, and the phone number is in the 555-01xx range that exists for fiction. No reviews, ratings or
+    customer names appear anywhere on it, because a new page has not earned any.
+  </p>
+  <p id="wiring">
+    To make it real, a person wires the outbox to something that sends — and keeps the approval step in front of it.
+    Every row in the outbox carries the request id, the revision and the approval it came from, so the thing that
+    sends can check them again on its side.
+  </p>
+</footer>
+</div>
+
+<script type="application/json" id="business">
+{
+  "name": "Fernwood Bicycle Workshop",
+  "tagline": "Repairs and tune-ups while you wait, and a fitting session that takes the morning.",
+  "facts": ["Fernwood, two streets back from the park", "Tue–Sat, 9:00–17:30", "555-0142", "Cash, card, or an IOU if we know you"],
+  "services": [
+    {"name": "Safety check and tune-up", "price": "$45–$70", "note": "Brakes, gears, bearings and a wash. About an hour, usually while you wait."},
+    {"name": "Wheel rebuild", "price": "$90–$160", "note": "New spokes and a proper tension job. Two days, because the wheel has to settle."},
+    {"name": "Fitting session", "price": "$120", "note": "Saddle height, reach and cleats, on your own bike. Bring the shoes you ride in."}
+  ],
+  "faq": [
+    {"q": "Do I need an appointment?", "a": "For a tune-up, no — mornings are quieter. For a fitting, yes: it takes the better part of a morning."},
+    {"q": "What if the part has to be ordered?", "a": "We tell you the price before we order and the bike stays with you until the part arrives."},
+    {"q": "Do you work on e-bikes?", "a": "Mechanically yes. We do not open battery packs or motor housings."},
+    {"q": "Can I watch?", "a": "Yes. There is a stool and the kettle is on."}
+  ],
+  "slots": ["Tue 09:30", "Tue 14:00", "Wed 11:00", "Thu 09:30", "Sat 10:00"],
+  "demo": true
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var BIZ = JSON.parse(document.getElementById("business").textContent);
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------------------------------------------------------------- the window */
+  $("biz-name").textContent = BIZ.name;
+  $("biz-tagline").textContent = BIZ.tagline;
+  document.title = BIZ.name + " — booking";
+  BIZ.facts.forEach(function (f) { var li = document.createElement("li"); li.textContent = f; $("biz-facts").appendChild(li); });
+  BIZ.services.forEach(function (s) {
+    var li = document.createElement("li"), left = document.createElement("div");
+    var h = document.createElement("h3"); h.textContent = s.name;
+    var p = document.createElement("p"); p.textContent = s.note;
+    left.appendChild(h); left.appendChild(p);
+    var price = document.createElement("span"); price.className = "price"; price.textContent = s.price;
+    li.appendChild(left); li.appendChild(price); $("services").appendChild(li);
+    var opt = document.createElement("option"); opt.value = s.name; opt.textContent = s.name; $("f-service").appendChild(opt);
+  });
+  BIZ.faq.forEach(function (f) {
+    var d = document.createElement("details"), s = document.createElement("summary"), p = document.createElement("p");
+    s.textContent = f.q; p.textContent = f.a; d.appendChild(s); d.appendChild(p); $("faq").appendChild(d);
+  });
+  BIZ.slots.forEach(function (slot) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "slot"; b.textContent = slot; b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () {
+      Array.prototype.forEach.call(document.querySelectorAll(".slot"), function (o) { o.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true"); state.picked = slot;
+    });
+    $("slots").appendChild(b);
+  });
+
+  /* ---------------------------------------------------------------- the door */
+  /* issued has no prototype: on a plain {} the names every object inherits ("constructor", "toString") are already
+     there, and the built-in object behind one of them passed as an approval the desk had issued */
+  var state = { picked: null, requests: [], approvals: [], issued: Object.create(null), outbox: [], spent: {}, reqSeq: 0, apprSeq: 0 };
+
+  function draftFor(r) {
+    return "Hi " + r.name + " — " + BIZ.name + " here. We have you down for " + r.service + " on " + r.slot +
+           ". Reply to this message if that no longer works." + (r.note ? "\nYour note: " + r.note : "");
+  }
+
+  /* The guard. Every outbound action passes through it, and every refusal says why, out loud. */
+  /* An approval covers exactly two things for one request: the confirmation message whose words it names, and the
+     calendar entry for the slot it names. Anything else — a reminder, a second message — needs its own approval.
+     An earlier version of this function let unapproved words through when a real approval was reused with a new
+     kind and new text: it compared the approval with the request's current draft instead of with what was about
+     to go out. Every check below compares against the action itself. */
+  var KINDS = { message: "message", calendar: "calendar" };
+  function commit(action, approval) {
+    var r = state.requests.filter(function (x) { return x.id === action.requestId; })[0];
+    if (!r) return refuse("no such request");
+    if (!approval || approval.actor !== "staff") return refuse("approvals come from the staff desk, not from the form");
+    /* the very approval the desk issued — the same object, not one with the same fields or the same id. Before
+       0.1.1 a made-up {actor: "staff", …} with the right fields went through. */
+    if (state.issued[approval.id] !== approval) return refuse("the staff desk did not issue this approval");
+    if (!KINDS.hasOwnProperty(action.kind)) return refuse("an approval covers the confirmation and the calendar entry, nothing else (" + action.kind + ")");
+    if (approval.requestId !== r.id) return refuse("that approval belongs to another request (" + approval.requestId + ")");
+    /* the revision first, so a request that changed after approval says that rather than "already used" */
+    if (approval.rev !== r.rev) return refuse("the request changed after it was approved (approved revision " + approval.rev + ", current " + r.rev + ")");
+    var approvedWords = action.kind === "message" ? approval.message : approval.slot;
+    if (action.text !== approvedWords) return refuse("the text going out is not the text that was approved");
+    var key = approval.id + ":" + action.kind;   // each of the two, once
+    if (state.spent[key]) return refuse("that approval was already used for this action (approval " + approval.id + ", " + action.kind + ")");
+    state.spent[key] = true;
+    state.outbox.push({ kind: action.kind, requestId: r.id, rev: r.rev, approval: approval.id, to: r.contact, slot: r.slot, text: action.text });
+    return true;
+  }
+  function refuse(why) { $("guard-log").textContent = "Refused: " + why + "."; return false; }
+
+  function render() {
+    var box = $("requests"); box.textContent = "";
+    state.requests.forEach(function (r) {
+      var el = document.createElement("div"); el.className = "req";
+      var h = document.createElement("h3"); h.textContent = r.name + " · " + r.service;
+      var meta = document.createElement("p"); meta.className = "meta";
+      meta.textContent = "request " + r.id + " · revision " + r.rev + " · " + r.slot + " · " + r.status;
+      var d = document.createElement("div"); d.className = "draft"; d.textContent = draftFor(r);
+      var row = document.createElement("div"); row.className = "row";
+      if (r.status === "awaiting_staff") {
+        var ok = document.createElement("button"); ok.className = "primary"; ok.type = "button"; ok.textContent = "Approve and send";
+        ok.addEventListener("click", function () { approve(r); });
+        var no = document.createElement("button"); no.className = "quiet danger"; no.type = "button"; no.textContent = "Reject";
+        no.addEventListener("click", function () { r.status = "rejected"; say("Your request was declined. Nothing was sent."); render(); });
+        row.appendChild(ok); row.appendChild(no);
+      }
+      el.appendChild(h); el.appendChild(meta); el.appendChild(d); el.appendChild(row); box.appendChild(el);
+    });
+    $("desk-note").style.display = state.requests.length ? "none" : "";
+
+    var out = $("outbox"); out.textContent = "";
+    state.outbox.forEach(function (o) {
+      var li = document.createElement("li");
+      li.textContent = (o.kind === "calendar" ? "Calendar: " : "Message to " + o.to + ": ") + (o.kind === "calendar" ? o.slot : o.text);
+      var m = document.createElement("span"); m.className = "not-sent";
+      m.textContent = "not sent — demo mode · request " + o.requestId + " · revision " + o.rev + " · approval " + o.approval;
+      li.appendChild(m); out.appendChild(li);
+    });
+    $("outbox-empty").style.display = state.outbox.length ? "none" : "";
+  }
+  function say(msg, kind) {
+    var el = $("visitor-status"); el.textContent = msg;
+    el.className = "status " + (kind || "wait");
+  }
+
+  function approve(r) {
+    var approval = { id: "a" + (++state.apprSeq), actor: "staff", requestId: r.id, rev: r.rev, message: draftFor(r), slot: r.slot };
+    state.approvals.push(approval);
+    state.issued[approval.id] = approval;   // the desk's own record of what it issued
+    var sent = commit({ requestId: r.id, kind: "message", text: draftFor(r) }, approval);
+    if (!sent) { render(); return; }
+    commit({ requestId: r.id, kind: "calendar", text: r.slot }, approval);   // the same approval, not a second one
+    r.status = "approved";
+    $("guard-log").textContent = "Approved: approval " + approval.id + " for revision " + r.rev + ".";
+    say("Confirmed for " + r.slot + ". " + BIZ.name + " approved it by hand.", "ok");
+    render();
+  }
+
+  $("booking").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("f-name").value.trim(), contact = $("f-contact").value.trim();
+    if (!name || !contact) { say("We need a name and a way to reach you.", "no"); return; }
+    if (!state.picked) { say("Pick one of the slots above first.", "no"); return; }
+    var r = { id: "r" + (++state.reqSeq), rev: 1, name: name, contact: contact, service: $("f-service").value,
+              slot: state.picked, note: $("f-note").value.trim(), status: "awaiting_staff" };
+    state.requests.push(r);
+    say("Sent to " + BIZ.name + ". It is waiting for someone there to read it — nothing is booked yet.");
+    render();
+  });
+
+  $("change-slot").addEventListener("click", function () {
+    var r = state.requests[state.requests.length - 1];
+    if (!r) { say("Nothing requested yet.", "no"); return; }
+    if (!state.picked || state.picked === r.slot) { say("Pick a different slot above, then press this again.", "no"); return; }
+    r.slot = state.picked; r.rev += 1; r.status = "awaiting_staff";
+    say("Changed to " + r.slot + ". It goes back to the desk as revision " + r.rev + " — an earlier approval does not carry over.");
+    $("guard-log").textContent = "Request " + r.id + " is now revision " + r.rev + "; any approval of revision " + (r.rev - 1) + " is spent.";
+    render();
+  });
+
+  /* The three attempts the guard exists for. Each runs the real commit() — nothing is faked for the demo. */
+  $("attack-replay").addEventListener("click", function () {
+    var a = state.approvals[state.approvals.length - 1];
+    if (!a) { $("guard-log").textContent = "Approve something first, then replay it."; return; }
+    var r = state.requests.filter(function (x) { return x.id === a.requestId; })[0];
+    if (commit({ requestId: a.requestId, kind: "message", text: draftFor(r) }, a)) {
+      $("guard-log").textContent = "The replay went through — that is a bug in the guard.";
+    }
+    render();
+  });
+  $("attack-forge").addEventListener("click", function () {
+    var r = state.requests[state.requests.length - 1];
+    if (!r) { $("guard-log").textContent = "Send a request first, then try to approve it from the form."; return; }
+    commit({ requestId: r.id, kind: "message", text: draftFor(r) },
+           { id: "forged", actor: "customer", requestId: r.id, rev: r.rev, message: draftFor(r), slot: r.slot });
+    render();
+  });
+  $("attack-swap").addEventListener("click", function () {
+    var a = state.approvals[state.approvals.length - 1];
+    if (!a) { $("guard-log").textContent = "Approve something first, then try to change the text."; return; }
+    commit({ requestId: a.requestId, kind: "message", text: "A different message nobody approved." }, a);
+    render();
+  });
+
+  $("scheme").addEventListener("change", function () {
+    var v = $("scheme").value;
+    if (v) { document.documentElement.setAttribute("data-scheme", v); } else { document.documentElement.removeAttribute("data-scheme"); }
+    try { v ? localStorage.setItem("scheme", v) : localStorage.removeItem("scheme"); } catch (e) { /* private window */ }
+  });
+  try { $("scheme").value = localStorage.getItem("scheme") || ""; } catch (e) { /* private window */ }
+
+  if (!BIZ.demo) { $("demo-note").style.display = "none"; }
+  render();
+
+  /* ?probe=1 — run the guard against the cases it exists for, on a request of its own, and write what happened
+     into the page. Each case calls the real commit(); nothing here is a copy of the rules. A person can open
+     page.html?probe=1 and read the table; a headless browser can read <pre id="guard-probe">. */
+  if (/[?&]probe=1\b/.test(location.search)) {
+    /* Every case gets its own request and its own approval, built so that exactly one check in commit() stands
+       between the attempt and the outbox. Sharing one approval across cases let the reuse check refuse things
+       the text check was supposed to refuse, and a broken text check went unnoticed (2026-09-22). */
+    var n = 0;
+    function fresh() {
+      var r = { id: "probe-r" + (++n), rev: 1, name: "Probe", contact: "555-0100", service: BIZ.services[0].name,
+                slot: BIZ.slots[0], note: "", status: "awaiting_staff" };
+      state.requests.push(r);
+      var a = { id: "probe-a" + n, actor: "staff", requestId: r.id, rev: 1, message: draftFor(r), slot: r.slot };
+      state.issued[a.id] = a;   // issued, as the desk would
+      return [r, a];
+    }
+    function msg(r) { return { requestId: r.id, kind: "message", text: draftFor(r) }; }
+    var cases = [
+      ["the approved message goes out", true, "", function () { var x = fresh(); return commit(msg(x[0]), x[1]); }],
+      ["the approved calendar entry goes out", true, "", function () { var x = fresh(); return commit({ requestId: x[0].id, kind: "calendar", text: x[0].slot }, x[1]); }],
+      ["the same message a second time", false, "reuse", function () { var x = fresh(); commit(msg(x[0]), x[1]); return commit(msg(x[0]), x[1]); }],
+      ["other words under a real approval", false, "words", function () { var x = fresh(); return commit({ requestId: x[0].id, kind: "message", text: "Words nobody approved." }, x[1]); }],
+      ["another slot under a real approval", false, "words", function () { var x = fresh(); return commit({ requestId: x[0].id, kind: "calendar", text: BIZ.slots[1] }, x[1]); }],
+      ["a reminder under a real approval", false, "kind", function () { var x = fresh(); return commit({ requestId: x[0].id, kind: "reminder", text: x[0].slot }, x[1]); }],
+      ["an approval made on the customer side", false, "actor", function () { var x = fresh(); x[1].actor = "customer"; return commit(msg(x[0]), x[1]); }],
+      /* a built-in object dressed as an approval under the name it is inherited by: a record with a prototype lists it */
+      ["an approval named after a built-in", false, "issued", function () {
+        var x = fresh(), fake = Object.prototype.hasOwnProperty, keys = ["id", "actor", "requestId", "rev", "message", "slot"];
+        var vals = ["hasOwnProperty", "staff", x[0].id, 1, draftFor(x[0]), x[0].slot];
+        keys.forEach(function (k, i) { fake[k] = vals[i]; });
+        try { return commit(msg(x[0]), fake); } finally { keys.forEach(function (k) { delete fake[k]; }); }
+      }],
+      /* a copy of a real approval, same id, other words: checking only that the id was issued would let it through */
+      ["an approval the desk did not issue", false, "issued", function () { var x = fresh(); var copy = JSON.parse(JSON.stringify(x[1])); copy.message = "Words nobody approved."; return commit({ requestId: x[0].id, kind: "message", text: copy.message }, copy); }],
+      ["another request's approval", false, "request", function () { var x = fresh(); x[1].requestId = "somebody-else"; return commit(msg(x[0]), x[1]); }],
+      ["the phone number changed after approval", false, "revision", function () { var x = fresh(); x[0].contact = "555-0199"; x[0].rev = 2; return commit(msg(x[0]), x[1]); }]
+    ];
+    var rows = cases.map(function (c) {
+      var got = c[3]();
+      return { case: c[0], expected: c[1] ? "sent" : "refused", only_check: c[2], got: got ? "sent" : "refused",
+               refusal: got ? "" : $("guard-log").textContent, pass: got === c[1] };
+    });
+    var pre = document.createElement("pre"); pre.id = "guard-probe";
+    pre.textContent = JSON.stringify({ passed: rows.filter(function (x) { return x.pass; }).length, cases: rows.length, rows: rows }, null, 1);
+    document.body.appendChild(pre);
+    state.requests = state.requests.filter(function (x) { return x.id.indexOf("probe-") !== 0; });
+    state.outbox = state.outbox.filter(function (x) { return x.requestId.indexOf("probe-") !== 0; });
+    Object.keys(state.issued).forEach(function (k) { if (k.indexOf("probe-") === 0) delete state.issued[k]; });
+    Object.keys(state.spent).forEach(function (k) { if (k.indexOf("probe-") === 0) delete state.spent[k]; });
+    render();
+  }
+})();
+</script>
+</body>
+</html>

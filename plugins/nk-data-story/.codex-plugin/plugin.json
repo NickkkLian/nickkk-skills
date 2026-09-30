@@ -1,0 +1,27 @@
+{
+  "name": "nk-data-story",
+  "version": "0.1.4",
+  "description": "Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-data-story",
+  "repository": "https://github.com/NickkkLian/nk-data-story",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "data",
+    "report",
+    "csv"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-data-story",
+    "shortDescription": "CSV to a one-page data report",
+    "longDescription": "Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter. The agent profiles the table, then writes report.json - the decision the report serves, figures defined as computations (count, sum, mean, median, share, change, over filters, date windows, groups and per-day, week or month levels), up to three charts, a next step and what the data cannot answer. scripts/report_check.py refuses typed numbers in the prose, shares without a denominator, changes without two periods, a missing decision and data that does not match its pinned sha256; scripts/render.py recomputes every number from the file into a single HTML page in three palettes, light and dark. Standard library only; the data never leaves the machine. Use when someone hands over a spreadsheet and asks what it says, or needs a one-page summary they can share. Not a dashboard and not a statistics package.",
+    "developerName": "Nick Lian",
+    "category": "Productivity",
+    "capabilities": []
+  }
+}

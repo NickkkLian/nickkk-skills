@@ -1,0 +1,27 @@
+{
+  "name": "nk-model",
+  "version": "0.1.4",
+  "description": "Turn a description of a small business and a few assumptions \u2014 price, units sold, costs, the days customers take to pay, equipment, a loan, tax \u2014 into a three-statement financial model in one .xlsx: an income statement, a balance sheet and a cash flow that tie to each other, a checks sheet, charts, and a sheet stating every assumption and the method.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-model",
+  "repository": "https://github.com/NickkkLian/nk-model",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "financial-model",
+    "xlsx",
+    "three-statement"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-model",
+    "shortDescription": "A three-statement workbook",
+    "longDescription": "Turn a description of a small business and a few assumptions \u2014 price, units sold, costs, the days customers take to pay, equipment, a loan, tax \u2014 into a three-statement financial model in one .xlsx: an income statement, a balance sheet and a cash flow that tie to each other, a checks sheet, charts, and a sheet stating every assumption and the method. Use when someone needs to see how a business plan hangs together (when the cash runs out, what a loan or slower-paying customers do to it) or wants a model they can open in a spreadsheet and change. scripts/make_model.py builds the workbook with standard-library Python, every number a live formula with its value stored beside it, and writes nothing unless it balances to the penny; scripts/model_check.py re-checks a workbook from this skill, edited or not, cell by cell against the one it would write: plugs, changed formulas, stored values that disagree, statements that do not tie; scripts/preview.py shows it without a spreadsheet program.",
+    "developerName": "Nick Lian",
+    "category": "Productivity",
+    "capabilities": []
+  }
+}

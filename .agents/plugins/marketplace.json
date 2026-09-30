@@ -1,0 +1,212 @@
+{
+  "name": "nickkk-skills",
+  "interface": {
+    "displayName": "nickkk-skills"
+  },
+  "plugins": [
+    {
+      "name": "nk-evidence-audit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-evidence-audit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-publish-gate",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-publish-gate"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-indent-guard",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-indent-guard"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-breakable-selftest",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-breakable-selftest"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-memory-with-conditions",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-memory-with-conditions"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-rules-that-land",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-rules-that-land"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-regression-baseline",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-regression-baseline"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-rewrite-coverage",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-rewrite-coverage"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-handoff-package",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-handoff-package"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-novel",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-novel"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "nk-design",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-design"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "nk-data-story",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-data-story"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "nk-post-kit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-post-kit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "nk-landing",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-landing"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "nk-deck",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-deck"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "nk-model",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-model"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "nk-explorer",
+      "source": {
+        "source": "local",
+        "path": "./plugins/nk-explorer"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

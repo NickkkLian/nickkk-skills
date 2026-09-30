@@ -1,0 +1,73 @@
+{
+  "title": "How compound interest grows",
+  "question": "Money left to grow at a fixed yearly rate earns interest on its interest. How much is there after a number of years?",
+  "result": {
+    "name": "A",
+    "label": "Amount after n years",
+    "unit": "£"
+  },
+  "formula": "P * (1 + r/100)^n",
+  "controls": [
+    {
+      "name": "P",
+      "label": "Starting amount",
+      "unit": "£",
+      "min": 100,
+      "max": 10000,
+      "step": 100,
+      "value": 1000
+    },
+    {
+      "name": "r",
+      "label": "Yearly rate",
+      "unit": "%",
+      "min": 0,
+      "max": 15,
+      "step": 0.5,
+      "value": 5
+    },
+    {
+      "name": "n",
+      "label": "Years",
+      "unit": "years",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "value": 10,
+      "unit_one": "year"
+    }
+  ],
+  "chart": {
+    "x": "n",
+    "title": "The amount, year by year"
+  },
+  "notes": [
+    "Interest is added once a year.",
+    "Nothing is paid in or taken out along the way.",
+    "The rate never changes."
+  ],
+  "source": "the standard compound interest formula, compounded once a year.",
+  "practice": [
+    {
+      "type": "compute",
+      "prompt": "£2,000 at 3% a year for 5 years. What is the amount?",
+      "set": {
+        "P": 2000,
+        "r": 3,
+        "n": 5
+      },
+      "tolerance": 0.5
+    },
+    {
+      "type": "reach",
+      "prompt": "£1,000 at 7% a year: after how many whole years is there £2,000 or more for the first time?",
+      "fixed": {
+        "P": 1000,
+        "r": 7
+      },
+      "goal": "at least",
+      "target": 2000,
+      "lowest": "n"
+    }
+  ]
+}

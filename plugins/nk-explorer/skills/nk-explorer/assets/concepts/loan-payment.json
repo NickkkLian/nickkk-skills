@@ -1,0 +1,73 @@
+{
+  "title": "What a loan costs each month",
+  "question": "A loan paid back in equal monthly payments: how big is each payment, and what moves it most?",
+  "result": {
+    "name": "M",
+    "label": "Monthly payment",
+    "unit": "£"
+  },
+  "formula": "L * (i/1200) / (1 - (1 + i/1200)^(-12*y))",
+  "controls": [
+    {
+      "name": "L",
+      "label": "Amount borrowed",
+      "unit": "£",
+      "min": 10000,
+      "max": 500000,
+      "step": 5000,
+      "value": 200000
+    },
+    {
+      "name": "i",
+      "label": "Yearly interest rate",
+      "unit": "%",
+      "min": 0.5,
+      "max": 12,
+      "step": 0.25,
+      "value": 5
+    },
+    {
+      "name": "y",
+      "label": "Years to pay it back",
+      "unit": "years",
+      "min": 1,
+      "max": 35,
+      "step": 1,
+      "value": 25,
+      "unit_one": "year"
+    }
+  ],
+  "chart": {
+    "x": "y",
+    "title": "The monthly payment for each length of loan"
+  },
+  "notes": [
+    "The rate is fixed for the whole loan.",
+    "Interest is charged every month at a twelfth of the yearly rate.",
+    "Fees, insurance and paying early are left out."
+  ],
+  "source": "the standard level-payment (annuity) formula used for repayment mortgages and personal loans.",
+  "practice": [
+    {
+      "type": "compute",
+      "prompt": "£150,000 borrowed at 4.5% a year, paid back over 20 years. What is the monthly payment?",
+      "set": {
+        "L": 150000,
+        "i": 4.5,
+        "y": 20
+      },
+      "tolerance": 0.5
+    },
+    {
+      "type": "reach",
+      "prompt": "£300,000 over 30 years: what is the highest rate at which the payment is £1,800 a month or less?",
+      "fixed": {
+        "L": 300000,
+        "y": 30
+      },
+      "goal": "at most",
+      "target": 1800,
+      "highest": "i"
+    }
+  ]
+}

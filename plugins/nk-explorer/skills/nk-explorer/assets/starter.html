@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="written by make_explorer.py">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How compound interest grows</title>
+<meta name="description" content="Money left to grow at a fixed yearly rate earns interest on its interest. How much is there after a number of years?">
+<meta name="theme-color" content="#053333">
+<script>
+(function () {
+  try {
+    var s = localStorage.getItem("nl-scheme");
+    if (s === "dark" || s === "light") document.documentElement.setAttribute("data-scheme", s);
+  } catch (e) { /* a private window: the system setting decides */ }
+})();
+</script>
+<link rel="stylesheet" href="design-tokens.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: var(--weight-regular) var(--text-md)/var(--leading-normal) var(--font-sans); }
+  .topbar { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--gutter); background: var(--band); color: var(--on-band); border-bottom: 1px solid var(--band-line); }
+  .topbar .mark { display: inline-flex; align-items: center; gap: 8px; font: 600 var(--text-sm)/1 var(--font-mono); letter-spacing: .02em; }
+  .topbar .mark svg { color: var(--point); flex: none; }
+  .spacer { flex: 1; }
+  .tbtn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 1px solid var(--band-line); border-radius: var(--radius-sm); background: transparent; color: var(--on-band); cursor: pointer; }
+  .tbtn:hover { background: var(--band-line); }
+  main { max-width: 1120px; margin: 0 auto; padding: var(--space-6) var(--gutter) var(--space-8); }
+  .kicker { font: 600 var(--text-xs)/1 var(--font-mono); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--text-3); margin: 0 0 var(--space-2); }
+  h1 { font-family: var(--font-display); font-size: var(--text-3xl); line-height: var(--leading-tight); margin: 0 0 var(--space-2); }
+  .question { color: var(--text-2); max-width: 60ch; margin: 0 0 var(--space-6); }
+  h2 { font-family: var(--font-display); font-size: var(--text-lg); margin: 0 0 var(--space-3); }
+  .work { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); }
+  .panel { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4); min-width: 0; }
+  .panel.chart { grid-column: 1 / -1; }
+  .control { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px var(--space-2); margin-bottom: var(--space-3); }
+  .control label { font-weight: var(--weight-medium); }
+  .control output { font: var(--text-sm)/1.4 var(--font-mono); color: var(--text-2); }
+  .control input { grid-column: 1 / -1; width: 100%; accent-color: var(--accent-text); }
+  .control input:disabled { opacity: .55; }
+  .control .range { grid-column: 1 / -1; display: flex; justify-content: space-between; font: var(--text-2xs)/1 var(--font-mono); color: var(--text-3); }
+  .mirror .line { font: var(--text-md)/1.6 var(--font-mono); margin: 0; overflow-wrap: anywhere; }
+  .mirror .sym { color: var(--text-2); }
+  .mirror .v { border-radius: var(--radius-xs); padding: 0 2px; }
+  .mirror .v.changed { background: var(--point-tint); color: var(--point-tint-text); }
+  .mirror .out b { font-size: var(--text-xl); color: var(--text); }
+  .mirror .err { color: var(--danger); font-size: var(--text-sm); min-height: 1.4em; margin: var(--space-2) 0 0; }
+  .where { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px var(--space-3); margin: var(--space-2) 0 0; font-size: var(--text-sm); color: var(--text-2); }
+  .where dt { font-family: var(--font-mono); color: var(--text); }
+  .where dd { margin: 0; }
+  .how { font-size: var(--text-sm); color: var(--text-3); margin: var(--space-3) 0 0; }
+  #chart { width: 100%; height: auto; display: block; }
+  #chart .grid { stroke: var(--viz-grid); stroke-width: 1; }
+  #chart .axis { stroke: var(--viz-axis); stroke-width: 1; }
+  #chart .curve { fill: none; stroke: var(--viz-1); stroke-width: 2.5; stroke-linejoin: round; }
+  #chart .here { fill: var(--point); stroke: var(--surface-raised); stroke-width: 2; }
+  #chart text { font: 12px var(--font-mono); fill: var(--text-2); }
+  #chart text.cap { fill: var(--text-3); }
+  .practice { margin-top: var(--space-6); }
+  .practice .hint { color: var(--text-2); max-width: 70ch; margin: 0 0 var(--space-3); }
+  #tasks { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+  .task { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); }
+  .task p { margin: 0 0 var(--space-2); }
+  .task .row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+  .task input { font: var(--text-md) var(--font-mono); width: 12ch; padding: 6px 8px; border: 1px solid var(--border-input); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); }
+  .task .state { font-size: var(--text-sm); color: var(--text-2); margin: var(--space-2) 0 0; }
+  .task .state:empty { display: none; }
+  .btn { font: var(--weight-medium) var(--text-sm)/1 var(--font-sans); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: var(--surface-raised); color: var(--text); cursor: pointer; }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .verdict { font-size: var(--text-sm); min-height: 1.4em; margin: var(--space-2) 0 0; }
+  .verdict.ok { color: var(--success); } .verdict.no { color: var(--danger); }
+  .verdict.ok::before, .verdict.no::before { content: ""; display: inline-block; width: .8em; height: .8em; margin-right: .35em; vertical-align: -.05em; background: currentColor; -webkit-mask: var(--glyph) center/contain no-repeat; mask: var(--glyph) center/contain no-repeat; }
+  .verdict.ok { --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.6 5.3 4 7.6 8.4 2.4' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  .verdict.no { --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.4 2.4 7.6 7.6M7.6 2.4 2.4 7.6' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  footer { max-width: 1120px; margin: 0 auto; padding: var(--space-4) var(--gutter) var(--space-8); color: var(--text-2); font-size: var(--text-sm); border-top: 1px solid var(--border); }
+  :focus-visible { outline: var(--border-focus-width, 2px) solid var(--focus); outline-offset: 2px; }
+  #probe-summary, #explorer-probe { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter) var(--space-4); font: var(--text-xs)/1.5 var(--font-mono); color: var(--text-2); }
+  #probe-summary ul { margin: 0; padding-left: 1.2em; }
+  #explorer-probe { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text-3); padding-bottom: var(--space-8); }
+  @media (max-width: 760px) { .work { grid-template-columns: minmax(0, 1fr); } h1 { font-size: var(--text-2xl); } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="mark"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg> concept explorer</span>
+  <span class="spacer"></span>
+  <button class="tbtn" type="button" id="scheme" aria-pressed="false" aria-label="Dark appearance" title="Dark appearance"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg></button>
+</header>
+<main>
+  <section class="intro">
+    <p class="kicker">Concept</p>
+    <h1 id="title"></h1>
+    <p class="question" id="question"></p>
+  </section>
+  <div class="work">
+    <section class="panel" aria-labelledby="h-controls">
+      <h2 id="h-controls">Move a control</h2>
+      <div id="controls"></div>
+    </section>
+    <section class="panel mirror" aria-labelledby="h-mirror">
+      <h2 id="h-mirror">The formula it changes</h2>
+      <p class="line sym"><span id="m-res"></span> = <span id="m-sym"></span></p>
+      <p class="line with">= <span id="m-with"></span></p>
+      <p class="line out" aria-live="polite">= <b id="m-out" data-nk-src="result"></b></p>
+      <p class="err" id="m-err" role="status"></p>
+      <dl class="where" id="m-where"></dl>
+      <p class="how">The marked number is the one you just moved. All three lines are written from the formula the result is computed with.</p>
+    </section>
+    <section class="panel chart" aria-labelledby="h-chart">
+      <h2 id="h-chart"></h2>
+      <svg id="chart" role="img" aria-labelledby="h-chart"></svg>
+      <p class="how" id="chart-how"></p>
+    </section>
+  </div>
+  <section class="practice" aria-labelledby="h-practice">
+    <h2 id="h-practice">Practice</h2>
+    <p class="hint">Graded on the result, not on how you got there: any working that lands within the tolerance counts.</p>
+    <ol id="tasks"></ol>
+  </section>
+</main>
+<footer>
+  <p><b>What this leaves out:</b> <span id="notes"></span> <b>Where the formula comes from:</b> <span id="source"></span> <b>Not verified here:</b> whether this formula fits your own case. It explains a concept; it is not advice.</p>
+</footer>
+
+<script type="application/json" id="concept">
+{
+  "title": "How compound interest grows",
+  "question": "Money left to grow at a fixed yearly rate earns interest on its interest. How much is there after a number of years?",
+  "result": {"name": "A", "label": "Amount after n years", "unit": "£"},
+  "formula": "P * (1 + r/100)^n",
+  "controls": [
+    {"name": "P", "label": "Starting amount", "unit": "£", "min": 100, "max": 10000, "step": 100, "value": 1000},
+    {"name": "r", "label": "Yearly rate", "unit": "%", "min": 0, "max": 15, "step": 0.5, "value": 5},
+    {"name": "n", "label": "Years", "unit": "years", "unit_one": "year", "min": 0, "max": 40, "step": 1, "value": 10}
+  ],
+  "chart": {"x": "n", "title": "The amount, year by year"},
+  "notes": ["Interest is added once a year.", "Nothing is paid in or taken out along the way.", "The rate never changes."],
+  "source": "the standard compound interest formula, compounded once a year.",
+  "practice": [
+    {"type": "compute", "prompt": "£2,000 at 3% a year for 5 years. What is the amount?", "set": {"P": 2000, "r": 3, "n": 5}, "tolerance": 0.5},
+    {"type": "reach", "prompt": "£1,000 at 7% a year: after how many whole years is there £2,000 or more for the first time?", "fixed": {"P": 1000, "r": 7}, "goal": "at least", "target": 2000, "lowest": "n"}
+  ]
+}
+</script>
+
+<script>
+/* formula:start */
+var Formula = (function () {
+  "use strict";
+  var FUNCS = { min: [2, Infinity], max: [2, Infinity], abs: [1, 1], sqrt: [1, 1], exp: [1, 1], ln: [1, 1],
+                log10: [1, 1], floor: [1, 1], ceil: [1, 1], round: [1, 2] };
+  var TOKEN = /^\s*(?:(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\*\*|[-+*\/^(),]))/;
+  function FormulaError(message) { this.message = message; }
+  FormulaError.prototype.toString = function () { return this.message; };
+  function fail(m) { throw new FormulaError(m); }
+  function has(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+
+  function tokens(src) {
+    var out = [], rest = src.replace(/\s+$/, ""), at = 0;
+    while (rest.length) {
+      var m = TOKEN.exec(rest);
+      if (!m || !m[0].length) fail("unexpected character at " + (at + 1) + ": '" + rest.slice(0, 12).trim() + "'");
+      if (m[1] !== undefined) {
+        if (!isFinite(parseFloat(m[1]))) fail("the number " + m[1] + " is too large");
+        out.push(["num", parseFloat(m[1]), m[1]]);
+      }
+      else if (m[2] !== undefined) out.push(["name", m[2], m[2]]);
+      else out.push(["op", m[3] === "**" ? "^" : m[3], m[3]]);
+      at += m[0].length; rest = rest.slice(m[0].length);
+    }
+    return out;
+  }
+
+  function parse(src) {
+    var toks = tokens(src), pos = 0;
+    function peek() { return pos < toks.length ? toks[pos] : ["end", null]; }
+    function is(kind, value) { var t = peek(); return t[0] === kind && t[1] === value; }
+    function shown(t) { return t[0] === "end" ? "the end" : t[2]; }
+    function take(kind, value) {
+      var t = peek();
+      if ((kind && t[0] !== kind) || (value !== undefined && t[1] !== value)) fail("expected '" + (value !== undefined ? value : kind) + "' but found '" + shown(t) + "'");
+      pos++; return t;
+    }
+    function expr() { var n = term(); while (is("op", "+") || is("op", "-")) { var op = take()[1]; n = ["bin", op, n, term()]; } return n; }
+    function term() { var n = unary(); while (is("op", "*") || is("op", "/")) { var op = take()[1]; n = ["bin", op, n, unary()]; } return n; }
+    function unary() {
+      if (is("op", "-")) { take(); return ["neg", unary()]; }
+      if (is("op", "+")) { take(); return unary(); }
+      return power();
+    }
+    function power() { var b = atom(); if (is("op", "^")) { take(); return ["bin", "^", b, unary()]; } return b; }
+    function atom() {
+      var t = peek();
+      if (t[0] === "num") { take(); return ["num", t[1], t[2]]; }
+      if (t[0] === "name") {
+        take();
+        if (is("op", "(")) {
+          if (!has(FUNCS, t[1])) fail("unknown function '" + t[1] + "'; the language has " + Object.keys(FUNCS).sort().join(", "));
+          take("op", "(");
+          var args = [expr()];
+          while (is("op", ",")) { take(); args.push(expr()); }
+          take("op", ")");
+          var lo = FUNCS[t[1]][0], hi = FUNCS[t[1]][1];
+          if (args.length < lo || args.length > hi) fail(t[1] + "() takes " + lo + (hi === lo ? "" : hi === Infinity ? " or more" : " to " + hi) + " argument(s), not " + args.length);
+          return ["call", t[1], args];
+        }
+        if (has(FUNCS, t[1])) fail(t[1] + " is a function: write " + t[1] + "(…)");
+        return ["var", t[1]];
+      }
+      if (is("op", "(")) { take(); var n = expr(); take("op", ")"); return ["group", n]; }
+      fail("expected a number, a name or '(' but found '" + shown(t) + "'");
+    }
+    var tree = expr();
+    if (peek()[0] !== "end") fail("unexpected '" + peek()[2] + "' after a complete formula");
+    return tree;
+  }
+
+  function names(tree) {
+    var out = [];
+    (function walk(n) {
+      if (n[0] === "var" && out.indexOf(n[1]) < 0) out.push(n[1]);
+      for (var i = 1; i < n.length; i++) {
+        if (Array.isArray(n[i]) && typeof n[i][0] === "string") walk(n[i]);
+        else if (Array.isArray(n[i])) n[i].forEach(walk);
+      }
+    })(tree);
+    return out;
+  }
+
+  /* every step of the working has to be a finite number, as in formula.py: 1/exp(1000) has no value here either,
+     rather than 0 on the page and an error in the checker */
+  function finite(r) {
+    if (typeof r !== "number" || !isFinite(r)) fail("part of the working is not a finite number");
+    return r;
+  }
+
+  /* round(), floor() and ceil() finish their argument's working in decimal before they round, as formula.py's
+     exact() does: each number as written in the formula, each value as written on the line with numbers, and + - * /
+     and whole powers done exactly, on fractions of BigInts. A step with no exact decimal result (sqrt, exp, ln, log10,
+     a fractional power or one larger than EXACT_POWER, a division by a working that is exactly zero) is taken as the
+     number the page computes for it, as written. So round(8.5 * 10.45, 2) is 88.83 and ceil(2.1 / 0.3) is 7 here,
+     in the checker and by hand. */
+  var EXACT_POWER = 400, B0 = BigInt(0), B1 = BigInt(1), B10 = BigInt(10);
+  function babs(n) { return n < B0 ? -n : n; }
+  function gcd(a, b) { a = babs(a); b = babs(b); while (b !== B0) { var t = a % b; a = b; b = t; } return a; }
+  function frac(n, d) {
+    if (d < B0) { n = -n; d = -d; }
+    var g = gcd(n, d); if (g > B1) { n = n / g; d = d / g; }
+    return [n, d];
+  }
+  function pow10(k) { var r = B1; for (var i = 0; i < k; i++) r = r * B10; return r; }
+  /* the exact value of a decimal numeral: 12.5, .5, 1.5e3, 1e-7 */
+  function decimal(text) {
+    var m = /^(\d*)(?:\.(\d*))?(?:[eE]([+-]?\d+))?$/.exec(text);
+    var whole = m[1] || "", part = m[2] || "", e = (m[3] ? parseInt(m[3], 10) : 0) - part.length;
+    var n = BigInt((whole + part).replace(/^0+(?=\d)/, "") || "0");
+    return e >= 0 ? frac(n * pow10(e), B1) : frac(n, pow10(-e));
+  }
+  /* a number as written: its shortest decimal digits, from toExponential() (formula.py's repr() gives the same) */
+  function written(x) {
+    var parts = Math.abs(x).toExponential().split("e"), q = decimal(parts[0] + "e" + parts[1]);
+    return x < 0 ? [-q[0], q[1]] : q;
+  }
+  function add(a, b) { return frac(a[0] * b[1] + b[0] * a[1], a[1] * b[1]); }
+  function mul(a, b) { return frac(a[0] * b[0], a[1] * b[1]); }
+  function cmp(a, b) { var l = a[0] * b[1], r = b[0] * a[1]; return l < r ? -1 : l > r ? 1 : 0; }
+  function floorOf(q) { var t = q[0] / q[1]; return (q[0] < B0 && t * q[1] !== q[0]) ? t - B1 : t; }
+  function ceilOf(q) { var t = q[0] / q[1]; return (q[0] > B0 && t * q[1] !== q[0]) ? t + B1 : t; }
+  function scale(q, d) { return d >= 0 ? frac(q[0] * pow10(d), q[1]) : frac(q[0], q[1] * pow10(-d)); }
+  function exactRounding(f, q, d) {
+    if (f === "floor") return [floorOf(q), B1];
+    if (f === "ceil") return [ceilOf(q), B1];
+    var whole = floorOf(add(scale([babs(q[0]), q[1]], d), [B1, BigInt(2)]));
+    return scale([q[0] < B0 ? -whole : whole, B1], -d);
+  }
+  function exact(tree, values, approx) {
+    function ex(n) {
+      var k = n[0];
+      if (k === "num") return decimal(n.length > 2 ? n[2] : String(n[1]));
+      if (k === "var") return written(Number(values[n[1]]));
+      if (k === "group") return ex(n[1]);
+      if (k === "neg") { var v = ex(n[1]); return [-v[0], v[1]]; }
+      if (k === "bin") {
+        var a = ex(n[2]), b = ex(n[3]), op = n[1];
+        if (op === "+") return add(a, b);
+        if (op === "-") return add(a, [-b[0], b[1]]);
+        if (op === "*") return mul(a, b);
+        if (op === "/") return b[0] !== B0 ? frac(a[0] * b[1], a[1] * b[0]) : written(approx(n));
+        if (b[1] === B1 && babs(b[0]) <= BigInt(EXACT_POWER) && !(a[0] === B0 && b[0] < B0)) {
+          var p = Number(b[0]), r = [B1, B1];
+          for (var i = 0; i < Math.abs(p); i++) r = mul(r, a);
+          return p < 0 ? frac(r[1], r[0]) : r;
+        }
+        return written(approx(n));
+      }
+      if (k === "call") {
+        var f = n[1];
+        if (f === "round" || f === "floor" || f === "ceil") return exactRounding(f, ex(n[2][0]), n[2].length > 1 ? Math.trunc(approx(n[2][1])) : 0);
+        if (f === "min" || f === "max") {
+          return n[2].map(ex).reduce(function (m, q) { return (f === "min" ? cmp(q, m) < 0 : cmp(q, m) > 0) ? q : m; });
+        }
+        if (f === "abs") { var w = ex(n[2][0]); return [babs(w[0]), w[1]]; }
+        return written(approx(n));
+      }
+      fail("unknown node " + k);
+    }
+    return ex(tree);
+  }
+  /* the exact result as the page's number: its decimal digits read once by parseFloat, correctly rounded — the same
+     text formula.py hands to float() */
+  function asDouble(f, q, d) {
+    if (f !== "round") return parseFloat(q[0].toString());
+    var whole = scale(q, d)[0];
+    return parseFloat((q[0] < B0 ? "-" : "") + babs(whole).toString() + "e" + (-d));
+  }
+
+  function evaluate(tree, values) {
+    function ev(n) { return finite(step(n)); }
+    function step(n) {
+      var k = n[0];
+      if (k === "num") return n[1];
+      if (k === "var") { if (!has(values, n[1])) fail("'" + n[1] + "' is not a control on this page"); return Number(values[n[1]]); }
+      if (k === "group") return ev(n[1]);
+      if (k === "neg") return -ev(n[1]);
+      if (k === "bin") {
+        var a = ev(n[2]), b = ev(n[3]), op = n[1];
+        if (op === "+") return a + b;
+        if (op === "-") return a - b;
+        if (op === "*") return a * b;
+        if (op === "/") { if (b === 0) fail("division by zero"); return a / b; }
+        if (a < 0 && b !== Math.trunc(b)) fail("a negative number to a fractional power");
+        if (a === 0 && b < 0) fail("zero to a negative power");
+        return Math.pow(a, b);
+      }
+      if (k === "call") {
+        var args = n[2].map(ev), f = n[1], x = args[0];
+        if (f === "sqrt") { if (x < 0) fail("the square root of a negative number"); return Math.sqrt(x); }
+        if (f === "ln") { if (x <= 0) fail("ln of a number that is not positive"); return Math.log(x); }
+        if (f === "log10") { if (x <= 0) fail("log10 of a number that is not positive"); return Math.log10(x); }
+        if (f === "round" || f === "floor" || f === "ceil") {
+          var d = args.length > 1 ? Math.trunc(args[1]) : 0;
+          return asDouble(f, exactRounding(f, exact(n[2][0], values, ev), d), d);
+        }
+        if (f === "min") return Math.min.apply(null, args);
+        if (f === "max") return Math.max.apply(null, args);
+        return { abs: Math.abs, exp: Math.exp }[f](x);
+      }
+      fail("unknown node " + k);
+    }
+    var r = ev(tree);
+    if (typeof r !== "number" || !isFinite(r)) fail("the result is not a finite number");
+    return r;
+  }
+
+  /* numbers as the page shows them — the same rule as formula.py's fmt(): whole numbers plainly; others rounded to
+     six significant digits by toExponential (half away from zero on the exact value), trailing zeros dropped, and
+     e-notation when the rounded exponent is below -4 or 6 and up. The digits are placed by hand rather than by
+     toPrecision, which switches notation on its own rule. */
+  function fmt(x) {
+    x = Number(x);
+    if (x === Math.trunc(x) && Math.abs(x) < 1e15) return String(x === 0 ? 0 : x);
+    var sign = x < 0 ? "-" : "", s = Math.abs(x).toExponential(5);
+    var e = parseInt(s.split("e")[1], 10), digits = s.split("e")[0].replace(".", "");
+    if (e < -4 || e >= 6) return sign + digits.charAt(0) + ("." + digits.slice(1)).replace(/0+$/, "").replace(/\.$/, "") + "e" + e;
+    var out = e >= 0 ? digits.slice(0, e + 1) + "." + digits.slice(e + 1) : "0." + new Array(-e).join("0") + digits;
+    if (out.indexOf(".") >= 0) out = out.replace(/0+$/, "").replace(/\.$/, "");
+    return sign + out;
+  }
+
+  /* a number in the formula is written as it was typed; a negative value goes in brackets, so the line with values
+     works out to the result: 1 × (-3)^2, not 1 × -3^2 (formula.py's write() is the same) */
+  function write(tree, values) {
+    function w(n) {
+      var k = n[0];
+      if (k === "num") return n.length > 2 ? n[2] : fmt(n[1]);
+      if (k === "var") {
+        if (!values) return n[1];
+        return Number(values[n[1]]) < 0 ? "(" + fmt(values[n[1]]) + ")" : fmt(values[n[1]]);
+      }
+      if (k === "group") return "(" + w(n[1]) + ")";
+      if (k === "neg") return "-" + w(n[1]);
+      if (k === "bin") return w(n[2]) + ({ "+": " + ", "-": " - ", "*": " × ", "/": " ÷ ", "^": "^" })[n[1]] + w(n[3]);
+      if (k === "call") return n[1] + "(" + n[2].map(w).join(", ") + ")";
+    }
+    return w(tree);
+  }
+
+  /* the same text as write(tree, values), cut into parts: [text, name] where the text is a control's value and name
+     is that control, [text, null] for everything else — so the page can mark the value that just changed while the
+     line still reads exactly what write() gives */
+  function parts(tree, values) {
+    var out = [];
+    function push(t, name) { out.push([t, name || null]); }
+    function w(n) {
+      var k = n[0];
+      if (k === "num") return push(n.length > 2 ? n[2] : fmt(n[1]));
+      if (k === "var") {
+        var neg = Number(values[n[1]]) < 0;
+        if (neg) push("(");
+        push(fmt(values[n[1]]), n[1]);
+        return neg ? push(")") : undefined;
+      }
+      if (k === "group") { push("("); w(n[1]); return push(")"); }
+      if (k === "neg") { push("-"); return w(n[1]); }
+      if (k === "bin") { w(n[2]); push(({ "+": " + ", "-": " - ", "*": " \u00d7 ", "/": " \u00f7 ", "^": "^" })[n[1]]); return w(n[3]); }
+      if (k === "call") {
+        push(n[1] + "(");
+        n[2].forEach(function (a, i) { if (i) push(", "); w(a); });
+        return push(")");
+      }
+    }
+    w(tree);
+    return out;
+  }
+
+  return { parse: parse, names: names, evaluate: evaluate, write: write, parts: parts, fmt: fmt, FormulaError: FormulaError };
+})();
+/* formula:end */
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var C = JSON.parse(document.getElementById("concept").textContent);
+  var $ = function (id) { return document.getElementById(id); };
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var tree = Formula.parse(C.formula), fmt = Formula.fmt;
+  var stepped = (function uses(n) {
+    if (n[0] === "call" && ["floor", "ceil", "round"].indexOf(n[1]) >= 0) return true;
+    return n.slice(1).some(function (c) {
+      return Array.isArray(c) && (typeof c[0] === "string" ? uses(c) : c.some(function (a) { return uses(a); }));
+    });
+  })(tree);
+  var values = {}, start = {}, inputs = {}, lastChanged = null, lastResult = null;
+  function control(name) { return C.controls.filter(function (c) { return c.name === name; })[0]; }
+  function has(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+  function copy(o) { var r = {}; Object.keys(o).forEach(function (k) { r[k] = o[k]; }); return r; }
+  /* a currency sign goes in front (and money with one decimal gets a second), % sticks to the number, any other unit
+     follows after a space; u is a control or
+     the result, and its unit_one, when it has one, is used for exactly 1 or -1 ("1 year", not "1 years").
+     concept.py's with_unit() is the same rule, and the probe compares the two */
+  function withUnit(x, u) {
+    var unit = u ? (Math.abs(x) === 1 && u.unit_one ? u.unit_one : u.unit) : "";
+    if (!unit) return fmt(x);
+    if (["£", "$", "€", "¥"].indexOf(unit) >= 0) {       /* money with one decimal reads as pence: £7.50, not £7.5 */
+      var m = fmt(Math.abs(x));
+      return (x < 0 ? "-" : "") + unit + (/^\d+\.\d$/.test(m) ? m + "0" : m);
+    }
+    return fmt(x) + (unit === "%" ? "%" : " " + unit);
+  }
+  /* a control's k-th position, rounded to 12 significant digits so that 0.1 steps land on 0.3 and not on
+     0.30000000000000004 — concept.py's grid() is the same */
+  function grid(c, k) { return Number((c.min + k * c.step).toPrecision(12)); }
+  function stepsOf(c) { return Math.round((c.max - c.min) / c.step); }
+  function result(vals) { return Formula.evaluate(tree, vals); }
+  function tryResult(vals) {
+    try { return result(vals); } catch (e) { if (e instanceof Formula.FormulaError) return null; throw e; }
+  }
+
+  /* ---- words from the concept block ---- */
+  var xc = control(C.chart.x);
+  document.title = C.title;
+  $("title").textContent = C.title;
+  $("question").textContent = C.question;
+  $("m-res").textContent = C.result.name;
+  $("h-chart").textContent = C.chart.title;
+  $("chart-how").textContent = "The curve runs " + xc.label + " (" + xc.name + ") from " + withUnit(xc.min, xc) + " to " +
+    withUnit(xc.max, xc) + " and keeps every other control where it is now. The dot is where " + xc.name + " is now.";
+  $("notes").textContent = C.notes.join(" ");
+  $("source").textContent = C.source;
+  function whereRow(name, label, unit) {
+    var dt = document.createElement("dt"), dd = document.createElement("dd");
+    dt.textContent = name; dd.textContent = label + (unit && label.toLowerCase().indexOf(unit.toLowerCase()) < 0 ? " (" + unit + ")" : "");
+    $("m-where").appendChild(dt); $("m-where").appendChild(dd);
+  }
+  whereRow(C.result.name, C.result.label, C.result.unit);
+  C.controls.forEach(function (c) { whereRow(c.name, c.label, c.unit); });
+
+  /* ---- the controls, one per control in the concept block ---- */
+  C.controls.forEach(function (c) {
+    values[c.name] = start[c.name] = c.value;
+    var row = document.createElement("div"); row.className = "control";
+    var id = "c-" + c.name;
+    var label = document.createElement("label"); label.htmlFor = id; label.textContent = c.label + " (" + c.name + ")";
+    var out = document.createElement("output"); out.id = id + "-v"; out.htmlFor = id; out.setAttribute("data-nk-src", "control." + c.name);
+    var input = document.createElement("input");
+    input.type = "range"; input.id = id; input.min = c.min; input.max = c.max; input.step = c.step; input.value = c.value;
+    input.addEventListener("input", function () { values[c.name] = Number(input.value); lastChanged = c.name; render(); });
+    var range = document.createElement("div"); range.className = "range"; range.setAttribute("aria-hidden", "true");
+    var lo = document.createElement("span"); lo.textContent = withUnit(c.min, c);
+    var hi = document.createElement("span"); hi.textContent = withUnit(c.max, c);
+    range.appendChild(lo); range.appendChild(hi);
+    row.appendChild(label); row.appendChild(out); row.appendChild(input); row.appendChild(range);
+    $("controls").appendChild(row);
+    inputs[c.name] = input;
+  });
+
+  /* ---- the mirror and the chart, redrawn from the same tree on every change ---- */
+  function render() {
+    C.controls.forEach(function (c) { $("c-" + c.name + "-v").textContent = withUnit(values[c.name], c); });
+    $("m-sym").textContent = Formula.write(tree);
+    var w = $("m-with"); w.textContent = "";
+    Formula.parts(tree, values).forEach(function (p) {
+      var s = document.createElement("span"); s.textContent = p[0];
+      if (p[1]) { s.className = "v" + (p[1] === lastChanged ? " changed" : ""); s.setAttribute("data-name", p[1]); }
+      w.appendChild(s);
+    });
+    lastResult = null;
+    try { lastResult = result(values); $("m-out").textContent = fmt(lastResult); $("m-err").textContent = ""; }
+    catch (e) {
+      if (!(e instanceof Formula.FormulaError)) throw e;
+      $("m-out").textContent = "no value"; $("m-err").textContent = "Here the formula has no value: " + e.message + ".";
+    }
+    sources();
+    drawChart();
+  }
+
+  /* ---- where each number comes from (nk-sources): click the result or a readout. make_explorer.py writes each
+     entry; the result's entry is brought up to date with the formula line as it stands after every move ---- */
+  function sources() {
+    if (!window.NkSources) return;
+    var set = C.controls.map(function (c) { return c.name + " = " + withUnit(values[c.name], c); }).join(", ");
+    NkSources.update("result", {from: [{text: "the controls as they are set now: " + set}],
+      how: {kind: "formula", text: C.result.name + " = " + $("m-sym").textContent + "\n= " + $("m-with").textContent}});
+  }
+  addEventListener("DOMContentLoaded", sources);
+
+  function el(name, attrs, text) {
+    var n = document.createElementNS(SVGNS, name);
+    Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  /* round tick values: steps of 1, 2 or 5 times a power of ten, covering lo..hi */
+  function niceTicks(lo, hi, want) {
+    var raw = (hi - lo) / want, mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+    var step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * mag, out = [];
+    for (var i = Math.floor(lo / step + 1e-9); i <= Math.ceil(hi / step - 1e-9); i++) out.push(Number((i * step).toPrecision(12)));
+    return out;
+  }
+  /* the chart is drawn at the width it is shown at, so its 12px labels stay 12px on a phone and on a wide screen */
+  function drawChart() {
+    var svg = $("chart");
+    var W = Math.max(280, Math.round(svg.getBoundingClientRect().width) || 640), H = W < 480 ? 220 : 260;
+    var n = 201, pts = [];
+    for (var i = 0; i < n; i++) {
+      var v = copy(values);
+      v[xc.name] = xc.min + (xc.max - xc.min) * i / (n - 1);
+      pts.push([v[xc.name], tryResult(v)]);
+    }
+    var ys = pts.filter(function (p) { return p[1] !== null; }).map(function (p) { return p[1]; }).concat([0]);
+    var lo = Math.min.apply(null, ys), hi = Math.max.apply(null, ys);
+    if (hi === lo) hi = lo + 1;
+    var yt = niceTicks(lo, hi, 4), y0 = yt[0], y1 = yt[yt.length - 1], labels = yt.map(fmt);
+    var L = 14 + 7.4 * Math.max.apply(null, labels.map(function (s) { return s.length; })), R = 14, T = 10, B = 44;
+    function sx(x) { return L + (W - L - R) * (x - xc.min) / (xc.max - xc.min); }
+    function sy(y) { return T + (H - T - B) * (1 - (y - y0) / (y1 - y0)); }
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    yt.forEach(function (y, i) {
+      svg.appendChild(el("line", { "class": y === 0 ? "axis" : "grid", x1: L, x2: W - R, y1: sy(y), y2: sy(y) }));
+      svg.appendChild(el("text", { x: L - 8, y: sy(y) + 4, "text-anchor": "end" }, labels[i]));
+    });
+    var xt = niceTicks(xc.min, xc.max, W < 480 ? 3 : 5).filter(function (x) { return x >= xc.min - 1e-9 && x <= xc.max + 1e-9; });
+    [xc.min, xc.max].forEach(function (e) {
+      if (xt.every(function (x) { return Math.abs(x - e) > (xc.max - xc.min) / 10; })) xt.push(e);
+    });
+    xt.forEach(function (x) {
+      var anchor = Math.abs(x - xc.max) < 1e-9 ? "end" : Math.abs(x - xc.min) < 1e-9 ? "start" : "middle";
+      svg.appendChild(el("text", { x: sx(x), y: H - B + 18, "text-anchor": anchor }, fmt(x)));
+    });
+    svg.appendChild(el("text", { "class": "cap", x: (L + W - R) / 2, y: H - 8, "text-anchor": "middle" }, xc.label + " (" + xc.name + ")"));
+    /* a formula with floor, ceil or round jumps: drawn as steps (flat, then straight up or down), not as slopes between
+       the samples either side of a jump */
+    var d = "", pen = false;
+    pts.forEach(function (p) {
+      if (p[1] === null) { pen = false; return; }
+      var X = sx(p[0]).toFixed(2), Y = sy(p[1]).toFixed(2);
+      d += !pen ? " M" + X + " " + Y : stepped ? " H" + X + " V" + Y : " L" + X + " " + Y;
+      pen = true;
+    });
+    svg.appendChild(el("path", { "class": "curve", d: d.trim(), id: "curve" }));
+    if (lastResult !== null) svg.appendChild(el("circle", { "class": "here", id: "here", r: 6, cx: sx(values[xc.name]).toFixed(2), cy: sy(lastResult).toFixed(2) }));
+  }
+  window.addEventListener("resize", drawChart);
+
+  /* ---- practice: graded on the result ---- */
+  /* a typed answer as a number: the result's unit, a currency sign, % and spaces are taken off; what is left must be
+     a plain number — commas only between groups of three digits (2,318.55), e-notation as the page itself writes
+     large and small results (1.5e-7) — so 23,18.55 and 0x90F are not read as numbers */
+  function number(text) {
+    var s = String(text);
+    [C.result.unit, C.result.unit_one].forEach(function (u) { if (u) s = s.split(u).join(""); });
+    s = s.replace(/[£$€¥%\s]/g, "");
+    if (!/^[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)?(?:\.\d+)?(?:[eE][-+]?\d+)?$/.test(s) || !/\d/.test(s.split(/[eE]/)[0])) return NaN;
+    return Number(s.replace(/,/g, ""));
+  }
+  function gradeCompute(t, answer) {
+    var want = result(t.set), a = number(answer);
+    if (!isFinite(a)) return { ok: false, text: "Type a number." };
+    return Math.abs(a - want) <= t.tolerance + 1e-9 * Math.max(1, Math.abs(want))
+      ? { ok: true, text: "Right: the formula gives " + fmt(want) + "." }
+      : { ok: false, text: "Not yet. Put the question's values on the controls and read the last line of the formula." };
+  }
+  /* a goal counts as met within a billionth of the target, so that a value the formula should hit exactly is not
+     missed by a rounding error in the last bit (0.52 is 0.020000000000000018 away from 0.5); concept.py's meets()
+     allows the same, and an answer to a compute question gets the same allowance */
+  function meets(t, r) {
+    var slack = 1e-9 * Math.max(1, Math.abs(t.target));
+    return t.goal === "at least" ? r >= t.target - slack : t.goal === "at most" ? r <= t.target + slack : Math.abs(r - t.target) <= t.tolerance + slack;
+  }
+  function goalText(t) { return t.goal === "within" ? "within " + fmt(t.tolerance) + " of " + fmt(t.target) : t.goal + " " + fmt(t.target); }
+  function reachState(t) { var v = copy(values); Object.keys(t.fixed).forEach(function (k) { v[k] = t.fixed[k]; }); return v; }
+  /* the state is graded, not the way it was reached; "lowest"/"highest" also asks that no position of that control
+     further toward that end passes, the other controls as they are — every one of them, not only the next, since a
+     curve can turn back (a ball thrown up is at 15 m twice). The verdict names the nearest one that also passes.
+     concept.py's grade_reach() is the same */
+  function gradeReach(t, v) {
+    v = v || reachState(t);
+    var r = tryResult(v);
+    if (r === null) return { ok: false, text: "Here the formula has no value." };
+    if (!meets(t, r)) return { ok: false, text: "Not yet: " + fmt(r) + " is not " + goalText(t) + "." };
+    var side = t.lowest ? "lowest" : t.highest ? "highest" : null;
+    if (side) {
+      var c = control(t[side]), dir = side === "lowest" ? -1 : 1;
+      for (var k = Math.round((v[c.name] - c.min) / c.step) + dir; k >= 0 && k <= stepsOf(c); k += dir) {
+        var u = copy(v); u[c.name] = grid(c, k);
+        var r2 = tryResult(u);
+        if (r2 !== null && meets(t, r2)) return { ok: false, text: "That reaches it, but so does " + c.name + " = " + fmt(u[c.name]) + " (" + fmt(r2) + "): the question asks for the " + side + " " + c.name + "." };
+      }
+    }
+    return { ok: true, text: "Yes: " + fmt(r) + " is " + goalText(t) + "." };
+  }
+  function lock(fixed) {
+    C.controls.forEach(function (c) { inputs[c.name].disabled = !!fixed && has(fixed, c.name); });
+    if (fixed) Object.keys(fixed).forEach(function (k) { values[k] = fixed[k]; inputs[k].value = fixed[k]; });
+    render();
+  }
+  function fixedText(t) {
+    var fixed = Object.keys(t.fixed).map(function (k) { return k + " = " + withUnit(t.fixed[k], control(k)); }).join(", ");
+    var free = C.controls.filter(function (c) { return !has(t.fixed, c.name); }).map(function (c) { return c.label + " (" + c.name + ")"; }).join(" and ");
+    return "Fixed for this question: " + fixed + ". Move " + free + ", then check.";
+  }
+  function say(node, g) { node.textContent = g.text; node.className = "verdict " + (g.ok ? "ok" : "no"); }
+  function button(text, id, primary) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "btn" + (primary ? " primary" : ""); b.textContent = text; b.id = id;
+    return b;
+  }
+  C.practice.forEach(function (t, i) {
+    var li = document.createElement("li"); li.className = "task"; li.id = "task-" + i;
+    var p = document.createElement("p"); p.textContent = (i + 1) + ". " + t.prompt; li.appendChild(p);
+    var row = document.createElement("div"); row.className = "row";
+    var state = document.createElement("p"); state.className = "state"; state.id = "state-" + i;
+    var verdict = document.createElement("p"); verdict.className = "verdict"; verdict.setAttribute("role", "status"); verdict.id = "verdict-" + i;
+    var check = button("Check", "check-" + i, true);
+    if (t.type === "compute") {
+      var input = document.createElement("input"); input.id = "answer-" + i; input.inputMode = "decimal"; input.autocomplete = "off";
+      input.setAttribute("aria-label", "Your answer to question " + (i + 1));
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") check.click(); });
+      check.addEventListener("click", function () { say(verdict, gradeCompute(t, input.value)); });
+      var show = button("Show it on the controls", "show-" + i);
+      show.addEventListener("click", function () {
+        lock(null);
+        Object.keys(t.set).forEach(function (k) { values[k] = t.set[k]; inputs[k].value = t.set[k]; });
+        lastChanged = null; render();
+      });
+      row.appendChild(input); row.appendChild(check); row.appendChild(show);
+    } else {
+      var go = button("Try it", "try-" + i);
+      go.addEventListener("click", function () { lock(t.fixed); state.textContent = fixedText(t); verdict.textContent = ""; verdict.className = "verdict"; });
+      check.addEventListener("click", function () { lock(t.fixed); state.textContent = fixedText(t); say(verdict, gradeReach(t)); });
+      var done = button("Unlock the controls", "unlock-" + i);
+      done.addEventListener("click", function () { lock(null); state.textContent = ""; });
+      row.appendChild(go); row.appendChild(check); row.appendChild(done);
+    }
+    li.appendChild(row); li.appendChild(state); li.appendChild(verdict);
+    $("tasks").appendChild(li);
+  });
+
+  /* ---- appearance ---- */
+  $("scheme").addEventListener("click", function () {
+    var dark = document.documentElement.getAttribute("data-scheme") !== "dark";
+    document.documentElement.setAttribute("data-scheme", dark ? "dark" : "light");
+    $("scheme").setAttribute("aria-pressed", String(dark));
+    try { localStorage.setItem("nl-scheme", dark ? "dark" : "light"); } catch (e) { /* a private window */ }
+  });
+  $("scheme").setAttribute("aria-pressed", String(document.documentElement.getAttribute("data-scheme") === "dark"));
+
+  render();
+
+  /* ?probe=1 — the page tests its own wiring and writes what it found into <pre id="explorer-probe">, for
+     probe_check.py to read and to recompute with the Python twin of the formula language. Every step goes through the
+     real controls and buttons (set a slider and fire its input event, type an answer and press Check) and reads the
+     page back, not the variables behind it. */
+  if (/[?&]probe=1\b/.test(location.search)) {
+    var move = function (name, v) { inputs[name].value = v; inputs[name].dispatchEvent(new Event("input")); };
+    var snapshot = function () {
+      var here = $("here"), shown = {};
+      C.controls.forEach(function (c) { shown[c.name] = [inputs[c.name].value, $("c-" + c.name + "-v").textContent]; });
+      /* the chart counts as changed if its curve, its dot or its axis labels changed: a control that only scales
+         the result (the starting amount) leaves the curve's shape where it was and moves the labels */
+      return { values: copy(values), shown: shown, sym: $("m-sym").textContent, with: $("m-with").textContent,
+               out: $("m-out").textContent, err: $("m-err").textContent, curve: $("curve") ? $("curve").getAttribute("d") : "",
+               here: here ? here.getAttribute("cx") + "," + here.getAttribute("cy") : "", labels: $("chart").textContent };
+    };
+    var reset = function () { lock(null); C.controls.forEach(function (c) { move(c.name, start[c.name]); }); lastChanged = null; };
+    var report = { formula: C.formula, controls: [], states: [], practice: [] };
+    /* 1 · wiring: move each control away from where it starts; the formula line, the result and the chart must follow,
+       and the number that moved must be the one marked */
+    C.controls.forEach(function (c) {
+      reset();
+      var base = snapshot(), seen = [], k0 = Math.round((start[c.name] - c.min) / c.step);
+      [0, stepsOf(c), Math.round(stepsOf(c) / 2), k0 - 1, k0 + 1].forEach(function (k) {
+        var v = grid(c, k);
+        if (k < 0 || k > stepsOf(c) || k === k0 || seen.some(function (s) { return s.to === v; })) return;
+        reset(); move(c.name, v);
+        var s = snapshot(), mark = document.querySelector('#m-with .v.changed[data-name="' + c.name + '"]');
+        seen.push({ to: v, with: s.with !== base.with, out: s.out !== base.out,
+                    chart: s.curve !== base.curve || s.here !== base.here || s.labels !== base.labels,
+                    marked: !!mark && mark.textContent === fmt(v) });
+      });
+      report.controls.push({ name: c.name, tries: seen });
+    });
+    /* 2 · states for the Python twin to recompute: the start, each control at its ends and middle, all at min, all at
+       max. The chart's drawing is left out of these; the wiring above is what looks at it */
+    var record = function () { var s = snapshot(); delete s.curve; delete s.here; delete s.labels; report.states.push(s); };
+    reset(); record();
+    C.controls.forEach(function (c) {
+      [0, Math.round(stepsOf(c) / 2), stepsOf(c)].forEach(function (k) { reset(); move(c.name, grid(c, k)); record(); });
+    });
+    reset(); C.controls.forEach(function (c) { move(c.name, c.min); }); record();
+    reset(); C.controls.forEach(function (c) { move(c.name, c.max); }); record();
+    /* 3 · practice, through each task's own input and Check button */
+    var verdictOk = function (i) { return $("verdict-" + i).classList.contains("ok"); };
+    C.practice.forEach(function (t, i) {
+      reset();
+      if (t.type === "compute") {
+        var want = result(t.set);
+        var answer = function (text) { reset(); $("answer-" + i).value = text; $("check-" + i).click(); return verdictOk(i); };
+        var row = { task: i, type: t.type, want: want, right: answer(fmt(want)), other_form: answer(want.toFixed(4)),
+                    with_unit: answer(withUnit(want, C.result)), inside: answer(String(want + t.tolerance / 2)),
+                    near_miss: answer(fmt(want + 2 * t.tolerance)), blank: answer("") };
+        reset(); $("show-" + i).click();
+        row.show_sets = C.controls.every(function (c) { return values[c.name] === t.set[c.name] && Number(inputs[c.name].value) === t.set[c.name]; });
+        report.practice.push(row);
+      } else {
+        var free = C.controls.filter(function (c) { return !has(t.fixed, c.name); }), hit = null, miss = null;
+        (function search(k, v) {
+          if (hit && miss) return;
+          if (k === free.length) { var g = gradeReach(t, v).ok; if (g && !hit) hit = copy(v); if (!g && !miss) miss = copy(v); return; }
+          var c = free[k];
+          for (var j = 0; j <= stepsOf(c) && !(hit && miss); j++) { v[c.name] = grid(c, j); search(k + 1, v); }
+        })(0, reachState(t));
+        var via = function (s) {   /* put a state on the real sliders, press this task's Check, read its verdict */
+          reset(); free.forEach(function (c) { move(c.name, s[c.name]); });
+          $("check-" + i).click();
+          return { ok: verdictOk(i), locked: Object.keys(t.fixed).every(function (k) { return inputs[k].disabled && values[k] === t.fixed[k]; }) };
+        };
+        var right = hit ? via(hit) : null, wrong = miss ? via(miss) : null, over = null, again = null;
+        var side = t.lowest ? "lowest" : t.highest ? "highest" : null;
+        if (hit && side) {
+          var c = control(t[side]), k = Math.round((hit[c.name] - c.min) / c.step) + (side === "lowest" ? 1 : -1);
+          if (k >= 0 && k <= stepsOf(c)) { var o = copy(hit); o[c.name] = grid(c, k); over = { state: o, passes: via(o).ok }; }
+          /* where the curve turns back, the goal is met again further on (a ball thrown up is at 15 m going up and coming
+             down): the first position of the next stretch that meets it must not pass as the lowest (or highest) */
+          var away = side === "lowest" ? 1 : -1, k0 = Math.round((hit[c.name] - c.min) / c.step);
+          var meetsAt = function (j) { var u = copy(hit); u[c.name] = grid(c, j); var r = tryResult(u); return r !== null && meets(t, r); };
+          for (var j = k0 + 2 * away; j >= 0 && j <= stepsOf(c); j += away) {
+            if (meetsAt(j) && !meetsAt(j - away)) { var a = copy(hit); a[c.name] = grid(c, j); again = { state: a, passes: via(a).ok }; break; }
+          }
+        }
+        report.practice.push({ task: i, type: t.type, hit: hit, miss: miss, right: right && right.ok, locked: right && right.locked,
+                               miss_passes: wrong && wrong.ok, overshoot: over, again: again });
+      }
+    });
+    reset();
+    /* for a person reading the page: what the page can say about itself. The numbers are only checked against an
+       independent calculation by probe_check.py, which reads the JSON below */
+    var summary = document.createElement("section"), h = document.createElement("h2"), ul = document.createElement("ul");
+    summary.id = "probe-summary"; h.textContent = "The page's self-test (?probe=1)"; summary.appendChild(h); summary.appendChild(ul);
+    var line = function (ok, text) { var li = document.createElement("li"); li.textContent = (ok ? "pass" : "FAIL") + " \u00b7 " + text; ul.appendChild(li); };
+    report.controls.forEach(function (c) {
+      line(c.tries.length > 0 && c.tries.every(function (t) { return t.with && t.marked && t.chart; }) && c.tries.some(function (t) { return t.out; }),
+           "moving " + c.name + " rewrites the formula line with the moved number marked, moves the chart, and changes the result");
+    });
+    report.practice.forEach(function (p) {
+      line(p.type === "compute" ? p.right && p.other_form && p.with_unit && p.inside && !p.near_miss && !p.blank && p.show_sets
+                                : !!p.hit && p.right && p.locked && p.miss_passes === false && (!p.overshoot || p.overshoot.passes === false) && (!p.again || p.again.passes === false),
+           "question " + (p.task + 1) + " (" + p.type + ") passes the right answer and fails the wrong ones it was tried with");
+    });
+    var note = document.createElement("li"); note.textContent = "not checked here: that each number agrees with an independent calculation (python3 scripts/probe_check.py does that)";
+    ul.appendChild(note);
+    document.body.appendChild(summary);
+    var pre = document.createElement("pre"); pre.id = "explorer-probe"; pre.textContent = JSON.stringify(report);
+    document.body.appendChild(pre);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+{
+  "title": "The Next-Year Light",
+  "idea": "A lighthouse keeper realises the ships she guides in arrive from next year.",
+  "retelling": "A keeper who guides ships from next year uses what they know to save her town, and loses the life she would have had.",
+  "caps": {
+    "main_characters": 4,
+    "places": 3
+  },
+  "world": {
+    "rules": [
+      {
+        "id": "R1",
+        "rule": "Ships that see the light in fog arrive one year early",
+        "cost": "each early ship takes a year from the keeper's memory"
+      }
+    ],
+    "not_allowed": [
+      "no one else can see the fog light"
+    ],
+    "places": [
+      {
+        "id": "P1",
+        "name": "Gull Point light"
+      },
+      {
+        "id": "P2",
+        "name": "Harbour town"
+      }
+    ]
+  },
+  "characters": [
+    {
+      "id": "C1",
+      "name": "Maren",
+      "role": "protagonist",
+      "desire": "keep the town alive",
+      "fear": "forgetting her brother",
+      "secret": "she lit the fog light on purpose",
+      "introduced_in": 1,
+      "relations": [
+        {
+          "to": "C2",
+          "kind": "sibling"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "name": "Tobias",
+      "role": "main",
+      "desire": "leave the town",
+      "fear": "the sea",
+      "secret": "his ship is on next year's list",
+      "introduced_in": 1,
+      "relations": [
+        {
+          "to": "C1",
+          "kind": "sibling"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "name": "Harbourmaster Quill",
+      "role": "antagonist",
+      "desire": "control the harbour",
+      "fear": "losing the town's trust",
+      "secret": "",
+      "introduced_in": 2,
+      "relations": [
+        {
+          "to": "C1",
+          "kind": "rival"
+        }
+      ]
+    }
+  ],
+  "spine": [
+    {
+      "id": "E1",
+      "t": 1,
+      "title": "The early ship",
+      "what_happened": "A ship docks with next year's newspapers",
+      "so_what_changed": "Maren knows the storm is coming",
+      "participants": [
+        "C1"
+      ],
+      "place": "P1",
+      "depends_on_rules": [
+        "R1"
+      ]
+    },
+    {
+      "id": "E2",
+      "t": 2,
+      "title": "The warning",
+      "what_happened": "Maren tells the town about the storm",
+      "so_what_changed": "Quill calls her a liar and closes the harbour",
+      "participants": [
+        "C1",
+        "C3"
+      ],
+      "place": "P2",
+      "causes": [
+        "E1"
+      ]
+    },
+    {
+      "id": "E3",
+      "t": 3,
+      "title": "The list",
+      "what_happened": "Tobias finds his own name on next year's lost list",
+      "so_what_changed": "Tobias stays instead of sailing",
+      "participants": [
+        "C2",
+        "C1"
+      ],
+      "place": "P2",
+      "causes": [
+        "E1"
+      ]
+    },
+    {
+      "id": "E4",
+      "t": 4,
+      "title": "The price",
+      "what_happened": "Maren lights the fog light again to bring the rescue ship early",
+      "so_what_changed": "The town survives and Maren forgets a year with her brother",
+      "participants": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "place": "P1",
+      "causes": [
+        "E2",
+        "E3"
+      ],
+      "depends_on_rules": [
+        "R1"
+      ]
+    }
+  ],
+  "structure": {
+    "acts": [
+      {
+        "name": "I",
+        "beats": [
+          {
+            "name": "Inciting incident",
+            "events": [
+              "E1"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "II",
+        "beats": [
+          {
+            "name": "Midpoint",
+            "events": [
+              "E3"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "III",
+        "beats": [
+          {
+            "name": "Climax",
+            "events": [
+              "E4"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "foreshadowing": [
+    {
+      "id": "F1",
+      "clue": "Maren cannot remember last winter",
+      "planted_in": 1,
+      "paid_off_in": 4
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "question": "Who lit the fog light?",
+      "opened_in": 1,
+      "answered_in": 3
+    }
+  ],
+  "chapters": [
+    {
+      "n": 1,
+      "title": "Fog",
+      "pov": "C1",
+      "events": [
+        "E1"
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Liar",
+      "pov": "C1",
+      "events": [
+        "E2"
+      ]
+    },
+    {
+      "n": 3,
+      "title": "The list",
+      "pov": "C2",
+      "events": [
+        "E3"
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Light",
+      "pov": "C1",
+      "events": [
+        "E4"
+      ]
+    }
+  ]
+}

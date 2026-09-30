@@ -1,0 +1,26 @@
+{
+  "name": "nk-regression-baseline",
+  "version": "0.1.1",
+  "description": "Freeze the byte-exact output of production code on its default inputs before you change it, and compare after.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-regression-baseline",
+  "repository": "https://github.com/NickkkLian/nk-regression-baseline",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "regression",
+    "baseline"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-regression-baseline",
+    "shortDescription": "Freeze output before a change",
+    "longDescription": "Freeze the byte-exact output of production code on its default inputs before you change it, and compare after. Use when you are about to modify a function, script or pipeline that existing users or automated jobs already run, when adding a feature to code with callers you did not write, or before an A/B experiment (first confirm the baseline is alive). New-feature tests only exercise the new branch; the default path is where everyone else is. scripts/baseline.py freeze/compare with normalizers for volatile output. Not a unit-test framework.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}

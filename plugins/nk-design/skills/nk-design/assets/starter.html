@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Demo Bench — nk-design starter</title>
+<meta name="description" content="Starter page for nk-design: a review workbench whose numbers are computed from the loaded rows and show where they came from.">
+<!-- why: a favicon is a separate image and cannot read CSS variables. It is the mark rule drawn with the default palette's
+     (Water lilies, code value plaster)
+     literal band (cell), point (seal) and on-band (strokes) colours; the band is dark in both schemes, so one icon reads
+     on light and dark tab strips. Inline data URI: no request. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http%3A//www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Crect%20x='1'%20y='1'%20width='22'%20height='22'%20rx='5'%20fill='%23053333'/%3E%3Crect%20x='14'%20y='6'%20width='4'%20height='4'%20rx='1'%20fill='%23ca6980'/%3E%3Cpath%20d='M7%209h4M7%2012.5h10M7%2016h10'%20stroke='%23f7f0e9'%20stroke-width='2'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<!-- why: a meta tag cannot read CSS variables. This literal is the default palette's band colour (its dark-scheme value is one
+     step away); the appearance script below replaces it with the live --band value on load and on every change. -->
+<meta name="theme-color" content="#053333">
+<script>
+/* Appearance contract, applied before the first stylesheet so a reload never flashes the default theme.
+   data-theme = paper | ink (plaster, shown as Water lilies, writes nothing); data-scheme = light | dark (System writes nothing).
+   Read order: the URL query (?theme=ink&scheme=dark, handy for screenshots), then localStorage nl-theme / nl-scheme. */
+(function () {
+  var d = document.documentElement, q = new URLSearchParams(location.search);
+  var t = q.get('theme'), s = q.get('scheme');
+  try {
+    if (t === null) t = localStorage.getItem('nl-theme');
+    if (s === null) s = localStorage.getItem('nl-scheme');
+  } catch (e) { /* storage blocked: keep the defaults */ }
+  if (t === 'paper' || t === 'ink') d.setAttribute('data-theme', t);
+  if (s === 'dark' || s === 'light') d.setAttribute('data-scheme', s);
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..600;1,9..144,400&family=Inter:wght@400..600&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="design-tokens.css">
+<style>
+/* Page styles. Semantic tokens only: no colour literal in this block (colours live in the token file). */
+
+/* Offline fallbacks named in the token font stacks; size-adjust keeps line lengths close to the web faces.
+   local() matches a full or PostScript name, so Menlo is "Menlo Regular" / "Menlo-Regular" (plain "Menlo" does not
+   load). The bold and italic faces give headings, chip values and captions a real bold or italic offline. */
+@font-face{font-family:"Fraunces Fallback";src:local("Georgia"),local("Times New Roman");size-adjust:93.3%}
+@font-face{font-family:"Fraunces Fallback";src:local("Georgia Bold"),local("Georgia-Bold"),local("Times New Roman Bold");font-weight:700;size-adjust:93.3%}
+@font-face{font-family:"Fraunces Fallback";src:local("Georgia Italic"),local("Georgia-Italic"),local("Times New Roman Italic");font-style:italic;size-adjust:93.3%}
+@font-face{font-family:"Inter Fallback";src:local("Helvetica Neue"),local("Arial"),local("Segoe UI");size-adjust:106.5%}
+@font-face{font-family:"Space Mono Fallback";src:local("Menlo Regular"),local("Menlo-Regular"),local("Consolas"),local("DejaVu Sans Mono");size-adjust:101.7%}
+@font-face{font-family:"Space Mono Fallback";src:local("Menlo Bold"),local("Menlo-Bold"),local("Consolas Bold"),local("DejaVu Sans Mono Bold");font-weight:700;size-adjust:101.7%}
+
+/* ---- base ---- */
+*,*::before,*::after{box-sizing:border-box}
+:root{accent-color:var(--accent)}   /* native checkboxes and radios in the palette's accent */
+[hidden]{display:none!important}
+/* The token file declares color-scheme for light only; native controls (select, search clear, scrollbars) need dark too. */
+:root[data-scheme="dark"]{color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-scheme="light"]){color-scheme:dark}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:var(--weight-regular) var(--text-md)/var(--leading-normal) var(--font-sans);font-variant-numeric:lining-nums;touch-action:manipulation}
+/* Paper grain: a fixed layer at z-index 0 under content at z-index 1. Never -1: it would land behind the body background. */
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:var(--grain);opacity:var(--grain-opacity)}
+::selection{background:var(--selection-bg)}
+:focus-visible{outline:var(--border-focus-width) solid var(--focus);outline-offset:2px}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--accent-text);text-underline-offset:.18em;text-decoration-thickness:from-font}
+h1,h2,h3{margin:0;font-family:var(--font-display);font-weight:var(--display-weight);font-variation-settings:"opsz" var(--opsz-title);line-height:var(--leading-tight);letter-spacing:var(--tracking-title);text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+code,.mono,.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums lining-nums}
+.num{text-align:right}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.skip{position:absolute;left:var(--space-2);top:calc(-1 * var(--space-12));z-index:var(--z-toast);padding:var(--space-2) var(--space-3);border:1px solid var(--border-input);border-radius:var(--radius-sm);background:var(--paper);color:var(--text)}
+.skip:focus{top:var(--space-2)}
+.skip:focus-visible{outline-color:var(--on-band)}   /* the ring sits over the band */
+.eyebrow{margin:0;font:var(--weight-semibold) var(--text-2xs)/1.4 var(--font-sans);letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--text-3)}
+.caption{font-family:var(--font-display);font-style:var(--caption-style);font-weight:var(--weight-regular);font-variation-settings:"opsz" var(--opsz-caption);font-size:var(--text-sm);line-height:var(--leading-relaxed);color:var(--text-2);max-width:var(--measure)}
+
+/* ---- the band: top bar, signature plate and footer share one surface pair ---- */
+.band{position:relative;z-index:1;background:var(--band);color:var(--on-band)}
+.band ::selection{background:var(--on-band-2);color:var(--band)}
+/* --focus is solved for the light surfaces; on the band the ring uses --on-band (at least 10:1 on every band) */
+.band :focus-visible{outline-color:var(--on-band)}
+
+/* ---- top bar ---- */
+.topbar{position:sticky;top:0;z-index:var(--z-sticky);display:flex;align-items:center;gap:var(--space-3);min-height:var(--topbar-h);padding:0 var(--gutter);border-bottom:1px solid var(--band-line)}
+.brand{display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.mark{display:block;flex:none}
+.mark .seal{fill:var(--point)}
+.brand-name{flex:none;font-family:var(--font-display);font-weight:var(--display-weight);font-variation-settings:"opsz" var(--opsz-title);font-size:var(--text-xl);letter-spacing:var(--tracking-title);white-space:nowrap}
+/* one-line positioning: the only top-bar item allowed to shrink, so it truncates before the pill or the buttons move */
+.positioning{min-width:0;margin-left:var(--space-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--text-xs);color:var(--on-band-2)}
+.pill{display:inline-flex;align-items:center;gap:var(--space-1);flex:none;height:22px;padding:0 var(--space-2);border:1px solid var(--band-line);border-radius:var(--radius-full);font:var(--weight-regular) var(--text-2xs)/1 var(--font-mono);color:var(--on-band-2);white-space:nowrap}
+.pill::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--on-band-warning)}
+.spacer{flex:1 1 0}
+.tbtn{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:28px;height:28px;padding:0 var(--space-2);border:1px solid transparent;border-radius:var(--radius-sm);background:transparent;color:var(--on-band);font-size:var(--text-sm);text-decoration:none;cursor:pointer;transition:background-color var(--dur-fast) var(--ease-out)}
+.tbtn-glyph{font-size:var(--text-lg);line-height:1}
+
+/* ---- signature plate: page title, a one-paragraph lede and the reconciliation bar, on the band ---- */
+.plate{padding:var(--space-8) var(--gutter) var(--space-6);border-bottom:1px solid var(--band-line)}
+.plate-in{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-6);max-width:var(--content-max);margin:0 auto}
+.plate .eyebrow,.plate .caption{color:var(--on-band-2)}
+.display{margin:var(--space-2) 0 0 -0.028em;font-size:clamp(var(--text-3xl), 1.1rem + 2.2vw, var(--text-4xl));font-variation-settings:"opsz" var(--opsz-display);letter-spacing:var(--tracking-display)}
+.lede{margin-top:var(--space-3);max-width:var(--measure);font-size:var(--text-lg);line-height:var(--leading-lede);color:var(--on-band-2)}
+/* signature rule: one of the three places the point colour appears (seal, this rule, one chart key) */
+.rule{width:56px;height:2px;margin-top:var(--space-4);border-radius:1px;background:var(--point)}
+.sum-strip{display:grid;gap:var(--space-3)}
+.sum-bar{display:flex;gap:2px;height:8px;border-radius:var(--radius-xs);overflow:hidden}
+.sum-bar span{flex:1 1 0;min-width:2px}
+/* segment colours are the three tokens solved against the band (at least 3.5:1 on all six theme/scheme bands) */
+.s-point{background:var(--point)}
+.s-strong{background:var(--on-band-2)}
+.s-soft{background:var(--on-band-3)}
+.s-hatch{background:repeating-linear-gradient(135deg,var(--on-band-2) 0 2px,transparent 2px 5px)}
+.sum-legend{display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-6);margin:0;padding:0;list-style:none;font-size:var(--text-xs);color:var(--on-band-2)}
+.sum-legend li{display:inline-flex;align-items:center;gap:var(--space-2)}
+.sum-legend b{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:700;color:var(--on-band)}
+.sw{flex:none;width:9px;height:9px;border-radius:2px}
+.sum-eq{padding-top:var(--space-3);border-top:1px solid var(--band-line);font:var(--weight-regular) var(--text-xs)/1.8 var(--font-mono);font-variant-numeric:tabular-nums;color:var(--on-band-2)}
+.sum-eq .ok,.sum-eq .bad{white-space:nowrap}
+.sum-eq .ok::before,.sum-eq .bad::before{content:"";display:inline-block;width:.8em;height:.8em;margin-right:.35em;vertical-align:-.04em;background:currentColor;-webkit-mask:var(--glyph) center/contain no-repeat;mask:var(--glyph) center/contain no-repeat}
+.sum-eq .ok::before{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.6 5.3 4 7.6 8.4 2.4' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")} .sum-eq .bad::before{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.4 2.4 7.6 7.6M7.6 2.4 2.4 7.6' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E")}
+.sum-eq .ok{color:var(--on-band)}
+.sum-eq .bad{padding:1px var(--space-2);border-radius:var(--radius-xs);background:var(--danger-tint);color:var(--danger-tint-text);font-weight:700}
+.band .chip{border-color:var(--band-line);background:transparent;color:var(--on-band-2)}
+.band .chip b{color:var(--on-band)}
+
+/* ---- work area ---- */
+.work{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-8);align-items:start;max-width:var(--content-max);margin:0 auto;padding:var(--space-8) var(--gutter) var(--space-12)}
+.side{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-6);align-content:start}
+.section-label{margin-bottom:var(--space-3)}
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-bottom:var(--space-3)}
+.field{display:inline-flex;align-items:center;gap:var(--space-2);min-width:0;font-size:var(--text-xs);color:var(--text-2)}
+.field-grow{flex:1 1 14rem;max-width:22rem}
+.field-grow .input{flex:1 1 auto;width:100%}
+.filters .chip{margin-left:auto}
+.input{height:var(--control-h);min-width:0;padding:0 var(--space-3);border:1px solid var(--border-input);border-radius:var(--radius-sm);background:var(--paper);color:var(--text);font-size:var(--text-sm);transition:border-color var(--dur-fast) var(--ease-out)}
+.input::placeholder{color:var(--text-3)}
+select.input{padding-right:var(--space-2)}
+
+/* ---- chips, tags, categories ---- */
+.chip{display:inline-flex;align-items:center;gap:var(--space-1);height:19px;padding:0 var(--space-2);border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--neutral-tint);color:var(--text-3);font:var(--weight-regular) var(--text-2xs)/1 var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip b{font-weight:700;color:var(--text-2)}
+.chips{display:flex;flex-wrap:wrap;gap:var(--space-1)}
+/* status = a pill with a second channel (dot, check or stop sign), drawn as line SVG masks — no emoji or symbol
+   characters on a public page; they are decoration, so screen readers get nothing from them */
+.tag{display:inline-flex;align-items:center;gap:var(--space-1);height:21px;padding:0 var(--space-2);border:1px solid transparent;border-radius:var(--radius-full);font-size:var(--text-2xs);font-weight:var(--weight-medium);white-space:nowrap}
+.tag::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;background:currentColor}
+.tag-success,.tag-danger{gap:var(--space-1)}
+.tag-success::before,.tag-danger::before{width:9px;height:9px;border-radius:0;-webkit-mask:var(--glyph) center/contain no-repeat;mask:var(--glyph) center/contain no-repeat}
+.tag-success::before{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.6 5.3 4 7.6 8.4 2.4' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.tag-danger::before{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='3.8' fill='none' stroke='black' stroke-width='1.4'/%3E%3Cpath d='M2.4 7.6 7.6 2.4' stroke='black' stroke-width='1.4'/%3E%3C/svg%3E")}
+.tag-success{background:var(--success-tint);color:var(--success-tint-text)}
+.tag-warning{background:var(--warning-tint);color:var(--warning-tint-text)}
+.tag-danger{background:var(--danger-tint);color:var(--danger-tint-text)}
+.tag-neutral{background:var(--neutral-tint);color:var(--neutral-tint-text);border-color:var(--border)}
+.tag-info{background:var(--info-tint);color:var(--info-tint-text)}
+.tag-draft{background:transparent;color:var(--text-2);border:1px dashed var(--border-input)}
+.tag-draft::before{background:transparent;border:1px solid currentColor}
+/* category = an attribute, not a status: dotted text, never a pill */
+.cat{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-2)}
+.cat::before{content:"";flex:none;width:7px;height:7px;border-radius:2px;background:var(--brand-sage)}
+.cat-none{color:var(--text-3)}
+.cat-none::before{background:transparent;border:1px dashed var(--border-input)}
+.missing{color:var(--text-3)}
+
+/* ---- table: two line weights (outer --border, rows --hairline) ---- */
+.tablewrap{overflow:auto;overscroll-behavior-x:contain;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--paper);box-shadow:var(--shadow-1)}
+table.data{width:100%;border-collapse:separate;border-spacing:0;font-size:var(--text-sm)}
+table.data th,table.data td{height:var(--row-h);padding:0 var(--space-4);border-bottom:1px solid var(--hairline);text-align:left;white-space:nowrap}
+table.data tbody tr:last-child td{border-bottom:0}
+table.data thead th{position:sticky;top:0;z-index:1;background:var(--surface-2);border-bottom-color:var(--border);color:var(--text-2);font-size:var(--text-2xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-caps);text-transform:uppercase}
+table.data th.num,table.data td.num{text-align:right}
+.sort{display:inline-flex;align-items:center;gap:var(--space-1);margin:0;padding:var(--space-1) 0;border:0;border-radius:var(--radius-xs);background:none;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
+th.num .sort{flex-direction:row-reverse}
+th[aria-sort] .sort{color:var(--text)}
+th[aria-sort="ascending"] .sort::after,th[aria-sort="descending"] .sort::after{content:"";width:.75em;height:.75em;background:var(--accent-text);-webkit-mask:var(--glyph) center/contain no-repeat;mask:var(--glyph) center/contain no-repeat}
+th[aria-sort="ascending"] .sort::after{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 8.6V1.6M2.2 4.4 5 1.6l2.8 2.8' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+th[aria-sort="descending"] .sort::after{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 1.4v7M2.2 5.6 5 8.4l2.8-2.8' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+table.data tbody tr{cursor:pointer}
+table.data tbody tr:focus-visible{outline-offset:-2px}
+table.data tbody tr[aria-selected="true"]{background:var(--accent-tint)}
+table.data tbody tr[aria-selected="true"] td:first-child{box-shadow:inset 3px 0 0 var(--accent-text)}
+/* muted text on the selected row uses --text-2: 6.48:1 or more on --accent-tint in every palette and scheme (--text-3 would give 4.81:1 in Morning light) */
+table.data tbody tr[aria-selected="true"] .missing,table.data tbody tr[aria-selected="true"] .cat-none{color:var(--text-2)}
+td.row-action{text-align:right}
+.empty{display:grid;justify-items:center;gap:var(--space-2);padding:var(--space-10) var(--space-4);text-align:center;color:var(--text-2)}
+.empty h3{font-size:var(--text-xl);color:var(--text)}
+.empty p{max-width:46ch}
+.empty .btn{margin-top:var(--space-3)}
+.hint{margin-top:var(--space-2);font-size:var(--text-xs);color:var(--text-3)}
+kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px solid var(--border);border-bottom-width:2px;border-radius:var(--radius-xs);background:var(--paper);color:var(--text-2);font:var(--weight-regular) var(--text-2xs)/1.5 var(--font-mono);text-align:center}
+
+/* ---- buttons ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-1);height:var(--control-h);padding:0 var(--space-4);border:1px solid var(--border-input);border-radius:var(--radius-sm);background:var(--paper);color:var(--text);font-size:var(--text-sm);font-weight:var(--weight-medium);white-space:nowrap;text-decoration:none;cursor:pointer;transition:background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out),transform var(--dur-fast) var(--ease-out)}
+.btn:active{transform:scale(var(--press-scale))}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-ghost{background:transparent;border-color:transparent}
+.btn-sm{height:26px;padding:0 var(--space-3);font-size:var(--text-xs)}
+.btn-icon{width:var(--control-h);padding:0;font-size:var(--text-lg);line-height:1}
+.btn[aria-disabled="true"],.btn[aria-disabled="true"]:active{background:var(--neutral-tint);border-color:var(--border);color:var(--text-disabled);cursor:not-allowed;transform:none}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover{background:var(--surface-hover)}
+  .btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+  .btn-ghost:hover{background:var(--neutral-tint)}
+  .btn[aria-disabled="true"]:hover{background:var(--neutral-tint)}
+  .tbtn:hover{background:var(--band-line);border-color:var(--band-line)}
+  table.data tbody tr:hover{background:var(--surface-hover)}
+  table.data tbody tr[aria-selected="true"]:hover{background:var(--accent-tint)}
+  .sort:hover{color:var(--text)}
+}
+@media (pointer:coarse){.btn,.btn-sm,.tbtn{min-height:var(--touch-min)}}
+
+/* ---- panels: details and settings ---- */
+.panel{padding:var(--space-5);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--paper);box-shadow:var(--shadow-1)}
+.panel-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:var(--space-1) var(--space-3)}
+.panel-title{margin-top:var(--space-1);font-size:var(--text-xl);overflow-wrap:anywhere}
+.panel-title:focus-visible{outline-offset:4px}
+.insp-tag{margin-top:var(--space-3)}
+.facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:var(--space-2) var(--space-4);margin:var(--space-4) 0 0;font-size:var(--text-sm)}
+.facts dt{padding-top:1px;font-size:var(--text-xs);color:var(--text-3)}
+.facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.history{display:grid;gap:var(--space-1);margin:0;padding:0;list-style:none;font-size:var(--text-xs);color:var(--text-2)}
+.history .mono{color:var(--text-3)}
+.insp-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-5);padding-top:var(--space-4);border-top:1px solid var(--hairline)}
+.help{margin-top:var(--space-2);font-size:var(--text-xs);color:var(--text-2)}
+.empty-note{margin:var(--space-3) 0 var(--space-4);font-size:var(--text-sm);color:var(--text-2)}
+.settings{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-4)}
+.settings .help{margin-top:0}
+.pickset{display:grid;gap:var(--space-2);min-width:0;margin:0;padding:0;border:0}
+.pickset legend{margin-bottom:var(--space-2);padding:0;font-size:var(--text-sm);font-weight:var(--weight-medium)}
+.picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2)}
+.pick{position:relative;display:grid;gap:var(--space-2);padding:var(--space-2);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--paper);font-size:var(--text-xs);cursor:pointer;transition:border-color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),transform var(--dur-fast) var(--ease-out)}
+.pick:active{transform:scale(var(--press-scale))}
+.pick input,.seg input{position:absolute;top:0;left:0;width:1px;height:1px;margin:0;opacity:0}
+.pick:has(input:checked){border-color:var(--accent-text);background:var(--accent-tint);color:var(--accent-tint-text)}
+.pick:has(input:focus-visible),.seg label:has(input:focus-visible){outline:var(--border-focus-width) solid var(--focus);outline-offset:2px}
+/* swatch previews read the real tokens of each theme through a nested data-theme; the script mirrors data-scheme */
+.swatch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:22px;border:1px solid var(--border);border-radius:var(--radius-xs);overflow:hidden}
+.swatch i{display:block}
+.swatch i:nth-child(1){background:var(--bg)}
+.swatch i:nth-child(2){background:var(--band)}
+.swatch i:nth-child(3){background:var(--point)}
+.seg{display:inline-flex;justify-self:start;gap:2px;padding:2px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface-2)}
+.seg label{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:4.5rem;height:28px;padding:0 var(--space-2);border-radius:var(--radius-sm);color:var(--text-2);font-size:var(--text-xs);cursor:pointer;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.seg label:has(input:checked){background:var(--paper);color:var(--text);font-weight:var(--weight-medium);box-shadow:var(--shadow-1)}
+@media (pointer:coarse){.seg label{height:var(--touch-min)}}
+
+/* ---- honest footer, back on the band ---- */
+.honest{padding:var(--space-10) var(--gutter) var(--space-12);border-top:1px solid var(--band-line);color:var(--on-band-2)}
+.honest-in{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-6);max-width:var(--content-max);margin:0 auto}
+.honest h2{margin-bottom:var(--space-2);font:var(--weight-semibold) var(--text-2xs)/1.4 var(--font-sans);letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--on-band)}
+.honest p{max-width:var(--measure);font-size:var(--text-xs);line-height:var(--leading-relaxed)}
+.honest a{color:var(--on-band);text-decoration-color:var(--on-band-2)}
+.honest code{font-size:var(--text-2xs);color:var(--on-band)}
+
+/* ---- breakpoints ---- */
+@media (min-width:640px){.tablewrap{max-height:min(40rem, calc(100vh - var(--topbar-h) - var(--space-8)))}}
+@media (min-width:900px){.honest-in{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1200px){.work{grid-template-columns:minmax(0,1fr) var(--inspector-w)}}
+@media (max-width:719px){.positioning{display:none}} /* below 720px no useful part of the line fits */
+@media (max-width:639px){
+  .topbar{gap:var(--space-2)}
+  .pill .long{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .plate{padding-top:var(--space-6)}
+  .hint{display:none}
+}
+/* below 375px the fixed items no longer fit at their normal spacing: tighten the bar instead of letting the name overlap the pill */
+@media (max-width:374px){
+  .topbar{gap:var(--space-1);padding:0 var(--space-3)}
+  .brand-name{font-size:var(--text-lg)}
+  .tbtn{padding:0 var(--space-1)}
+}
+/* reduced motion: the press feedback changes colour instead of scale */
+@media (prefers-reduced-motion:reduce){
+  .btn:active,.pick:active{transform:none}
+  .btn:not(.btn-primary):active{background:var(--neutral-tint)}
+  .btn-primary:active{background:var(--accent-hover);border-color:var(--accent-hover)}
+}
+</style>
+<style id="nk-sources-style">/* Always: a closed panel takes no space. */
+.nk-src-panel[hidden] { display: none; }
+/* On screen only: printed, a number is plain text and nothing here changes the page. */
+@media screen {
+  .nk-src {
+    text-decoration: underline dotted;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+  .nk-src:focus-visible,
+  .nk-src-close:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: var(--space-1);
+  }
+
+  .nk-src-panel {
+    position: fixed;
+    box-sizing: border-box;
+    width: 26rem;
+    max-width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    overflow: auto;
+    z-index: var(--z-overlay);
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-raised);
+    color: var(--text);
+    box-shadow: var(--shadow-2);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .nk-src-heading {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+  }
+  .nk-src-value { margin: 0 0 var(--space-3); }
+  .nk-src-section {
+    margin: var(--space-4) 0 var(--space-1);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+  }
+  .nk-src-list {
+    margin: 0;
+    padding-left: var(--space-4);
+    color: var(--text-2);
+  }
+  .nk-src-list li + li { margin-top: var(--space-1); }
+  .nk-src-kind {
+    margin: var(--space-2) 0 var(--space-1);
+    color: var(--text-3);
+    font-size: var(--text-xs);
+  }
+  .nk-src-mono {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    white-space: pre-wrap;
+  }
+  .nk-src-close {
+    margin-top: var(--space-4);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface-raised);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+}
+@media screen and (max-width: 599px) {
+  .nk-src-panel {
+    inset: auto 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+}
+</style></head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar band">
+  <div class="brand">
+    <!-- mark by rule: rounded 24px cell, a point-colour seal top right, three strokes for this product -->
+    <svg class="mark" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true" focusable="false">
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="currentColor" stroke-width="2"/>
+      <rect class="seal" x="14" y="6" width="4" height="4" rx="1"/>
+      <path d="M7 9h4M7 12.5h10M7 16h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-name">Demo Bench</span>
+    <span class="positioning">Clean, categorise and reconcile a batch of rows — every row stays traceable.</span>
+  </div>
+  <span class="pill" id="demo-pill" title="Synthetic data generated in this page; nothing here is a real record.">Demo<span class="long"> · synthetic data · seed <span data-seed>42</span></span></span>
+  <span class="spacer"></span>
+  <button class="tbtn" type="button" id="scheme-toggle" aria-pressed="false" aria-label="Dark appearance" title="Dark appearance"><svg class="tbtn-glyph" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg></button>
+  <a class="tbtn" href="https://github.com/NickkkLian/nk-design">Source</a>
+</header>
+
+<section class="plate band" aria-labelledby="page-title">
+  <div class="plate-in">
+    <div>
+      <p class="eyebrow">Reconciliation · synthetic batch</p>
+      <h1 class="display" id="page-title">Where the input rows went</h1>
+      <p class="lede">Rules sort each row and set aside exact duplicates. Rows with no amount, no rule or only a partial match wait for a person.</p>
+      <div class="rule" aria-hidden="true"></div>
+    </div>
+    <div class="sum-strip" role="group" aria-label="Where did the input rows go, and do the parts add up to the totals?">
+      <div class="sum-bar" id="sum-bar" aria-hidden="true"></div>
+      <ul class="sum-legend" id="sum-legend"></ul>
+      <p class="sum-eq" id="sum-eq"></p>
+      <p class="caption">The total after each = comes from a separate pass over every input row, so a row that lands in no group turns the check into a cross.</p>
+    </div>
+  </div>
+</section>
+
+<main class="work" id="main">
+  <noscript><p class="panel">This demo generates its rows and computes every total in the browser. Turn on JavaScript to see them.</p></noscript>
+  <section aria-labelledby="rows-title">
+    <h2 class="eyebrow section-label" id="rows-title">Input rows</h2>
+    <div class="filters" role="search" aria-label="Filter rows">
+      <label class="field field-grow">Search <input class="input" id="q" type="search" placeholder="name, category or A:12" autocomplete="off" spellcheck="false"></label>
+      <label class="field">Status
+        <select class="input" id="status">
+          <option value="">All statuses</option>
+          <option>Needs review</option>
+          <option>Approved</option>
+          <option>Rejected</option>
+          <option>Excluded</option>
+        </select>
+      </label>
+      <button class="btn btn-ghost" type="button" id="clear">Clear filters</button>
+      <span class="chip" id="showing" aria-live="polite"></span>
+    </div>
+    <div class="tablewrap">
+      <table class="data" id="table">
+        <caption class="sr-only">Input rows. Arrow keys move between rows; Enter opens a row in the details panel.</caption>
+        <thead><tr>
+          <th scope="col" aria-sort="ascending"><button class="sort" type="button" data-k="src">Source</button></th>
+          <th scope="col"><button class="sort" type="button" data-k="name">Name</button></th>
+          <th scope="col"><button class="sort" type="button" data-k="cat">Category</button></th>
+          <th scope="col" class="num"><button class="sort" type="button" data-k="amount">Amount</button></th>
+          <th scope="col"><button class="sort" type="button" data-k="status">Status</button></th>
+          <th scope="col"><span class="sr-only">Actions</span></th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>
+        <h3>No rows match</h3>
+        <p id="empty-reason"></p>
+        <button class="btn" type="button" data-clear>Clear filters</button>
+      </div>
+    </div>
+    <p class="hint"><kbd>↑</kbd> <kbd>↓</kbd> move between rows · <kbd>Enter</kbd> opens one · <kbd>Esc</kbd> closes it</p>
+  </section>
+
+  <div class="side">
+    <section class="panel" id="inspector" aria-labelledby="insp-title">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Row details</p>
+          <h2 class="panel-title" id="insp-title" tabindex="-1">No row selected</h2>
+        </div>
+        <button class="btn btn-ghost btn-icon" type="button" id="insp-close" aria-label="Close row details" hidden><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      </div>
+      <div id="insp-body"></div>
+      <div class="insp-actions" id="insp-actions" hidden>
+        <button class="btn btn-primary" type="button" id="approve" aria-describedby="act-help">Approve row</button>
+        <button class="btn" type="button" id="other" aria-describedby="act-help">Reject row</button>
+      </div>
+      <p class="help" id="act-help" hidden></p>
+      <p class="sr-only" id="announce" aria-live="polite"></p>
+    </section>
+
+    <section class="panel settings" aria-labelledby="settings-title">
+      <h2 class="eyebrow" id="settings-title">Settings</h2>
+      <fieldset class="pickset">
+        <legend>Theme</legend>
+        <div class="picks">
+          <label class="pick"><input type="radio" name="nl-theme" value="plaster" checked><span class="swatch" data-theme="plaster" aria-hidden="true"><i></i><i></i><i></i></span>Water lilies</label>
+          <label class="pick"><input type="radio" name="nl-theme" value="paper"><span class="swatch" data-theme="paper" aria-hidden="true"><i></i><i></i><i></i></span>Morning light</label>
+          <label class="pick"><input type="radio" name="nl-theme" value="ink"><span class="swatch" data-theme="ink" aria-hidden="true"><i></i><i></i><i></i></span>Dusk</label>
+        </div>
+      </fieldset>
+      <fieldset class="pickset">
+        <legend>Appearance</legend>
+        <div class="seg">
+          <label><input type="radio" name="nl-scheme" value="system" checked>System</label>
+          <label><input type="radio" name="nl-scheme" value="light">Light</label>
+          <label><input type="radio" name="nl-scheme" value="dark">Dark</label>
+        </div>
+      </fieldset>
+      <p class="help">Saved on this device only (<code>nl-theme</code>, <code>nl-scheme</code>) and applied before the first paint. Water lilies and System are the defaults and write nothing.</p>
+    </section>
+  </div>
+</main>
+
+<footer class="honest band">
+  <div class="honest-in">
+    <section>
+      <h2>About this demo</h2>
+      <p>Every number on this page is computed in your browser from <span data-n></span> synthetic rows generated from seed <span data-seed>42</span>. Nothing is loaded from a server or sent anywhere, and your decisions change this tab only. The search, status filter, sort and open row are kept in the address, so a copied link opens the same view. Add <code>?seed=7&amp;rows=300</code> to the address to generate another batch (up to 2,000 rows).</p>
+    </section>
+    <section>
+      <h2>Not verified here</h2>
+      <p>Real bank or workbook exports (every row here is generated), screen readers, browsers other than Chromium, touch devices, and right-to-left text.</p>
+    </section>
+    <section>
+      <h2>Source</h2>
+      <p><a href="https://github.com/NickkkLian/nk-design">github.com/NickkkLian/nk-design</a> · MIT · synthetic data only: no real people, payees or logos.</p>
+    </section>
+  </div>
+</footer>
+
+<script>
+/* ============ Workbench: synthetic rows → reconciliation bar, table, details panel ============
+   Every number on the page is computed from the rows array below; nothing is typed into the HTML.
+   To adapt it to another tool, change three things and keep the structure:
+     what one row is                  → KINDS and the generator loop (section 1)
+     what the first screen adds up    → GROUPS (section 3); their statuses must cover every status you use
+     what a person decides for a row  → approveBlock() and the two buttons (section 5) */
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+  var params = new URLSearchParams(location.search);
+  function intParam(name, fallback, min, max) {
+    var raw = params.get(name);
+    if (raw === null || !/^\d{1,10}$/.test(raw)) return fallback;
+    return Math.min(max, Math.max(min, Number(raw)));
+  }
+  var SEED = intParam("seed", 42, 0, 4294967295);
+  var COUNT = intParam("rows", 40, 1, 2000);
+
+  /* ---- 1. data: a seeded generator (mulberry32), so the same seed always gives the same batch ---- */
+  function mulberry32(a) {
+    return function () {
+      var t = a = (a + 0x6D2B79F5) | 0;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var KINDS = [
+    {cat: "Utilities", payee: "Demo Utility", lo: 3500, hi: 42000},
+    {cat: "Rent", payee: "Demo Landlord", lo: 110000, hi: 240000},
+    {cat: "Software", payee: "Demo Software", lo: 900, hi: 64000},
+    {cat: "Travel", payee: "Demo Travel", lo: 2400, hi: 185000},
+    {cat: "Supplies", payee: "Demo Supply", lo: 700, hi: 36000}
+  ];
+  var rnd = mulberry32(SEED), rows = [];
+  for (var i = 0; i < COUNT; i++) {
+    var kind = KINDS[Math.floor(rnd() * KINDS.length)], roll = rnd(), no = String(i + 1).padStart(2, "0");
+    /* amounts are integer cents, so the sums below are exact and "reconciles to the cent" is a real comparison */
+    var r = {id: i + 1, src: "A:" + (i + 2), name: kind.payee + " " + no, cat: kind.cat,
+             cents: kind.lo + Math.floor(rnd() * (kind.hi - kind.lo)), rule: "exact alias", status: "Approved",
+             reason: "The name matched an exact alias.", history: ["rule exact alias → " + kind.cat]};
+    if (roll < 0.05) {
+      r.cents = null; r.status = "Needs review";
+      r.reason = "The amount cell is empty or not a number."; r.history = ["rule exact alias → " + kind.cat + "; amount unreadable"];
+    } else if (roll < 0.12) {
+      r.cat = null; r.rule = "none"; r.name = "Demo Payee " + no; r.status = "Needs review";
+      r.reason = "No rule matched the name."; r.history = ["no rule matched"];
+    } else if (roll < 0.20) {
+      r.rule = "prefix"; r.status = "Needs review";
+      r.reason = "Only the start of the name matched; confirm the category."; r.history = ["rule prefix → " + kind.cat + ", unconfirmed"];
+    } else if (roll < 0.28 && i > 0) {
+      var orig = rows[Math.floor(rnd() * i)];
+      r.name = orig.name; r.cat = orig.cat; r.cents = orig.cents; r.rule = "duplicate"; r.status = "Excluded";
+      r.reason = "Exact duplicate of " + orig.src + " (same cells)."; r.history = ["duplicate of " + orig.src + " → excluded"];
+    } else if (roll < 0.34) {
+      r.status = "Rejected"; r.reason = "A reviewer rejected the suggested category.";
+      r.history.push("rejected by a reviewer");
+    }
+    rows.push(r);
+  }
+
+  /* ---- 2. formatting (fixed locale so the equation reads the same in every browser) ---- */
+  var intFmt = new Intl.NumberFormat("en-CA");
+  var centFmt = new Intl.NumberFormat("en-CA", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  function int(n) { return intFmt.format(n); }
+  function money(c) { return centFmt.format(c / 100); }
+  function plural(n, one, many) { return n === 1 ? one : many; }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (ch) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[ch]; });
+  }
+
+  /* ---- 3. reconciliation: group sums against totals computed in a separate pass ---- */
+  var GROUPS = [
+    {label: "Approved", statuses: ["Approved"], cls: "s-point"},
+    {label: "Needs review", statuses: ["Needs review"], cls: "s-strong"},
+    {label: "Rejected or excluded", statuses: ["Rejected", "Excluded"], cls: "s-soft"}
+  ];
+  var TAGS = {"Needs review": "tag-warning", "Approved": "tag-success", "Rejected": "tag-danger", "Excluded": "tag-neutral"};
+  var STATUS_ORDER = ["Needs review", "Approved", "Rejected", "Excluded"];
+
+  function reconcile() {
+    var total = {rows: rows.length, cents: 0, unknown: 0};
+    rows.forEach(function (row) { if (row.cents === null) total.unknown++; else total.cents += row.cents; });
+    var parts = GROUPS.map(function (g) {
+      var p = {g: g, rows: 0, cents: 0, unknown: 0};
+      rows.forEach(function (row) {
+        if (g.statuses.indexOf(row.status) === -1) return;
+        p.rows++;
+        if (row.cents === null) p.unknown++; else p.cents += row.cents;
+      });
+      return p;
+    });
+    var sumRows = 0, sumCents = 0;
+    parts.forEach(function (p) { sumRows += p.rows; sumCents += p.cents; });
+    return {total: total, parts: parts, rowGap: total.rows - sumRows, centGap: total.cents - sumCents};
+  }
+
+  function renderStrip() {
+    var rec = reconcile(), bar = [], legend = [];
+    rec.parts.forEach(function (p, i) {
+      var known = p.rows - p.unknown;
+      if (known) bar.push('<span class="' + p.g.cls + '" style="flex-grow:' + known + '"></span>');
+      if (p.unknown) bar.push('<span class="s-hatch" style="flex-grow:' + p.unknown + '"></span>');
+      legend.push('<li><i class="sw ' + p.g.cls + '"></i>' + p.g.label + ' <b data-nk-src="rec.part' + i + '">' + int(p.rows) + '</b></li>');
+    });
+    legend.push('<li><i class="sw s-hatch"></i>No amount <b data-nk-src="rec.unknown">' + int(rec.total.unknown) + '</b> (counted as rows, kept out of the sums)</li>');
+    $("#sum-bar").innerHTML = bar.join("");
+    $("#sum-legend").innerHTML = legend.join("");
+    var gaps = [];
+    if (rec.rowGap) gaps.push(int(Math.abs(rec.rowGap)) + plural(Math.abs(rec.rowGap), " row", " rows"));
+    if (rec.centGap) gaps.push(money(Math.abs(rec.centGap)));
+    $("#sum-eq").innerHTML =
+      '<span>' + rec.parts.map(function (p, i) { return '<span data-nk-src="rec.part' + i + '">' + int(p.rows) + '</span>'; }).join(" +&nbsp;") +
+        ' =&nbsp;<span data-nk-src="rec.rows">' + int(rec.total.rows) + '</span>' + plural(rec.total.rows, " row", " rows") + '</span>' +
+      ' <span aria-hidden="true">·</span> ' +
+      '<span>' + rec.parts.map(function (p, i) { return '<span data-nk-src="rec.part' + i + '.cents">' + money(p.cents) + '</span>'; }).join(" +&nbsp;") +
+        ' =&nbsp;<span data-nk-src="rec.cents">' + money(rec.total.cents) + '</span></span> ' +
+      (gaps.length ? '<span class="bad">off by ' + gaps.join(" and ") + '</span>' : '<span class="ok">reconciles to the cent</span>');
+    $("#page-title").textContent = "Where the " + int(rec.total.rows) + " input " + plural(rec.total.rows, "row", "rows") + " went";
+    document.querySelectorAll("[data-n]").forEach(function (el) { el.textContent = int(rec.total.rows); });
+    traceStrip(rec);
+    return rec;
+  }
+
+  /* ---- 3b. where each number in the strip comes from (nk-sources): click one to see its rows, how it was
+     computed and what was not checked. The manifest in the page holds each entry's words; this brings the value
+     and the rows up to date after every decision. ---- */
+  function traceStrip(rec) {
+    if (!window.NkSources) return;
+    function rowsOf(test) {
+      var hit = rows.filter(test);
+      return {input: "rows", rows: hit.slice(0, 50).map(function (r) { return r.id; }), rows_total: hit.length,
+              text: "cells " + hit.slice(0, 8).map(function (r) { return r.src; }).join(", ") + (hit.length > 8 ? " …" : "")};
+    }
+    rec.parts.forEach(function (p, i) {
+      var inGroup = function (r) { return p.g.statuses.indexOf(r.status) >= 0; };
+      NkSources.update("rec.part" + i, {value: int(p.rows), from: [rowsOf(inGroup)]});
+      NkSources.update("rec.part" + i + ".cents", {value: money(p.cents), from: [rowsOf(function (r) { return inGroup(r) && r.cents !== null; })]});
+    });
+    NkSources.update("rec.unknown", {value: int(rec.total.unknown), from: [rowsOf(function (r) { return r.cents === null; })]});
+    NkSources.update("rec.rows", {value: int(rec.total.rows), from: [rowsOf(function () { return true; })]});
+    NkSources.update("rec.cents", {value: money(rec.total.cents), from: [rowsOf(function (r) { return r.cents !== null; })]});
+  }
+  addEventListener("DOMContentLoaded", function () { traceStrip(reconcile()); });
+
+  /* ---- 4. table: filter, sort (Source asc ↔ desc; other columns asc → desc → back to Source), roving focus ---- */
+  var state = {q: "", status: "", sortKey: "src", sortDir: 1, selected: null, focusId: null};
+  function find(id) { return rows.filter(function (row) { return row.id === id; })[0] || null; }
+
+  function compare(a, b) {
+    var k = state.sortKey, x, y;
+    if (k === "amount" || k === "cat") {
+      x = k === "amount" ? a.cents : a.cat; y = k === "amount" ? b.cents : b.cat;
+      if (x === null || y === null) return x === y ? a.id - b.id : (x === null ? 1 : -1); /* missing values last either way */
+    } else if (k === "status") { x = STATUS_ORDER.indexOf(a.status); y = STATUS_ORDER.indexOf(b.status); }
+    else if (k === "name") { x = a.name; y = b.name; }
+    else { x = a.id; y = b.id; }
+    var c = typeof x === "string" ? x.localeCompare(y) : x - y;
+    return c ? c * state.sortDir : a.id - b.id;
+  }
+
+  function visibleRows() {
+    var q = state.q.trim().toLowerCase();
+    return rows.filter(function (row) {
+      if (state.status && row.status !== state.status) return false;
+      return !q || (row.name + " " + (row.cat || "uncategorised") + " " + row.src).toLowerCase().indexOf(q) !== -1;
+    }).sort(compare);
+  }
+
+  function catHtml(row) {
+    return row.cat ? '<span class="cat">' + esc(row.cat) + '</span>' : '<span class="cat cat-none">Uncategorised</span>';
+  }
+  function amountHtml(row) {
+    return row.cents === null ? '<span class="missing">no amount</span>' : money(row.cents);
+  }
+
+  function renderTable() {
+    writeUrl();
+    var list = visibleRows(), body = $("#rows");
+    $("#showing").innerHTML = "showing <b>" + int(list.length) + "</b> of " + int(rows.length);
+    $("#table").hidden = !list.length;
+    $("#empty").hidden = !!list.length;
+    if (!list.length) {
+      var bits = [];
+      if (state.q.trim()) bits.push("contain “" + state.q.trim() + "”");
+      if (state.status) bits.push("have the status " + state.status);
+      $("#empty-reason").textContent = "None of the " + int(rows.length) + " rows " + bits.join(" and ") +
+        ". Filters only hide rows here; the totals above still count every row.";
+      body.innerHTML = "";
+      return;
+    }
+    var ids = list.map(function (row) { return row.id; });
+    var tabId = ids.indexOf(state.focusId) !== -1 ? state.focusId : ids.indexOf(state.selected) !== -1 ? state.selected : ids[0];
+    body.innerHTML = list.map(function (row) {
+      return '<tr data-id="' + row.id + '" tabindex="' + (row.id === tabId ? 0 : -1) + '" aria-selected="' + (row.id === state.selected) + '">' +
+        '<td><span class="chip" translate="no"><b>' + esc(row.src) + '</b></span></td>' +
+        '<td>' + esc(row.name) + '</td>' +
+        '<td>' + catHtml(row) + '</td>' +
+        '<td class="num">' + amountHtml(row) + '</td>' +
+        '<td><span class="tag ' + TAGS[row.status] + '">' + esc(row.status) + '</span></td>' +
+        '<td class="row-action"><button class="btn btn-ghost btn-sm" type="button" tabindex="-1" data-open="' + row.id + '">Open</button></td></tr>';
+    }).join("");
+  }
+
+  function rowEl(id) { return $('#rows tr[data-id="' + id + '"]'); }
+
+  function syncSortHeaders() {
+    document.querySelectorAll("thead th").forEach(function (th) { th.removeAttribute("aria-sort"); });
+    var active = document.querySelector('thead .sort[data-k="' + state.sortKey + '"]');
+    active.parentElement.setAttribute("aria-sort", state.sortDir === 1 ? "ascending" : "descending");
+  }
+
+  /* ---- URL state: search, status, sort and the open row live in the query string, so a copied link opens the
+     same view. replaceState keeps Back usable; a value equal to its default is removed, never written;
+     theme / scheme / seed / rows are left exactly as they are. ---- */
+  var SORT_KEYS = ["src", "name", "cat", "amount", "status"], DEFAULT_ROW = null;
+  function readUrl() {
+    var p = new URLSearchParams(location.search), q = p.get("q"), st = p.get("status"), k = p.get("sort"), row = p.get("row");
+    if (q !== null) state.q = q;
+    if (STATUS_ORDER.indexOf(st) !== -1) state.status = st;
+    if (SORT_KEYS.indexOf(k) !== -1) state.sortKey = k;
+    if (p.get("dir") === "desc") state.sortDir = -1;
+    if (row === "none") state.selected = null;
+    else if (row !== null) { var hit = rows.filter(function (r) { return r.src === row; })[0]; if (hit) state.selected = hit.id; }
+  }
+  function writeUrl() {
+    var p = new URLSearchParams(location.search), sel = find(state.selected);
+    function put(key, value, isDefault) { if (isDefault) p.delete(key); else p.set(key, value); }
+    put("q", state.q, !state.q.trim());
+    put("status", state.status, !state.status);
+    put("sort", state.sortKey, state.sortKey === "src");
+    put("dir", "desc", state.sortDir === 1);
+    put("row", sel ? sel.src : "none", state.selected === DEFAULT_ROW);
+    var qs = p.toString().replace(/%3A/gi, ":"), url = location.pathname + (qs ? "?" + qs : "") + location.hash;
+    if (url === location.pathname + location.search + location.hash) return;
+    try { history.replaceState(history.state, "", url); } catch (e) { /* a browser can refuse history changes on file://; the view still works */ }
+  }
+
+  /* ---- 5. details panel ---- */
+  function approveBlock(row) {
+    if (row.status === "Approved") return "Already approved.";
+    if (row.status !== "Needs review") return "Send it back to review before approving it.";
+    if (row.cents === null) return "No amount to approve: the amount cell is empty or not a number.";
+    if (row.cat === null) return "No category to approve: no rule matched this name.";
+    return "";
+  }
+
+  function renderInspector() {
+    var row = find(state.selected);
+    $("#insp-close").hidden = !row; $("#insp-actions").hidden = !row; $("#act-help").hidden = !row;
+    if (!row) {
+      var first = rows.filter(function (x) { return x.status === "Needs review"; })[0];
+      $("#insp-title").textContent = "No row selected";
+      $("#insp-body").innerHTML = '<p class="empty-note">Choose a row to see the cell it came from, the rule that sorted it and its history.</p>' +
+        (first ? '<button class="btn" type="button" data-open="' + first.id + '">Open the first row that needs review</button>'
+               : '<p class="empty-note">Nothing needs review.</p>');
+      return;
+    }
+    $("#insp-title").textContent = row.name;
+    $("#insp-body").innerHTML =
+      '<p class="insp-tag"><span class="tag ' + TAGS[row.status] + '">' + esc(row.status) + '</span></p>' +
+      '<dl class="facts">' +
+        '<dt>Source</dt><dd class="chips">' +
+          '<span class="chip" translate="no">src <b>' + esc(row.src) + '</b></span>' +
+          '<span class="chip" translate="no">rule <b>' + esc(row.rule) + '</b></span>' +
+          '<span class="chip" translate="no">rev <b>' + row.history.length + '</b></span></dd>' +
+        '<dt>Category</dt><dd>' + catHtml(row) + '</dd>' +
+        '<dt>Amount</dt><dd class="mono">' + amountHtml(row) + '</dd>' +
+        '<dt>Reason</dt><dd>' + esc(row.reason) + '</dd>' +
+        '<dt>History</dt><dd><ol class="history">' + row.history.map(function (h, n) {
+          return '<li><span class="mono">rev ' + (n + 1) + '</span> ' + esc(h) + '</li>';
+        }).join("") + '</ol></dd>' +
+      '</dl>';
+    var block = approveBlock(row);
+    $("#approve").setAttribute("aria-disabled", block ? "true" : "false");
+    $("#other").textContent = row.status === "Needs review" ? "Reject row" : "Send back to review";
+    $("#act-help").textContent = block || "Decisions change this tab only; nothing is saved or sent.";
+  }
+
+  function open(id, focusPanel) {
+    state.selected = id; state.focusId = id;
+    renderTable(); renderInspector();
+    if (focusPanel) $("#insp-title").focus();
+  }
+
+  function closeInspector() {
+    var id = state.selected;
+    state.selected = null;
+    renderTable(); renderInspector();
+    var tr = rowEl(id);
+    if (tr) tr.focus(); else $("#q").focus(); /* the row is filtered out: land on the search box */
+  }
+
+  function announce(text) {
+    var live = $("#announce");
+    live.textContent = "";
+    setTimeout(function () { live.textContent = text; }, 50);
+  }
+
+  function decide(status, note) {
+    var row = find(state.selected);
+    if (!row) return;
+    row.status = status; row.history.push(note);
+    var rec = renderStrip(); renderTable(); renderInspector();
+    announce(row.name + ": " + note + ". " + (rec.rowGap || rec.centGap ? "The totals no longer reconcile." : "The totals still reconcile."));
+  }
+
+  function clearFilters() {
+    $("#q").value = ""; $("#status").value = "";
+    state.q = ""; state.status = "";
+    renderTable();
+    $("#q").focus();
+  }
+
+  /* ---- 6. events ---- */
+  document.querySelectorAll("thead .sort").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var k = btn.getAttribute("data-k");
+      if (k === "src") { state.sortDir = state.sortKey === "src" ? -state.sortDir : 1; state.sortKey = "src"; }
+      else if (state.sortKey !== k) { state.sortKey = k; state.sortDir = 1; }
+      else if (state.sortDir === 1) { state.sortDir = -1; }
+      else { state.sortKey = "src"; state.sortDir = 1; }
+      syncSortHeaders();
+      renderTable();
+    });
+  });
+
+  $("#q").addEventListener("input", function () { state.q = this.value; renderTable(); });
+  $("#status").addEventListener("change", function () { state.status = this.value; renderTable(); });
+  $("#clear").addEventListener("click", clearFilters);
+  $("#empty").addEventListener("click", function (e) { if (e.target.closest("[data-clear]")) clearFilters(); });
+
+  $("#rows").addEventListener("click", function (e) {
+    var tr = e.target.closest("tr[data-id]");
+    if (!tr) return;
+    if (!e.target.closest("button") && String(window.getSelection())) return; /* the pointer was selecting text */
+    open(Number(tr.getAttribute("data-id")), true);
+  });
+  $("#rows").addEventListener("focusin", function (e) {
+    var tr = e.target.closest("tr[data-id]");
+    if (!tr || tr.tabIndex === 0) return;
+    $("#rows").querySelectorAll('tr[tabindex="0"]').forEach(function (other) { other.tabIndex = -1; });
+    tr.tabIndex = 0; state.focusId = Number(tr.getAttribute("data-id"));
+  });
+  $("#rows").addEventListener("keydown", function (e) {
+    var tr = e.target;
+    if (!tr.matches || !tr.matches("tr[data-id]")) return;
+    var next = null;
+    if (e.key === "ArrowDown") next = tr.nextElementSibling;
+    else if (e.key === "ArrowUp") next = tr.previousElementSibling;
+    else if (e.key === "Home") next = tr.parentElement.firstElementChild;
+    else if (e.key === "End") next = tr.parentElement.lastElementChild;
+    else if (e.key === "Enter") { e.preventDefault(); open(Number(tr.getAttribute("data-id")), true); return; }
+    else return;
+    e.preventDefault();
+    if (next) next.focus();
+  });
+
+  $("#inspector").addEventListener("click", function (e) {
+    var opener = e.target.closest("[data-open]");
+    if (opener) open(Number(opener.getAttribute("data-open")), true);
+  });
+  $("#inspector").addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && state.selected !== null) { e.preventDefault(); closeInspector(); }
+  });
+  $("#insp-close").addEventListener("click", closeInspector);
+  $("#approve").addEventListener("click", function () {
+    var row = find(state.selected);
+    if (row && !approveBlock(row)) decide("Approved", "approved in this tab");
+  });
+  $("#other").addEventListener("click", function () {
+    var row = find(state.selected);
+    if (!row) return;
+    if (row.status === "Needs review") decide("Rejected", "rejected in this tab");
+    else decide("Needs review", "sent back to review in this tab");
+  });
+
+  /* ---- 7. start: open the first row a person can decide on (unless the URL says otherwise), without moving focus ---- */
+  document.querySelectorAll("[data-seed]").forEach(function (el) { el.textContent = String(SEED); });
+  $("#demo-pill").title = "Synthetic data generated in this page from seed " + SEED + "; nothing here is a real record.";
+  var start = rows.filter(function (row) { return row.status === "Needs review" && !approveBlock(row); })[0] ||
+              rows.filter(function (row) { return row.status === "Needs review"; })[0] || rows[0];
+  DEFAULT_ROW = state.selected = start.id;
+  readUrl();
+  $("#q").value = state.q; $("#status").value = state.status; syncSortHeaders();
+  state.focusId = state.selected;
+  renderStrip(); renderTable(); renderInspector();
+})();
+
+/* ============ Appearance: theme picker, scheme toggle, theme-color (same contract as the head script) ============
+   plaster (Water lilies) and System remove the attribute instead of writing a value: an attribute present means a person chose it. */
+(function () {
+  var html = document.documentElement, osDark = matchMedia("(prefers-color-scheme: dark)");
+  var toggle = document.getElementById("scheme-toggle"), meta = document.querySelector('meta[name="theme-color"]');
+  function current() {
+    var t = html.getAttribute("data-theme"), s = html.getAttribute("data-scheme");
+    return {theme: t === "paper" || t === "ink" ? t : "plaster", scheme: s === "light" || s === "dark" ? s : "system"};
+  }
+  function isDark() { var s = current().scheme; return s === "dark" || (s === "system" && osDark.matches); }
+  function sync() {
+    var c = current(), dark = isDark();
+    document.querySelectorAll('input[name="nl-theme"]').forEach(function (i) { i.checked = i.value === c.theme; });
+    document.querySelectorAll('input[name="nl-scheme"]').forEach(function (i) { i.checked = i.value === c.scheme; });
+    toggle.setAttribute("aria-pressed", String(dark));
+    /* nested previews: mirror the effective scheme so a dark page previews dark palettes */
+    document.querySelectorAll(".swatch").forEach(function (sw) { sw.setAttribute("data-scheme", dark ? "dark" : "light"); });
+    var band = getComputedStyle(html).getPropertyValue("--band").trim();
+    if (band) meta.setAttribute("content", band);
+  }
+  function apply(next) {
+    var c = current(), t = next.theme || c.theme, s = next.scheme || c.scheme;
+    if (t === "plaster") html.removeAttribute("data-theme"); else html.setAttribute("data-theme", t);
+    if (s === "system") html.removeAttribute("data-scheme"); else html.setAttribute("data-scheme", s);
+    try { localStorage.setItem("nl-theme", t); localStorage.setItem("nl-scheme", s); } catch (e) { /* not saved */ }
+    /* a ?theme= / ?scheme= override has done its job once a person chooses; drop it so a reload keeps the choice */
+    try {
+      var p = new URLSearchParams(location.search);
+      if (p.has("theme") || p.has("scheme")) {
+        p.delete("theme"); p.delete("scheme");
+        var qs = p.toString().replace(/%3A/gi, ":");
+        history.replaceState(history.state, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
+      }
+    } catch (e) { /* URL left as it was */ }
+    sync();
+  }
+  /* click as well as change: after a ?theme= override the shown radio can already be checked, and clicking it
+     must still save that choice (a checked radio fires no change event). apply() is idempotent. */
+  document.querySelectorAll('input[name="nl-theme"], input[name="nl-scheme"]').forEach(function (i) {
+    function pick() { if (i.checked) apply(i.name === "nl-theme" ? {theme: i.value} : {scheme: i.value}); }
+    i.addEventListener("change", pick);
+    i.addEventListener("click", pick);
+  });
+  toggle.addEventListener("click", function () { apply({scheme: isDark() ? "light" : "dark"}); });
+  osDark.addEventListener("change", sync);
+  sync();
+})();
+</script>
+<script type="application/json" id="nk-sources">{
+  "nk_sources": 1,
+  "generator": "nk-design 0.1.5 starter",
+  "inputs": [
+    {
+      "id": "rows",
+      "name": "the page's generated rows (seeded generator, synthetic)",
+      "synthetic": true
+    }
+  ],
+  "not_checked": [
+    "The rows are generated in the browser from a fixed seed: no real file was read.",
+    "Nobody checked the rows against a source document; the strip only proves the parts add up to the totals."
+  ],
+  "sources": {
+    "rec.part0": {
+      "label": "Approved: rows",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "count of the rows whose status Approved"
+      },
+      "not_checked": [
+        "Whether each row's status is right: a reviewer's decision is taken as recorded."
+      ],
+      "live": true
+    },
+    "rec.part0.cents": {
+      "label": "Approved: amount",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "sum of the amounts (integer cents) of the rows whose status Approved; rows with no amount are counted as rows and kept out of the sum"
+      },
+      "not_checked": [
+        "Whether each amount was read correctly from its cell."
+      ],
+      "live": true
+    },
+    "rec.part1": {
+      "label": "Needs review: rows",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "count of the rows whose status Needs review"
+      },
+      "not_checked": [
+        "Whether each row's status is right: a reviewer's decision is taken as recorded."
+      ],
+      "live": true
+    },
+    "rec.part1.cents": {
+      "label": "Needs review: amount",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "sum of the amounts (integer cents) of the rows whose status Needs review; rows with no amount are counted as rows and kept out of the sum"
+      },
+      "not_checked": [
+        "Whether each amount was read correctly from its cell."
+      ],
+      "live": true
+    },
+    "rec.part2": {
+      "label": "Rejected or excluded: rows",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "count of the rows whose status Rejected or Excluded"
+      },
+      "not_checked": [
+        "Whether each row's status is right: a reviewer's decision is taken as recorded."
+      ],
+      "live": true
+    },
+    "rec.part2.cents": {
+      "label": "Rejected or excluded: amount",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "sum of the amounts (integer cents) of the rows whose status Rejected or Excluded; rows with no amount are counted as rows and kept out of the sum"
+      },
+      "not_checked": [
+        "Whether each amount was read correctly from its cell."
+      ],
+      "live": true
+    },
+    "rec.unknown": {
+      "label": "Rows with no amount",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "count of the rows whose amount cell is empty or not a number"
+      },
+      "not_checked": [
+        "Why the amount is missing: the row only says the cell could not be read."
+      ],
+      "live": true
+    },
+    "rec.rows": {
+      "label": "Input rows",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "count of every input row, in a separate pass from the groups"
+      },
+      "not_checked": [
+        "Whether rows were lost before the page loaded them."
+      ],
+      "live": true
+    },
+    "rec.cents": {
+      "label": "Total amount",
+      "from": [
+        {
+          "input": "rows",
+          "text": "filled in when the page computes the strip"
+        }
+      ],
+      "how": {
+        "kind": "computation",
+        "text": "sum of every readable amount (integer cents), in a separate pass from the groups"
+      },
+      "not_checked": [
+        "Whether rows were lost before the page loaded them."
+      ],
+      "live": true
+    }
+  }
+}</script><script id="nk-sources-runtime">(function () {
+  'use strict';
+  if (window.NkSources) return;
+
+  var manifest = { sources: Object.create(null), inputs: [], not_checked: [] };
+  var panel, heading, hint, active = null, activeId = null;
+  var warned = new Set();
+  var started = false;
+
+  function node(tag, text, className) {
+    var el = document.createElement(tag);
+    if (text !== undefined) el.textContent = String(text);
+    if (className) el.setAttribute('class', className);
+    return el;
+  }
+
+  function uniqueId(base) {
+    var id = base, index = 0;
+    while (document.getElementById(id)) id = base + '-' + (++index);
+    return id;
+  }
+
+  function decorate(el) {
+    el.classList.add('nk-src');
+    if (!el.matches('a[href],area[href],button,input,select,textarea,summary,[tabindex]') &&
+        !el.isContentEditable) el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-haspopup', 'dialog');
+    el.setAttribute('aria-expanded', el === active ? 'true' : 'false');
+    var described = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+    if (described.indexOf(hint.id) < 0) described.push(hint.id);
+    el.setAttribute('aria-describedby', described.join(' '));
+  }
+
+  function refresh() {
+    if (!started) return;
+    document.querySelectorAll('[data-nk-src]').forEach(decorate);
+    if (active && (!active.isConnected || active.getAttribute('data-nk-src') !== activeId)) close(false);
+  }
+
+  function close(restore) {
+    if (!active) return;
+    var previous = active;
+    active = null;
+    activeId = null;
+    panel.hidden = true;
+    previous.setAttribute('aria-expanded', 'false');
+    if (restore && previous.isConnected) previous.focus();
+  }
+
+  function section(title) {
+    panel.appendChild(node('h3', title, 'nk-src-section'));
+  }
+
+  function render() {
+    var focused = panel.contains(document.activeElement);
+    var onClose = document.activeElement && document.activeElement.classList.contains('nk-src-close');
+    while (panel.firstChild) panel.removeChild(panel.firstChild);
+    var entry = manifest.sources[activeId];
+    heading = node('h2', entry ? entry.label : 'Number source', 'nk-src-heading');
+    heading.setAttribute('id', panel.getAttribute('aria-labelledby'));
+    heading.setAttribute('tabindex', '-1');
+    panel.appendChild(heading);
+    panel.appendChild(node('p', entry && entry.value !== undefined ? entry.value : active.textContent,
+      'nk-src-value'));
+    if (!entry) {
+      panel.appendChild(node('p', 'No source recorded for this number.'));
+      if (!warned.has(activeId)) {
+        warned.add(activeId);
+        console.warn('No source recorded for number: ' + activeId);
+      }
+    } else {
+      section('Source');
+      var list = node('ul', undefined, 'nk-src-list');
+      (entry.from || []).forEach(function (item) {
+        var parts = [];
+        if (item.input) {
+          var input = (manifest.inputs || []).find(function (candidate) { return candidate.id === item.input; });
+          parts.push(input ? input.name : item.input);
+          if (input && input.sha256) parts.push('sha256 ' + input.sha256.slice(0, 12));
+          if (input && input.synthetic) parts.push('synthetic');
+        }
+        if (item.rows) {
+          parts.push('Rows ' + item.rows.join(', '));
+          if (item.rows_total > item.rows.length) parts.push('and ' + (item.rows_total - item.rows.length) + ' more');
+        } else if (item.rows_total !== undefined) parts.push('Rows total: ' + item.rows_total);
+        if (item.cells) parts.push('Cells: ' + (Array.isArray(item.cells) ? item.cells.join(', ') : item.cells));
+        if (item.text) parts.push(item.text);
+        list.appendChild(node('li', parts.join('; ')));
+      });
+      panel.appendChild(list);
+      section('How');
+      var how = entry.how || {};
+      panel.appendChild(node('p', how.kind || '', 'nk-src-kind'));
+      panel.appendChild(node('p', how.text || '', 'nk-src-mono'));
+      if (how.command) {
+        panel.appendChild(node('p', 'Command', 'nk-src-kind'));
+        panel.appendChild(node('p', how.command, 'nk-src-mono'));
+      }
+      section('Not checked');
+      list = node('ul', undefined, 'nk-src-list');
+      (entry.not_checked || []).concat(manifest.not_checked || []).forEach(function (item) {
+        list.appendChild(node('li', item));
+      });
+      panel.appendChild(list);
+    }
+    var button = node('button', 'Close', 'nk-src-close');
+    button.setAttribute('type', 'button');
+    panel.appendChild(button);
+    if (focused) (onClose ? button : heading).focus();
+  }
+
+  function position() {
+    if (!active) return;
+    panel.style.left = '';
+    panel.style.top = '';
+    if (window.innerWidth < 600) return;
+    var anchor = active.getBoundingClientRect();
+    var bounds = panel.getBoundingClientRect();
+    var top = anchor.bottom + 8;
+    if (top + bounds.height > window.innerHeight - 8) top = anchor.top - bounds.height - 8;
+    panel.style.left = Math.max(8, Math.min(anchor.left, window.innerWidth - bounds.width - 8)) + 'px';
+    panel.style.top = Math.max(8, Math.min(top, window.innerHeight - bounds.height - 8)) + 'px';
+  }
+
+  function open(el) {
+    if (active) active.setAttribute('aria-expanded', 'false');
+    active = el;
+    activeId = el.getAttribute('data-nk-src');
+    decorate(el);
+    render();
+    panel.hidden = false;
+    position();
+    heading.focus();
+  }
+
+  function traced(target) {
+    return target instanceof Element ? target.closest('[data-nk-src]') : null;
+  }
+
+  function start() {
+    if (started || !document.body) return;
+    started = true;
+    var block = document.getElementById('nk-sources');
+    try {
+      var parsed = block ? JSON.parse(block.textContent) : null;
+      if (parsed && parsed.sources && typeof parsed.sources === 'object') {
+        // Entries set or updated before start (a live page's first render) are laid over the manifest's own.
+        var early = manifest.sources;
+        parsed.sources = Object.assign(Object.create(null), parsed.sources);
+        Object.keys(early).forEach(function (id) {
+          parsed.sources[id] = Object.assign({}, parsed.sources[id] || {}, early[id]);
+        });
+        manifest = parsed;
+      }
+    } catch (error) { /* An absent or malformed manifest still permits an explanation. */ }
+    // A null prototype also keeps unknown ids from inheriting object properties.
+    manifest.sources = Object.assign(Object.create(null), manifest.sources);
+    hint = node('span', 'Show where this number comes from', 'nk-src-hint');
+    hint.setAttribute('id', uniqueId('nk-src-hint'));
+    // hidden: never drawn or printed (an in-flow 1px box added a page to a printed deck), still read as a description
+    hint.hidden = true;
+    document.body.appendChild(hint);
+    panel = node('div', undefined, 'nk-src-panel');
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'false');
+    panel.setAttribute('aria-labelledby', uniqueId('nk-src-heading'));
+    panel.hidden = true;
+    document.body.appendChild(panel);
+    refresh();
+    new MutationObserver(refresh).observe(document.body, {
+      childList: true, subtree: true, attributes: true, attributeFilter: ['data-nk-src']
+    });
+    document.addEventListener('click', function (event) {
+      if (panel.contains(event.target)) {
+        if (event.target.closest('.nk-src-close')) close(true);
+        return;
+      }
+      var el = traced(event.target);
+      if (el) { event.preventDefault(); open(el); }
+      else close(false);
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && active) { event.preventDefault(); close(true); return; }
+      var el = traced(event.target);
+      if (el && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        open(el);
+      }
+    });
+    panel.addEventListener('focusout', function (event) {
+      if (event.relatedTarget && !panel.contains(event.relatedTarget)) close(false);
+      else if (!event.relatedTarget) {
+        Promise.resolve().then(function () {
+          if (active && !panel.contains(document.activeElement)) close(false);
+        });
+      }
+    });
+    window.addEventListener('resize', position);
+    // A printout carries no panel: the numbers print as plain text.
+    window.addEventListener('beforeprint', function () { close(false); });
+    document.addEventListener('scroll', function (event) {
+      if (active && event.target !== panel && !panel.contains(event.target)) close(false);
+    }, true);
+  }
+
+  window.NkSources = {
+    refresh: refresh,
+    set: function (id, entry) {
+      manifest.sources[id] = entry;
+      if (activeId === id) { render(); position(); }
+    },
+    update: function (id, patch) {
+      this.set(id, Object.assign({}, manifest.sources[id] || {}, patch));
+    }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
+}());
+</script></body>
+</html>

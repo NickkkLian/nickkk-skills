@@ -1,0 +1,27 @@
+{
+  "name": "nk-evidence-audit",
+  "version": "0.1.1",
+  "description": "Turn \"done, fixed, tested\" into evidence a second agent judges.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-evidence-audit",
+  "repository": "https://github.com/NickkkLian/nk-evidence-audit",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "evidence",
+    "audit",
+    "verification"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-evidence-audit",
+    "shortDescription": "Proof a second agent checks",
+    "longDescription": "Turn \"done, fixed, tested\" into evidence a second agent judges. Use when you are about to report a task as complete, when an agent or teammate claims something works, or before acting on a \"tests pass / 0 findings / all green\" report. The claimer captures raw command output with a re-runnable command (scripts/evidence.py); an auditor who did not do the work reads only the evidence and returns one of three verdicts \u2014 supported, not supported, insufficient \u2014 never a fourth. Includes the table of things that look like evidence but are not.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}

@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stop taking custom cake orders in December</title>
+<meta name="description" content="Starter deck for nk-deck: ten slides whose titles carry the argument, five points at most, a source under every number, and a printout that is the same deck.">
+<!-- why: a favicon cannot read CSS variables; literal band, point and on-band colours from the default palette -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http%3A//www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Crect%20x='1'%20y='1'%20width='22'%20height='22'%20rx='5'%20fill='%23053333'/%3E%3Crect%20x='5'%20y='7'%20width='14'%20height='9'%20rx='1.5'%20fill='none'%20stroke='%23f7f0e9'%20stroke-width='1.6'/%3E%3Cpath%20d='M8%2019h8'%20stroke='%23ca6980'%20stroke-width='1.8'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#053333">
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem("theme"), s = localStorage.getItem("scheme");
+    if (t) document.documentElement.setAttribute("data-theme", t);
+    if (s) document.documentElement.setAttribute("data-scheme", s);
+  } catch (e) { /* private window: the defaults are fine */ }
+})();
+</script>
+<link rel="stylesheet" href="design-tokens.css">
+<style>
+  html, body { margin: 0; background: var(--band); color: var(--text); font-family: var(--font-sans); }
+  .viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .stage { width: 1280px; height: 720px; position: relative; transform-origin: center center; flex: none; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; background: var(--bg);
+           padding: 64px 88px 56px; box-sizing: border-box; overflow: hidden; }
+  .slide.on { display: flex; }
+  .kicker { font-family: var(--font-mono); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin: 0 0 18px; }
+  h1, h2 { font-family: var(--font-display); color: var(--text); margin: 0; line-height: 1.12; letter-spacing: -.01em; }
+  h1 { font-size: 64px; max-width: 18ch; }
+  h2 { font-size: 44px; max-width: 26ch; margin-bottom: 34px; }
+  .sub { font-size: 24px; color: var(--text-2); margin: 22px 0 0; max-width: 46ch; line-height: 1.4; }
+  ul.points { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; max-width: 58ch; }
+  ul.points li { font-size: 25px; line-height: 1.38; padding-left: 26px; position: relative; }
+  ul.points li::before { content: ""; position: absolute; left: 0; top: .62em; width: 10px; height: 10px; border-radius: 2px; background: var(--accent); }
+  .src { display: block; font-family: var(--font-mono); font-size: 14px; color: var(--text-3); margin-top: 4px; letter-spacing: .01em; }
+  .illustrative { margin-top: auto; font-family: var(--font-mono); font-size: 15px; color: var(--warning-tint-text);
+                  background: var(--warning-tint); padding: 10px 14px; border-radius: 6px; align-self: flex-start; }
+  .foot { position: absolute; left: 88px; right: 88px; bottom: 24px; display: flex; justify-content: space-between;
+          font-family: var(--font-mono); font-size: 13px; color: var(--text-3); }
+  /* the keyboard hint lives in the cover's footer: as a fixed overlay it sat on top of the page counter whenever the
+     window was exactly 16:9 */
+  .foot .hint { color: var(--text-3); }
+  :focus-visible { outline: var(--border-focus-width, 2px) solid var(--focus); outline-offset: 2px; }
+
+  /* phones read it as a column of cards. Screen only: a print that inherits this layout keeps its ten pages but
+     prints phone type and phone margins (measured 2026-09-22: 33pt titles become 20pt), and no page count shows it */
+  @media screen and (max-width: 900px) {
+    .viewport { position: static; display: block; overflow: visible; }
+    .stage { width: auto; height: auto; transform: none !important; }
+    .slide { position: relative; display: flex; min-height: 0; padding: 28px 20px 48px; margin: 0 0 12px; overflow: visible; }
+    h1 { font-size: 36px; } h2 { font-size: 27px; margin-bottom: 18px; }
+    .sub { font-size: 18px; } ul.points li { font-size: 18px; }
+    .foot { left: 20px; right: 20px; bottom: 14px; }
+    .foot .hint { display: none; }
+  }
+  /* the printout is the deck: one slide, one page, nothing spilling onto the next */
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { background: var(--bg); }
+    .viewport { position: static; display: block; overflow: visible; }
+    .stage { transform: none !important; width: 1280px; height: auto; }
+    .slide { position: relative; display: flex !important; height: 720px; overflow: hidden;
+             page-break-after: always; break-after: page; }
+    .slide:last-child { page-break-after: auto; break-after: auto; }
+    .foot .hint { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="viewport"><div class="stage" id="stage" role="region" aria-roledescription="slide deck" aria-live="polite"></div></div>
+
+<script type="application/json" id="deck">
+{
+  "title": "Stop taking custom cake orders in December",
+  "for": "The two of us, before the season starts",
+  "illustrative": true,
+  "slides": [
+    {"title": "Stop taking custom cake orders in December",
+     "sub": "A fixed menu for the month keeps most of the cake income and gives the oven back to the bread."},
+    {"title": "December custom cakes took a third of our baking hours for an eighth of the money",
+     "points": [
+       {"text": "Custom cakes: 31% of oven hours, 12% of December revenue", "source": "illustrative — last year's order book and the oven log"},
+       {"text": "Bread and pastries: 58% of oven hours, 71% of revenue", "source": "illustrative — same"},
+       {"text": "The rest went on the Saturday baking table"}
+     ]},
+    {"title": "One custom cake ties up the only oven for most of a morning",
+     "points": [
+       {"text": "Two bakes, a cooling rack and a decorating bench nobody else can use"},
+       {"text": "The consultation happens in the shop, while the queue waits"},
+       {"text": "About four hours of one of us per cake, before any changes", "source": "illustrative — our own estimate, not timed"}
+     ]},
+    {"title": "The loaves we did not bake were the ones our regulars came for",
+     "points": [
+       {"text": "We ran out of the seeded loaf by ten on most December Saturdays"},
+       {"text": "Standing orders are the bread our week is built on"},
+       {"text": "A regular who leaves in December does not come back in January"}
+     ]},
+    {"title": "Most December complaints were about bread, not about cakes",
+     "points": [
+       {"text": "Three of five written complaints: a standing order short or missing", "source": "illustrative — the complaints book"},
+       {"text": "None were about a cake we declined"},
+       {"text": "Every complaint arrived on a day we were decorating"}
+     ]},
+    {"title": "A four-cake December menu keeps most of the cake income",
+     "points": [
+       {"text": "Four cakes, two sizes, ordered by the 15th"},
+       {"text": "Baked in two batches, not one at a time"},
+       {"text": "Expected to recover about two thirds of last December's cake revenue", "source": "illustrative — assumes half the custom customers pick from the menu"}
+     ]},
+    {"title": "What we give up is the cake only we would make",
+     "points": [
+       {"text": "The wedding-adjacent orders, and the people who send photos"},
+       {"text": "Some of them will go elsewhere and stay there"},
+       {"text": "We say so in the notice rather than pretend nothing changes"}
+     ]},
+    {"title": "If the menu fails, custom orders reopen on 6 January",
+     "points": [
+       {"text": "Failure means cake revenue below half of last December"},
+       {"text": "We look at the order book on 2 January, together"},
+       {"text": "Nothing about this is permanent until we both say it is"}
+     ]},
+    {"title": "The notice goes up on 1 November, with the menu beside it",
+     "points": [
+       {"text": "One sheet on the door, the same words on the website"},
+       {"text": "Existing custom orders for December are kept"},
+       {"text": "Standing-order customers hear it from us first, in person"}
+     ]},
+    {"title": "Decision: a fixed December menu, reviewed on 2 January",
+     "sub": "If we both agree, the notice goes up on 1 November. If either of us does not, we talk again on Friday."}
+  ]
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var DECK = JSON.parse(document.getElementById("deck").textContent);
+  var stage = document.getElementById("stage");
+  document.title = DECK.title;
+
+  DECK.slides.forEach(function (s, i) {
+    var el = document.createElement("section");
+    el.className = "slide"; el.id = "s" + (i + 1);
+    el.setAttribute("aria-label", "Slide " + (i + 1) + " of " + DECK.slides.length);
+    if (i === 0) {
+      var k = document.createElement("p"); k.className = "kicker"; k.textContent = DECK["for"];
+      var h = document.createElement("h1"); h.textContent = s.title;
+      el.appendChild(k); el.appendChild(h);
+    } else {
+      var h2 = document.createElement("h2"); h2.textContent = s.title; el.appendChild(h2);
+    }
+    if (s.sub) { var p = document.createElement("p"); p.className = "sub"; p.textContent = s.sub; el.appendChild(p); }
+    if (s.points && s.points.length) {
+      var ul = document.createElement("ul"); ul.className = "points";
+      s.points.forEach(function (pt, j) {
+        var li = document.createElement("li"), text = typeof pt === "string" ? pt : pt.text;
+        /* a point with a source: each run of digits in it opens that source when clicked (data-nk-src, the id
+           make_deck.py gives the point in the page's sources manifest); with no digits, the source note does */
+        var id = pt.source ? "s" + (i + 1) + "p" + (j + 1) : null, digits = /\d(?:[\d,.]*\d)?%?/g, last = 0, m, traced = false;
+        while (id && (m = digits.exec(text))) {
+          li.appendChild(document.createTextNode(text.slice(last, m.index)));
+          var n = document.createElement("span"); n.setAttribute("data-nk-src", id); n.textContent = m[0];
+          li.appendChild(n); last = digits.lastIndex; traced = true;
+        }
+        li.appendChild(document.createTextNode(text.slice(last)));
+        if (pt.source) {
+          var src = document.createElement("span"); src.className = "src"; src.textContent = "source: " + pt.source;
+          if (!traced) src.setAttribute("data-nk-src", id);
+          li.appendChild(src);
+        }
+        ul.appendChild(li);
+      });
+      el.appendChild(ul);
+    }
+    if (i === 0 && DECK.illustrative) {
+      var note = document.createElement("p"); note.className = "illustrative";
+      note.textContent = "The numbers in this deck are illustrative, not measured.";
+      el.appendChild(note);
+    }
+    var foot = document.createElement("div"); foot.className = "foot";
+    var a = document.createElement("span"); a.textContent = DECK.title;
+    var b = document.createElement("span"); b.textContent = (i + 1) + " / " + DECK.slides.length;
+    foot.appendChild(a);
+    if (i === 0) { var h = document.createElement("span"); h.className = "hint"; h.textContent = "\u2190 \u2192 to move \u00b7 P to print"; foot.appendChild(h); }
+    foot.appendChild(b); el.appendChild(foot);
+    stage.appendChild(el);
+  });
+
+  var slides = Array.prototype.slice.call(stage.querySelectorAll(".slide")), cur = 0;
+  function fit() {
+    if (innerWidth <= 900) { stage.style.transform = ""; return; }
+    var s = Math.min(innerWidth / 1280, innerHeight / 720);
+    if (s > 0) stage.style.transform = "scale(" + s + ")";
+  }
+  function show(n) {
+    cur = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, i) { s.classList.toggle("on", i === cur); });
+    try { history.replaceState(null, "", "#" + (cur + 1)); } catch (e) { /* file:// in some browsers */ }
+  }
+  function fromHash() { var n = parseInt(location.hash.slice(1), 10); return isFinite(n) && n >= 1 ? n - 1 : 0; }
+  addEventListener("keydown", function (e) {
+    /* keys inside a number's source panel, and Enter or Space on a traced number, belong to that panel */
+    var t = e.target && e.target.closest ? e.target : null;
+    if (t && (t.closest(".nk-src-panel") || ((e.key === " " || e.key === "Enter") && t.closest("[data-nk-src]")))) return;
+    if (["ArrowRight", " ", "PageDown"].indexOf(e.key) >= 0) { e.preventDefault(); show(cur + 1); }
+    else if (["ArrowLeft", "PageUp"].indexOf(e.key) >= 0) { e.preventDefault(); show(cur - 1); }
+    else if (e.key === "Home") { show(0); }
+    else if (e.key === "End") { show(slides.length - 1); }
+    else if (e.key === "p" || e.key === "P") { print(); }
+  });
+  addEventListener("hashchange", function () { show(fromHash()); });
+  addEventListener("resize", fit);
+  fit(); show(fromHash());
+
+  /* ?check=1 — measure every slide on the 1280×720 stage and say which ones are too full. A slide hides its
+     overflow (so a printed page never spills onto the next), which also means nothing on screen tells you that
+     a last line was cut. This is the thing that does. print_check.py reads it; a person can too.
+     The phone layout is switched off while it measures: in a window 900px wide or less its padding made nine
+     of ten clean slides read as too full. The measurement is the 1280×720 slide whatever
+     the window. */
+  if (/[?&]check=1\b/.test(location.search)) {
+    var narrow = [];
+    Array.prototype.forEach.call(document.styleSheets, function (sheet) {
+      try {
+        Array.prototype.forEach.call(sheet.cssRules, function (r) {
+          if (r.media && /width/.test(r.media.mediaText) && !/print/.test(r.media.mediaText)) {
+            narrow.push([r, r.media.mediaText]); r.media.mediaText = "not all";
+          }
+        });
+      } catch (e) { /* a sheet the page may not read */ }
+    });
+    stage.style.transform = "";
+    var report = slides.map(function (s, i) {
+      var on = s.classList.contains("on"); s.classList.add("on");
+      var bottom = 0;
+      Array.prototype.forEach.call(s.children, function (c) {
+        if (!c.classList.contains("foot")) bottom = Math.max(bottom, c.offsetTop + c.offsetHeight);
+      });
+      var room = s.clientHeight - 56;
+      if (!on) s.classList.remove("on");
+      return { slide: i + 1, used: bottom, room: room, full: bottom > room };
+    });
+    narrow.forEach(function (x) { x[0].media.mediaText = x[1]; });
+    fit();
+    var pre = document.createElement("pre"); pre.id = "deck-check";
+    pre.textContent = JSON.stringify({ slides: report.length, tooFull: report.filter(function (r) { return r.full; }), report: report });
+    document.body.appendChild(pre);
+  }
+})();
+</script>
+</body>
+</html>

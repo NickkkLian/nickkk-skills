@@ -1,0 +1,61 @@
+{
+  "title": "The chance of at least one success",
+  "question": "Something works with the same chance every time you try. How likely is it to work at least once in a number of tries?",
+  "result": {
+    "name": "Q",
+    "label": "Chance of at least one success (0 to 1)",
+    "unit": ""
+  },
+  "formula": "1 - (1 - p/100)^n",
+  "controls": [
+    {
+      "name": "p",
+      "label": "Chance each try works",
+      "unit": "%",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "value": 10
+    },
+    {
+      "name": "n",
+      "label": "Number of tries",
+      "unit": "tries",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "value": 10,
+      "unit_one": "try"
+    }
+  ],
+  "chart": {
+    "x": "n",
+    "title": "The chance of at least one success, try by try"
+  },
+  "notes": [
+    "Every try has the same chance.",
+    "One try does not change the chance of the next."
+  ],
+  "source": "the complement rule of probability: the chance of at least one success is one minus the chance that every try fails.",
+  "practice": [
+    {
+      "type": "compute",
+      "prompt": "Each try works 20% of the time. What is the chance of at least one success in 5 tries?",
+      "set": {
+        "p": 20,
+        "n": 5
+      },
+      "tolerance": 0.005
+    },
+    {
+      "type": "reach",
+      "prompt": "With a 5% chance each try, how many tries make the chance of at least one success a coin flip: within 0.02 of 0.5?",
+      "fixed": {
+        "p": 5
+      },
+      "goal": "within",
+      "target": 0.5,
+      "tolerance": 0.02
+    }
+  ]
+}

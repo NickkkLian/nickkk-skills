@@ -1,0 +1,27 @@
+{
+  "name": "nk-handoff-package",
+  "version": "0.1.1",
+  "description": "Hand a line of work to an executor that has no context \u2014 another agent, a contractor, a future session \u2014 so that the work comes back checkable.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-handoff-package",
+  "repository": "https://github.com/NickkkLian/nk-handoff-package",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "handoff",
+    "delegation",
+    "acceptance"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-handoff-package",
+    "shortDescription": "Hand off work with acceptance",
+    "longDescription": "Hand a line of work to an executor that has no context \u2014 another agent, a contractor, a future session \u2014 so that the work comes back checkable. Use when delegating a whole task or a round of work to a second agent, when receiving such work back, or when a brief keeps being re-explained. Builds a self-contained package (boundary written as orders, read-only reference layer with a sealed manifest, output layer with evidence and pending-sync templates, a receipt with an \"unsure\" section, a generic hand-back check with three exit states, project gates as a plugin), pins a trust root outside the package, and runs an acceptance checklist with a declared denominator. Not a project-management tool.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}

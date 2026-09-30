@@ -1,0 +1,27 @@
+{
+  "name": "nk-indent-guard",
+  "version": "0.1.1",
+  "description": "Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-indent-guard",
+  "repository": "https://github.com/NickkkLian/nk-indent-guard",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "json",
+    "yaml",
+    "diff"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-indent-guard",
+    "shortDescription": "Keep JSON and YAML diffs small",
+    "longDescription": "Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff. Use when you edit tracked data files with a script (json.dump, JSON.stringify, a YAML dumper) and before committing them; also use when a diff for a small change looks huge. Compares each file's indentation unit with the last committed version and refuses the commit until the file is written back with the original unit. Not a JSON validator.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}

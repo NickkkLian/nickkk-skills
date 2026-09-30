@@ -1,0 +1,27 @@
+{
+  "name": "nk-post-kit",
+  "version": "0.2.3",
+  "description": "Turn a finished repository, tool or skill into a set of posts a person publishes by hand \u2014 a short X post, a 400\u2013800 word build log, a 5\u201310 minute video script, a 60\u201390 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version \u2014 every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-post-kit",
+  "repository": "https://github.com/NickkkLian/nk-post-kit",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "launch",
+    "social",
+    "gif"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-post-kit",
+    "shortDescription": "Launch posts for a repo",
+    "longDescription": "Turn a finished repository, tool or skill into a set of posts a person publishes by hand \u2014 a short X post, a 400\u2013800 word build log, a 5\u201310 minute video script, a 60\u201390 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version \u2014 every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details. Use when something is shipped and needs to be shown, when drafting a weekly build log, or when a demo GIF is needed without screen recording. scripts/termgif.py renders a scripted terminal session to a GIF, and scripts/preview_cards.py draws the thread and the Chinese post as image cards, so length, wrapping and the cover line are seen before anything goes out. Not an auto-poster: nothing is published by the skill.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}

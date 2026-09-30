@@ -1,0 +1,27 @@
+{
+  "name": "nk-breakable-selftest",
+  "version": "0.1.1",
+  "description": "Make a checker, validator, linter, gate or test suite prove it can fail.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-breakable-selftest",
+  "repository": "https://github.com/NickkkLian/nk-breakable-selftest",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "selftest",
+    "mutation",
+    "testing"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-breakable-selftest",
+    "shortDescription": "Prove a self-test can fail",
+    "longDescription": "Make a checker, validator, linter, gate or test suite prove it can fail. Use when you write or change a self-test, when a report says \"all green\" or \"selftest passes\", or before trusting a detector's clean result. Runs a break matrix \u2014 mutate the guarded code one line at a time; the self-test must go red on the named assertion, never via a crash, and an unmutated control must stay green \u2014 and lists decorative checks that no sample covers. Not for designing the checker's own rules.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}

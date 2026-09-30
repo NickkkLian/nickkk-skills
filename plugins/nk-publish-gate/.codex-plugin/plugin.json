@@ -1,0 +1,27 @@
+{
+  "name": "nk-publish-gate",
+  "version": "0.1.2",
+  "description": "Privacy and secret gate to run before anything goes public \u2014 a repo, a release zip, a demo folder, a PDF.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-publish-gate",
+  "repository": "https://github.com/NickkkLian/nk-publish-gate",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "privacy",
+    "secrets",
+    "publish"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-publish-gate",
+    "shortDescription": "Privacy check before a push",
+    "longDescription": "Privacy and secret gate to run before anything goes public \u2014 a repo, a release zip, a demo folder, a PDF. Use when you are about to push to a public repository, make a private repo public, attach files to a post, or hand a bundle to someone outside. Scans every file regardless of extension, opens archives three levels deep (member names included), inflates PDF streams, scans binaries as bytes, and with --git-range scans every commit's author, message and blobs, because publishing a repo publishes its whole history. Your own identifiers come from a config kept outside every repo. Not a replacement for reading the screenshots yourself.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}

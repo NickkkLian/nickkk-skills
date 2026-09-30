@@ -1,0 +1,26 @@
+{
+  "name": "nk-memory-with-conditions",
+  "version": "0.1.2",
+  "description": "Write agent memories that say when they hold, and keep the memory directory honest.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-memory-with-conditions",
+  "repository": "https://github.com/NickkkLian/nk-memory-with-conditions",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "memory",
+    "sentinel"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-memory-with-conditions",
+    "shortDescription": "Memories with their conditions",
+    "longDescription": "Write agent memories that say when they hold, and keep the memory directory honest. Use when you are about to save something to Claude Code's auto-memory (MEMORY.md plus one file per memory), when a remembered fact is about to drive a decision, or at the start of a session in a project where several sessions run in parallel. Every memory carries a \"Holds when:\" line; scripts/memguard.py catches files with no index line, an index close to the silent truncation cap, missing conditions, and sessions sharing one memory directory. Not a note-taking app.",
+    "developerName": "Nick Lian",
+    "category": "Developer Tools",
+    "capabilities": []
+  }
+}
