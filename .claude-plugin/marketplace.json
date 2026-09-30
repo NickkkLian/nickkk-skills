@@ -203,7 +203,7 @@
         "repo": "NickkkLian/nk-data-story"
       },
       "description": "Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "license": "MIT",
       "category": "data",
       "tags": [
