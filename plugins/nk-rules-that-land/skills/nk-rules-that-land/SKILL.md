@@ -1,10 +1,10 @@
 ---
 name: nk-rules-that-land
-description: Write rules for an AI agent that actually change what it does. Use when editing CLAUDE.md, AGENTS.md, a system prompt or a team playbook, when the same mistake happens again with the rule already written down, or when a brief has grown a long list of must/never. Three tests for every rule — it names its incident, it is enforced by something that exists and runs, and it is a checkable step at the point where the default behaviour happens rather than a prohibition — plus scripts/rules_check.py to audit a rules file for rules that only exist on paper. Not a prompt-writing guide.
+description: Write rules for an AI agent that actually change what it does. Use when editing CLAUDE.md, AGENTS.md, a system prompt or a team playbook, when the same mistake happens again with the rule already written down, or when a brief has grown a long list of must/never. Three tests for every rule — it says why (the incident, when there is one), it is enforced by something that exists and runs, and it is a checkable step at the point where the default behaviour happens rather than a prohibition — plus scripts/rules_check.py to audit a rules file for rules that only exist on paper. Not a prompt-writing guide.
 license: MIT
 metadata:
   provenance: own practice (2026-07 to 2026-09), learned partly from reading published prompt-engineering material and then rebuilt from own incidents; see Provenance
-  version: 0.1.0
+  version: 0.1.3
 ---
 # Rules that land
 
@@ -19,9 +19,10 @@ the replacement command did.
 
 ## Three tests for a rule
 
-1. **It names its incident.** A rule without a dated event behind it is an imagined risk; imagined risks
-   fire on normal work, and a few false alarms teach the reader to ignore all alarms. Write
-   `Incident: <date> <what happened>` on the rule. If there is no incident, do not add the rule yet.
+1. **It says why.** A rule whose reason nobody can state is an imagined risk; imagined risks fire on
+   normal work, and a few false alarms teach the reader to ignore all alarms. When an incident is behind
+   the rule, write `Incident: <what happened>` on it (a date helps a later reader judge whether it still
+   applies, but it is optional). When there is no incident yet, write `Why: <what breaks without it>`.
 2. **It is enforced by something that exists and runs.** `Enforced by: <script or hook or checklist>`.
    A rule enforced by memory is a wish. The enforcement should live on the path the work actually takes
    (a pre-commit hook, a step in the release script, a self-test) — a gate that exists next to the path is
@@ -52,7 +53,7 @@ finds every directive (must / never / always / do not …) and reports:
 
 | Finding | Meaning |
 |---|---|
-| NO-INCIDENT | no `Incident:` / `Why:` in the rule's block |
+| NO-INCIDENT | no `Incident:` / `Why:` in the rule's block (a date is not required) |
 | NO-ENFORCEMENT | no `Enforced by:` / `gate:` / `hook:` / `check:` |
 | MISSING-TARGET | the enforcement path does not exist |
 | FAILED-RUN | with `--run`, the enforcement command exited non-zero |

@@ -1,11 +1,11 @@
 ---
 name: nk-explorer
-description: Turn a concept that can be written as one formula — compound interest, a loan's monthly payment, the chance of at least one success — into one self-contained HTML page where every slider shows the formula it changes, written with names and with the current numbers, beside the result and a curve, plus practice questions graded on the result rather than on how it was reached. Use when someone needs to see how a formula behaves rather than read about it, or when a lesson, post or README needs an interactive example that works offline as one file. scripts/make_explorer.py builds the page from a JSON concept, refuses one whose controls change nothing, whose questions do not state their values or whose tolerance would pass a wrong answer, and seals the page so the browser runs only its own scripts; scripts/explorer_check.py checks fourteen rules on the file; scripts/probe_check.py opens it in Chrome, works every slider and question through the page's own buttons, and recomputes what it saw in Python.
+description: Turn a concept that can be written as one formula — compound interest, a loan's monthly payment, the chance of at least one success — into one self-contained HTML page where every slider shows the formula it changes, written with names and with current numbers, beside the result and a curve, plus practice questions graded on the result, not on how it was reached. Use when someone needs to see how a formula behaves rather than read about it, or when a lesson, post or README needs an interactive example that works offline as one file. scripts/make_explorer.py builds it from a JSON concept, refuses controls that change nothing, questions that omit their values and tolerances that pass a wrong answer, and seals the page to its own scripts; scripts/explorer_check.py checks fourteen rules; scripts/probe_check.py works every slider and question in Chrome with the page's own buttons and recomputes the results in Python.
 license: MIT
 compatibility: standard library only, no packages and no build step; the page it writes has no dependencies, evaluates its formula without eval, and carries a Content-Security-Policy under which the browser loads nothing from anywhere and runs no code but its own. probe_check.py needs Google Chrome or Chromium; without one, open the page with ?probe=1 in any browser.
 metadata:
   provenance: own practice (2026-09) — the "show the query behind every click, grade on the result" idea from Query Mirror, a SQL teaching tool of mine, carried over to formulas; see Provenance
-  version: 0.1.2
+  version: 0.1.3
 ---
 # Concept explorer
 

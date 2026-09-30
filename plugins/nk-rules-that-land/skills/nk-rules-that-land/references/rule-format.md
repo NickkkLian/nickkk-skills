@@ -13,6 +13,15 @@ Chinese" below. Tags are searched inside the same block (the item plus its inden
   Enforced by: python3 tools/indent_guard.py
 ```
 
+`Incident:` or `Why:` is enough; a date is optional (the checker does not look for one). A rule with no
+incident yet says what breaks without it:
+
+```markdown
+- Never edit the lock file by hand.
+  Why: the next install rewrites it and the edit is lost.
+  Enforced by: hooks/lockfile_guard.py
+```
+
 `Enforced by:` accepts a path (relative to the rules file's directory or `--base`) or a command. With
 `--run`, `.py/.sh/.mjs` targets are executed with the matching interpreter and must exit 0.
 

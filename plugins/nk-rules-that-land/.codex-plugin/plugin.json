@@ -1,6 +1,6 @@
 {
   "name": "nk-rules-that-land",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Write rules for an AI agent that actually change what it does.",
   "author": {
     "name": "Nick Lian",
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "nk-rules-that-land",
     "shortDescription": "Rules an agent actually keeps",
-    "longDescription": "Write rules for an AI agent that actually change what it does. Use when editing CLAUDE.md, AGENTS.md, a system prompt or a team playbook, when the same mistake happens again with the rule already written down, or when a brief has grown a long list of must/never. Three tests for every rule \u2014 it names its incident, it is enforced by something that exists and runs, and it is a checkable step at the point where the default behaviour happens rather than a prohibition \u2014 plus scripts/rules_check.py to audit a rules file for rules that only exist on paper. Not a prompt-writing guide.",
+    "longDescription": "Write rules for an AI agent that actually change what it does. Use when editing CLAUDE.md, AGENTS.md, a system prompt or a team playbook, when the same mistake happens again with the rule already written down, or when a brief has grown a long list of must/never. Three tests for every rule \u2014 it says why (the incident, when there is one), it is enforced by something that exists and runs, and it is a checkable step at the point where the default behaviour happens rather than a prohibition \u2014 plus scripts/rules_check.py to audit a rules file for rules that only exist on paper. Not a prompt-writing guide.",
     "developerName": "Nick Lian",
     "category": "Developer Tools",
     "capabilities": []

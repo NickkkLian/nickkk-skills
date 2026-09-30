@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""rules_check.py — audit a rules file (CLAUDE.md, AGENTS.md, a team playbook): does every rule name its incident,
-and is it enforced by something that exists and runs?
+"""rules_check.py — audit a rules file (CLAUDE.md, AGENTS.md, a team playbook): does every rule say why (its incident,
+when there is one), and is it enforced by something that exists and runs?
 
     python3 rules_check.py <rules.md> [--base DIR] [--run] [--json OUT]
     python3 rules_check.py --selftest
@@ -8,10 +8,10 @@ and is it enforced by something that exists and runs?
 A rule is a list item or paragraph that contains a directive (must / never / always / do not / don't / forbidden /
 required / prohibited / refuse), or one of their Chinese equivalents (references/rule-format.md lists them). Inside
 the same block the script looks for two tags:
-  incident:   (or why:)          — the dated event that made the rule necessary
+  incident:   (or why:)          — the event that made the rule necessary, or what breaks without it (a date is optional)
   enforced by:  (or gate: / hook: / check:) — a path (relative to --base, default: the rules file's directory) or a command
 Findings:
-  NO-INCIDENT    the rule cites no event; rules for imagined risks produce false positives and get clicked through
+  NO-INCIDENT    the rule gives no reason; rules for imagined risks produce false positives and get clicked through
   NO-ENFORCEMENT the rule relies on being remembered; a prohibition alone does not change a default action
   MISSING-TARGET enforced by a path that does not exist
   FAILED-RUN     (--run) the enforcement command exited non-zero
@@ -113,6 +113,9 @@ def selftest():
         open(p, "w").write("# R\n" + "".join(f"- Rule {i}: you must do thing {i}. Incident: x. Enforced by: gate.py\n" for i in range(13)))
         _, f = audit(p)
         chk(f == [("OVERFIT", 0, "13 directives in one file; retract before adding")], f"13 directives → OVERFIT ({f})")
+        open(p, "w").write(GOOD + "- Never edit the lock file by hand. Why: the next install rewrites it. Enforced by: gate.py\n")
+        rules, f = audit(p)
+        chk(len(rules) == 3 and not f, f"a reason with no date is enough: Why: without a date is not NO-INCIDENT ({f})")
         open(p, "w").write("# Notes\n- The build takes about a minute.\n- See the README for details.\n")
         rules, f = audit(p)
         chk(not rules and not f, "non-directive text is not a rule")
