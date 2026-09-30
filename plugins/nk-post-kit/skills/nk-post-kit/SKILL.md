@@ -1,11 +1,11 @@
 ---
 name: nk-post-kit
-description: Turn a finished repository, tool or skill into a set of posts a person publishes by hand — a short X post, a 400–800 word build log, a 5–10 minute video script, a 60–90 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version — every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details. Use when something is shipped and needs to be shown, when drafting a weekly build log, or when a demo GIF is needed without screen recording. scripts/termgif.py renders a scripted terminal session to a GIF, and scripts/preview_cards.py draws the thread and the Chinese post as image cards, so length, wrapping and the cover line are seen before anything goes out. Not an auto-poster: nothing is published by the skill.
+description: "Turn a finished repository, tool or skill into a set of posts a person publishes by hand — a short X post, a 400–800 word build log, a 5–10 minute video script, a 60–90 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version — every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details. Use when something is shipped and needs to be shown, when drafting a weekly build log, or when a demo GIF is needed without screen recording. scripts/termgif.py renders a scripted terminal session to a GIF, and scripts/preview_cards.py draws the thread and the Chinese post as image cards, so length, wrapping and the cover line are seen before anything goes out. Not an auto-poster: nothing is published by the skill."
 license: MIT
 compatibility: termgif.py and preview_cards.py need Pillow (pip install pillow); termgif needs a monospace TrueType font and preview_cards needs a font with Chinese glyphs (macOS has one; elsewhere pass --cjk-font); its Latin faces ship in assets/fonts (Inter, Space Mono, Fraunces; SIL OFL 1.1). postkit_check.py is stdlib only.
 metadata:
   provenance: own practice (2026-09) writing launch material for a set of open-source skills; see Provenance
-  version: 0.2.3
+  version: 0.2.4
 ---
 # Post kit
 

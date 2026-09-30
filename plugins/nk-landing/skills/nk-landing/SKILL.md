@@ -1,11 +1,11 @@
 ---
 name: nk-landing
-description: Turn a written description of a small business — hours, services, price ranges, the questions customers actually ask — into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft. Use when a shop, studio or practice needs a page people can book from, when a booking form has to be added to an existing page without a backend, or when a demo of a booking flow is needed that cannot accidentally message anybody. scripts/make_page.py writes the page from a JSON description, scripts/page_check.py checks the twelve rules that keep it honest, scripts/probe_check.py runs the page's own attack battery in Chrome, and the page ships in demo mode: it says on the screen that nothing is sent, and the outbox shows what would have gone and to whom.
+description: "Turn a written description of a small business — hours, services, price ranges, the questions customers actually ask — into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft. Use when a shop, studio or practice needs a page people can book from, when a booking form has to be added to an existing page without a backend, or when a demo of a booking flow is needed that cannot accidentally message anybody. scripts/make_page.py writes the page from a JSON description, scripts/page_check.py checks the twelve rules that keep it honest, scripts/probe_check.py runs the page's own attack battery in Chrome, and the page ships in demo mode: it says on the screen that nothing is sent, and the outbox shows what would have gone and to whom."
 license: MIT
 compatibility: standard library only, no packages and no build step; the page it writes has no dependencies and fetches nothing when it opens. probe_check.py needs Google Chrome or Chromium; without one, open the page with ?probe=1 in any browser.
 metadata:
   provenance: own practice (2026-09) — an offline booking-desk template with a staff-approval guard, and a design system built for pages whose numbers can be checked; see Provenance
-  version: 0.1.3
+  version: 0.1.4
 ---
 # Landing page with a booking door
 
