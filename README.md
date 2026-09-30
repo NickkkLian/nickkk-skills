@@ -2,7 +2,7 @@
 
 ![nickkk-skills](gallery/social/nickkk-skills.png)
 
-Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer make something new; the others stop an AI coding agent's
+Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer, nk-jubensha make something new; the others stop an AI coding agent's
 "done, tested, safe" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.
 
 - Every skill is one folder: a `SKILL.md` that says when to use it and where its rules came from, Python scripts
@@ -17,7 +17,7 @@ Agent skills for Claude Code, tested in OpenAI Codex too. nk-novel, nk-design, n
 ## Contents
 
 - [Work with numbers](#work-with-numbers): nk-design, nk-data-story, nk-model, nk-explorer
-- [Write and present](#write-and-present): nk-novel, nk-deck, nk-landing, nk-post-kit
+- [Write and present](#write-and-present): nk-novel, nk-jubensha, nk-deck, nk-landing, nk-post-kit
 - [Check an agent's work](#check-an-agents-work): nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage
 - [Guard a repository](#guard-a-repository): nk-git-guardrail-hook, nk-publish-gate, nk-indent-guard
 - [Keep agents on track between sessions](#keep-agents-on-track-between-sessions): nk-memory-with-conditions, nk-rules-that-land, nk-handoff-package
@@ -39,14 +39,16 @@ A data tool, a one-page report, a financial model and a formula you can move; ev
 
 ## Write and present
 
-Words and pages meant for other people: a novel plan, a slide deck, a booking page, and the posts for a finished repo.
+Words and pages meant for other people: a novel plan, a party mystery game, a slide deck, a booking page, and the posts for a finished repo.
 
 <table>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-novel"><img src="gallery/nk-novel.gif" alt="nk-novel demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-novel">nk-novel</a></b> · creation<br>One story idea in: a staged novel plan, checked for holes, and a one-page story bible you can open.<br><code>git clone https://github.com/NickkkLian/nk-novel ~/.claude/skills/nk-novel</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-deck"><img src="gallery/nk-deck.gif" alt="nk-deck demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-deck">nk-deck</a></b> · creation<br>One sentence in: ten slides whose titles make the case on their own, and a printout that is the same deck page for page.<br><code>git clone https://github.com/NickkkLian/nk-deck ~/.claude/skills/nk-deck</code></td></tr>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-landing"><img src="gallery/nk-landing.gif" alt="nk-landing demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-landing">nk-landing</a></b> · creation<br>Describe a small business, get one page people can book from — nothing is sent until someone approves the exact words.<br><code>git clone https://github.com/NickkkLian/nk-landing ~/.claude/skills/nk-landing</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-post-kit"><img src="gallery/nk-post-kit.gif" alt="nk-post-kit demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-post-kit">nk-post-kit</a></b> · discipline<br>Turn a finished repo into a thread, a video script and Chinese cards — every number traced to a file, and the posts drawn as pictures before they go out.<br><code>git clone https://github.com/NickkkLian/nk-post-kit ~/.claude/skills/nk-post-kit</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-novel"><img src="gallery/nk-novel.gif" alt="nk-novel demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-novel">nk-novel</a></b> · creation<br>One story idea in: a staged novel plan, checked for holes, and a one-page story bible you can open.<br><code>git clone https://github.com/NickkkLian/nk-novel ~/.claude/skills/nk-novel</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-jubensha"><img src="gallery/nk-jubensha.gif" alt="nk-jubensha demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-jubensha">nk-jubensha</a></b> · creation<br>One premise in: a five-player murder-mystery game with booklets and clue cards, proven solvable by a detective that never saw the answer.<br><code>git clone https://github.com/NickkkLian/nk-jubensha ~/.claude/skills/nk-jubensha</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-deck"><img src="gallery/nk-deck.gif" alt="nk-deck demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-deck">nk-deck</a></b> · creation<br>One sentence in: ten slides whose titles make the case on their own, and a printout that is the same deck page for page.<br><code>git clone https://github.com/NickkkLian/nk-deck ~/.claude/skills/nk-deck</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-landing"><img src="gallery/nk-landing.gif" alt="nk-landing demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-landing">nk-landing</a></b> · creation<br>Describe a small business, get one page people can book from — nothing is sent until someone approves the exact words.<br><code>git clone https://github.com/NickkkLian/nk-landing ~/.claude/skills/nk-landing</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-post-kit"><img src="gallery/nk-post-kit.gif" alt="nk-post-kit demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-post-kit">nk-post-kit</a></b> · discipline<br>Turn a finished repo into a thread, a video script and Chinese cards — every number traced to a file, and the posts drawn as pictures before they go out.<br><code>git clone https://github.com/NickkkLian/nk-post-kit ~/.claude/skills/nk-post-kit</code></td></tr>
 </table>
 
 - [nk-novel](https://github.com/NickkkLian/nk-novel): Turn one story idea into a staged novel plan that holds together, plus a one-page visual story bible.
+- [nk-jubensha](https://github.com/NickkkLian/nk-jubensha): Build a playable jubensha (剧本杀, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook).
 - [nk-deck](https://github.com/NickkkLian/nk-deck): Turn one sentence — a topic and who it is for — into a ten-slide single-file HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page.
 - [nk-landing](https://github.com/NickkkLian/nk-landing): Turn a written description of a small business — hours, services, price ranges, the questions customers actually ask — into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft.
 - [nk-post-kit](https://github.com/NickkkLian/nk-post-kit): Turn a finished repository, tool or skill into a set of posts a person publishes by hand — a short X post, a 400–800 word build log, a 5–10 minute video script, a 60–90 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version — every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details.
@@ -171,8 +173,8 @@ Other agents: see [docs/other-agents.md](docs/other-agents.md).
 
 | Agent | Tested | What was checked |
 |---|---|---|
-| Claude Code (CLI 2.1.173, macOS) | 18 of 18 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 17 of 18 skills: marketplace add, install, list. |
-| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2; gpt-5.6-sol, low reasoning, macOS) | 18 of 18 | 18 of 18 skills: a plain request that never names the skill triggered it and it ran its bundled script. 15 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer (see its README for why). |
+| Claude Code (CLI 2.1.173, macOS) | 19 of 19 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 17 of 19 skills: marketplace add, install, list. |
+| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.0) | 19 of 19 | 19 of 19 skills: a plain request that never names the skill triggered it and it ran its bundled script. 15 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer, nk-jubensha (see its README for why). |
 | Cursor, Gemini CLI | no | Not tested. Their documentation says both read `~/.agents/skills`, the folder route 4 clones into; Gemini CLI asks before it activates a skill. |
 
 Each skill's README has its own row with what that run did.

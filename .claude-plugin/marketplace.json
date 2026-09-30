@@ -4,7 +4,7 @@
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
   },
-  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer make something new; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "description": "Agent skills. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer, nk-jubensha make something new; the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
   "plugins": [
     {
       "name": "nk-evidence-audit",
@@ -290,6 +290,22 @@
         "explainer",
         "formula",
         "interactive"
+      ]
+    },
+    {
+      "name": "nk-jubensha",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-jubensha"
+      },
+      "description": "Build a playable jubensha (\u5267\u672c\u6740, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook).",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "writing",
+      "tags": [
+        "jubensha",
+        "murder-mystery",
+        "party-game"
       ]
     }
   ]

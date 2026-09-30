@@ -1,0 +1,27 @@
+{
+  "name": "nk-jubensha",
+  "version": "0.1.0",
+  "description": "Build a playable jubensha (\u5267\u672c\u6740, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook).",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-jubensha",
+  "repository": "https://github.com/NickkkLian/nk-jubensha",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "jubensha",
+    "murder-mystery",
+    "party-game"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "nk-jubensha",
+    "shortDescription": "Solvable murder-mystery games",
+    "longDescription": "Build a playable jubensha (\u5267\u672c\u6740, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook). Then a second model that never saw the solution plays detective on the players' material only, and the game is graded \"solved in N steps\", \"right name, cover not broken\", \"wrong\" or \"unsolvable - clue X missing\"; the chain is fixed and re-checked with a fresh detective until it is solved. chain_check.py catches unsupported steps, orphan clues, dead ends, a cover that breaks the wrong way, leaks into booklets, culprits found by elimination alone and roles with nothing to do. Use when someone wants a murder-mystery party game, a \u5267\u672c\u6740 or a whodunit for a group, when a mystery plot needs proof that players can solve it, or when a game's clue chain needs an outside test. Not for novels or escape rooms.",
+    "developerName": "Nick Lian",
+    "category": "Productivity",
+    "capabilities": []
+  }
+}
