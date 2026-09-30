@@ -187,7 +187,7 @@
         "repo": "NickkkLian/nk-design"
       },
       "description": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "license": "MIT",
       "category": "design",
       "tags": [
@@ -203,7 +203,7 @@
         "repo": "NickkkLian/nk-data-story"
       },
       "description": "Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "license": "MIT",
       "category": "data",
       "tags": [
@@ -251,7 +251,7 @@
         "repo": "NickkkLian/nk-deck"
       },
       "description": "Turn one sentence \u2014 a topic and who it is for \u2014 into a ten-slide single-file HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "license": "MIT",
       "category": "writing",
       "tags": [
@@ -267,7 +267,7 @@
         "repo": "NickkkLian/nk-model"
       },
       "description": "Turn a description of a small business and a few assumptions \u2014 price, units sold, costs, the days customers take to pay, equipment, a loan, tax \u2014 into a three-statement financial model in one .xlsx: an income statement, a balance sheet and a cash flow that tie to each other, a checks sheet, charts, and a sheet stating every assumption and the method.",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "license": "MIT",
       "category": "data",
       "tags": [
@@ -283,7 +283,7 @@
         "repo": "NickkkLian/nk-explorer"
       },
       "description": "Turn a concept that can be written as one formula \u2014 compound interest, a loan's monthly payment, the chance of at least one success \u2014 into one self-contained HTML page where every slider shows the formula it changes, written with names and with the current numbers, beside the result and a curve, plus practice questions graded on the result rather than on how it was reached.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "license": "MIT",
       "category": "productivity",
       "tags": [
