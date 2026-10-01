@@ -1,6 +1,6 @@
 {
   "name": "nk-deck",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Turn one sentence \u2014 a topic and who it is for \u2014 into a ten-slide single-file HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page.",
   "author": {
     "name": "Nick Lian",

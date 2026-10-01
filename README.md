@@ -1,73 +1,56 @@
 # nickkk-skills
 
+Agent skills for Claude Code. Each one hands back something you can open and check, not a message that says "done":
+
+<table>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-data-story"><img src="gallery/results/nk-data-story.png" alt="nk-data-story: a one-page report: the headline is the conclusion, each number is followed by its rows, window and filter" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-data-story">nk-data-story</a></b><br>A spreadsheet in, one page out: the headline is the conclusion, and every number shows the rows it was computed on.</td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-two-brain"><img src="gallery/results/nk-two-brain.png" alt="nk-two-brain: two judge runs on the same build: run 1 gives 4 supported and 2 insufficient, run 2 gives 6 supported" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-two-brain">nk-two-brain</a></b><br>Codex builds, your own checks re-run, and a run that did no building judges every claim. Here the same judge ran twice on one build.</td></tr>
+</table>
+
+The other 18 are below, by what you want to do: more things to make, checks that turn an agent's "done" into evidence,
+guards for git and for publishing, and rules for memory and handoffs. Every skill is its own repository; this one is the
+directory and the plugin marketplace.
+
 ![nickkk-skills](gallery/social/nickkk-skills.png)
-
-Agent skills for Claude Code. nk-novel, nk-design, nk-data-story, nk-landing, nk-deck, nk-model, nk-explorer, nk-jubensha make something new; the others stop an AI coding agent's
-"done, tested, safe" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.
-
-- Every skill is one folder: a `SKILL.md` that says when to use it and where its rules came from, Python scripts
-  that need only the standard library (two nk-post-kit scripts also need Pillow), and reference files such as
-  formats, checklists and worked examples; for several skills they also record the incidents or review rounds
-  behind the rules.
-- Every script ships a `--selftest`; each skill's README says which of them were broken on purpose before
-  publishing to prove they react.
-- Each skill lives in its own repository; this one is the directory, the plugin marketplace and the shared lint.
 
 <!-- gallery:by-category -->
 ## Contents
 
-- [Work with numbers](#work-with-numbers): nk-design, nk-data-story, nk-model, nk-explorer
-- [Write and present](#write-and-present): nk-novel, nk-jubensha, nk-deck, nk-landing, nk-post-kit
-- [Check an agent's work](#check-an-agents-work): nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage, nk-two-brain
+- [Work with numbers](#work-with-numbers): nk-data-story, nk-model, nk-design, nk-explorer
+- [Check an agent's work](#check-an-agents-work): nk-two-brain, nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage
 - [Guard a repository](#guard-a-repository): nk-git-guardrail-hook, nk-publish-gate, nk-indent-guard
 - [Keep agents on track between sessions](#keep-agents-on-track-between-sessions): nk-memory-with-conditions, nk-rules-that-land, nk-handoff-package
+- [Write and present](#write-and-present): nk-deck, nk-landing, nk-post-kit, nk-novel, nk-jubensha
 - [Install](#install-example-nk-evidence-audit) · [Compatibility](#compatibility) · [Tools](#tools) · [Verify](#verify) · [How these were built](#how-these-were-built) · [Limits](#limits)
 
 ## Work with numbers
 
-A data tool, a one-page report, a financial model and a formula you can move; every number on them shows where it came from.
+A one-page report, a financial model, a data tool and a formula you can move; every number on them shows where it came from.
 
 <table>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-design"><img src="gallery/nk-design.gif" alt="nk-design demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-design">nk-design</a></b> · creation<br>One sentence in: a working data tool whose first screen reconciles to the cent and whose every row shows its source.<br><code>git clone https://github.com/NickkkLian/nk-design ~/.claude/skills/nk-design</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-data-story"><img src="gallery/nk-data-story.gif" alt="nk-data-story demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-data-story">nk-data-story</a></b> · creation<br>A messy export in: one page whose headline is the conclusion and where every figure carries its n, window and filter.<br><code>git clone https://github.com/NickkkLian/nk-data-story ~/.claude/skills/nk-data-story</code></td></tr>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-model"><img src="gallery/nk-model.gif" alt="nk-model demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-model">nk-model</a></b> · creation<br>A few assumptions in: a three-statement financial model in one .xlsx, every number a formula, written only if it balances to the penny.<br><code>git clone https://github.com/NickkkLian/nk-model ~/.claude/skills/nk-model</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-explorer"><img src="gallery/nk-explorer.gif" alt="nk-explorer demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-explorer">nk-explorer</a></b> · creation<br>One formula in: a page where every slider shows the sum it changes, with practice questions graded on the result.<br><code>git clone https://github.com/NickkkLian/nk-explorer ~/.claude/skills/nk-explorer</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-data-story"><img src="gallery/nk-data-story.gif" alt="nk-data-story demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-data-story">nk-data-story</a></b> · creation<br>A messy export in: one page whose headline is the conclusion and where every figure carries its n, window and filter.<br><code>git clone https://github.com/NickkkLian/nk-data-story ~/.claude/skills/nk-data-story</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-model"><img src="gallery/nk-model.gif" alt="nk-model demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-model">nk-model</a></b> · creation<br>A few assumptions in: a three-statement financial model in one .xlsx, every number a formula, written only if it balances to the penny.<br><code>git clone https://github.com/NickkkLian/nk-model ~/.claude/skills/nk-model</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-design"><img src="gallery/nk-design.gif" alt="nk-design demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-design">nk-design</a></b> · creation<br>One sentence in: a working data tool whose first screen reconciles to the cent and whose every row shows its source.<br><code>git clone https://github.com/NickkkLian/nk-design ~/.claude/skills/nk-design</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-explorer"><img src="gallery/nk-explorer.gif" alt="nk-explorer demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-explorer">nk-explorer</a></b> · creation<br>One formula in: a page where every slider shows the sum it changes, with practice questions graded on the result.<br><code>git clone https://github.com/NickkkLian/nk-explorer ~/.claude/skills/nk-explorer</code></td></tr>
 </table>
 
-- [nk-design](https://github.com/NickkkLian/nk-design): Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.
 - [nk-data-story](https://github.com/NickkkLian/nk-data-story): Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.
-- [nk-model](https://github.com/NickkkLian/nk-model): Turn a description of a small business and a few assumptions — price, units sold, costs, the days customers take to pay, equipment, a loan, tax — into a three-statement financial model in one .xlsx: income statement, balance sheet and cash flow that tie to each other, a checks sheet, charts, and a sheet of every assumption and the method.
-- [nk-explorer](https://github.com/NickkkLian/nk-explorer): Turn a concept that can be written as one formula — compound interest, a loan's monthly payment, the chance of at least one success — into one self-contained HTML page where every slider shows the formula it changes, written with names and with current numbers, beside the result and a curve, plus practice questions graded on the result, not on how it was reached.
-
-## Write and present
-
-Words and pages meant for other people: a novel plan, a party mystery game, a slide deck, a booking page, and the posts for a finished repo.
-
-<table>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-novel"><img src="gallery/nk-novel.gif" alt="nk-novel demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-novel">nk-novel</a></b> · creation<br>One story idea in: a staged novel plan, checked for holes, and a one-page story bible you can open.<br><code>git clone https://github.com/NickkkLian/nk-novel ~/.claude/skills/nk-novel</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-jubensha"><img src="gallery/nk-jubensha.gif" alt="nk-jubensha demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-jubensha">nk-jubensha</a></b> · creation<br>One premise in: a five-player murder-mystery game with booklets and clue cards, proven solvable by a detective that never saw the answer.<br><code>git clone https://github.com/NickkkLian/nk-jubensha ~/.claude/skills/nk-jubensha</code></td></tr>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-deck"><img src="gallery/nk-deck.gif" alt="nk-deck demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-deck">nk-deck</a></b> · creation<br>One sentence in: ten slides whose titles make the case on their own, and a printout that is the same deck page for page.<br><code>git clone https://github.com/NickkkLian/nk-deck ~/.claude/skills/nk-deck</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-landing"><img src="gallery/nk-landing.gif" alt="nk-landing demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-landing">nk-landing</a></b> · creation<br>Describe a small business, get one page people can book from — nothing is sent until someone approves the exact words.<br><code>git clone https://github.com/NickkkLian/nk-landing ~/.claude/skills/nk-landing</code></td></tr>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-post-kit"><img src="gallery/nk-post-kit.gif" alt="nk-post-kit demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-post-kit">nk-post-kit</a></b> · discipline<br>Turn a finished repo into a thread, a video script and Chinese cards — every number traced to a file, and the posts drawn as pictures before they go out.<br><code>git clone https://github.com/NickkkLian/nk-post-kit ~/.claude/skills/nk-post-kit</code></td></tr>
-</table>
-
-- [nk-novel](https://github.com/NickkkLian/nk-novel): Turn one story idea into a staged novel plan that holds together, plus a one-page visual story bible.
-- [nk-jubensha](https://github.com/NickkkLian/nk-jubensha): Build a playable jubensha (剧本杀, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook).
-- [nk-deck](https://github.com/NickkkLian/nk-deck): Turn one sentence — a topic and who it is for — into a ten-slide single-file HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page.
-- [nk-landing](https://github.com/NickkkLian/nk-landing): Turn a written description of a small business — hours, services, price ranges, the questions customers actually ask — into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft.
-- [nk-post-kit](https://github.com/NickkkLian/nk-post-kit): Turn a finished repository, tool or skill into a set of posts a person publishes by hand — a short X post, a 400–800 word build log, a 5–10 minute video script, a 60–90 second vertical cut, a GIF recording script, and a Chinese Xiaohongshu version — every claim traced to a file or a real run, with a gate that blocks invented numbers, superlatives, private names and contact details.
+- [nk-model](https://github.com/NickkkLian/nk-model): Turn a description of a small business and a few assumptions into a three-statement financial model in one .xlsx whose statements tie to each other; the builder writes nothing unless the balance sheet balances.
+- [nk-design](https://github.com/NickkkLian/nk-design): Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.
+- [nk-explorer](https://github.com/NickkkLian/nk-explorer): Turn a concept that can be written as one formula into one self-contained HTML page: every slider shows the formula it changes, and the page grades its own practice questions.
 
 ## Check an agent's work
 
 When an agent says done, tested or unchanged, these turn the claim into evidence you can check.
 
 <table>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-evidence-audit"><img src="gallery/nk-evidence-audit.gif" alt="nk-evidence-audit demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-evidence-audit">nk-evidence-audit</a></b> · discipline<br>&quot;Fixed and tested&quot; becomes raw output a second agent judges: supported, not supported, insufficient.<br><code>git clone https://github.com/NickkkLian/nk-evidence-audit ~/.claude/skills/nk-evidence-audit</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-breakable-selftest"><img src="gallery/nk-breakable-selftest.gif" alt="nk-breakable-selftest demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-breakable-selftest">nk-breakable-selftest</a></b> · discipline<br>Breaks the code your self-test guards, one line at a time, and names the checks that never react.<br><code>git clone https://github.com/NickkkLian/nk-breakable-selftest ~/.claude/skills/nk-breakable-selftest</code></td></tr>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-regression-baseline"><img src="gallery/nk-regression-baseline.gif" alt="nk-regression-baseline demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-regression-baseline">nk-regression-baseline</a></b> · discipline<br>Freezes what production code prints today so tomorrow&#x27;s refactor has to prove it changed nothing.<br><code>git clone https://github.com/NickkkLian/nk-regression-baseline ~/.claude/skills/nk-regression-baseline</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-rewrite-coverage"><img src="gallery/nk-rewrite-coverage.gif" alt="nk-rewrite-coverage demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-rewrite-coverage">nk-rewrite-coverage</a></b> · discipline<br>After a rewrite, lists what the old version had and the new one lost — with a verdict required for each.<br><code>git clone https://github.com/NickkkLian/nk-rewrite-coverage ~/.claude/skills/nk-rewrite-coverage</code></td></tr>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-two-brain"><img src="gallery/nk-two-brain.gif" alt="nk-two-brain demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-two-brain">nk-two-brain</a></b> · discipline<br>Claude writes the handoff, Codex builds, and a run that did no building judges every claim: supported, not supported or insufficient.<br><code>git clone https://github.com/NickkkLian/nk-two-brain ~/.claude/skills/nk-two-brain</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-two-brain"><img src="gallery/nk-two-brain.gif" alt="nk-two-brain demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-two-brain">nk-two-brain</a></b> · discipline<br>Claude writes the handoff, Codex builds, and a run that did no building judges every claim: supported, not supported or insufficient.<br><code>git clone https://github.com/NickkkLian/nk-two-brain ~/.claude/skills/nk-two-brain</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-evidence-audit"><img src="gallery/nk-evidence-audit.gif" alt="nk-evidence-audit demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-evidence-audit">nk-evidence-audit</a></b> · discipline<br>&quot;Fixed and tested&quot; becomes raw output a second agent judges: supported, not supported, insufficient.<br><code>git clone https://github.com/NickkkLian/nk-evidence-audit ~/.claude/skills/nk-evidence-audit</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-breakable-selftest"><img src="gallery/nk-breakable-selftest.gif" alt="nk-breakable-selftest demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-breakable-selftest">nk-breakable-selftest</a></b> · discipline<br>Breaks the code your self-test guards, one line at a time, and names the checks that never react.<br><code>git clone https://github.com/NickkkLian/nk-breakable-selftest ~/.claude/skills/nk-breakable-selftest</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-regression-baseline"><img src="gallery/nk-regression-baseline.gif" alt="nk-regression-baseline demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-regression-baseline">nk-regression-baseline</a></b> · discipline<br>Freezes what production code prints today so tomorrow&#x27;s refactor has to prove it changed nothing.<br><code>git clone https://github.com/NickkkLian/nk-regression-baseline ~/.claude/skills/nk-regression-baseline</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-rewrite-coverage"><img src="gallery/nk-rewrite-coverage.gif" alt="nk-rewrite-coverage demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-rewrite-coverage">nk-rewrite-coverage</a></b> · discipline<br>After a rewrite, lists what the old version had and the new one lost — with a verdict required for each.<br><code>git clone https://github.com/NickkkLian/nk-rewrite-coverage ~/.claude/skills/nk-rewrite-coverage</code></td></tr>
 </table>
 
+- [nk-two-brain](https://github.com/NickkkLian/nk-two-brain): Hand a coding task from Claude to OpenAI Codex, re-run your own checks on what comes back, and have a run that did no building judge every claim: supported, not supported or insufficient.
 - [nk-evidence-audit](https://github.com/NickkkLian/nk-evidence-audit): Turn "done, fixed, tested" into evidence a second agent judges.
 - [nk-breakable-selftest](https://github.com/NickkkLian/nk-breakable-selftest): Make a checker, validator, linter, gate or test suite prove it can fail.
 - [nk-regression-baseline](https://github.com/NickkkLian/nk-regression-baseline): Freeze the byte-exact output of production code on its default inputs before you change it, and compare after.
 - [nk-rewrite-coverage](https://github.com/NickkkLian/nk-rewrite-coverage): After rewriting a long document — a spec, a research report, a handbook — list what the old version had that the new one no longer mentions, and account for every item with a three-state verdict before the rewrite is accepted.
-- [nk-two-brain](https://github.com/NickkkLian/nk-two-brain): Run a coding task through two different AI agents with proof at the end: Claude writes a handoff package (goal, boundaries as orders, what the builder cannot see, acceptance checks kept from the builder), OpenAI Codex builds it in a fresh clone, the acceptor re-runs its own checks (including one with the code broken on purpose), a separate model run that did no building judges each claim from the evidence alone with exactly three verdicts (supported, not supported, insufficient), and a post draft is written from the run's files.
 
 ## Guard a repository
 
@@ -94,6 +77,22 @@ Memories, rules and handoffs that the next session, or the next agent, can rely 
 - [nk-memory-with-conditions](https://github.com/NickkkLian/nk-memory-with-conditions): Write agent memories that say when they hold, and keep the memory directory honest.
 - [nk-rules-that-land](https://github.com/NickkkLian/nk-rules-that-land): Write rules for an AI agent that actually change what it does.
 - [nk-handoff-package](https://github.com/NickkkLian/nk-handoff-package): Hand a line of work to an executor that has no context — another agent, a contractor, a future session — so that the work comes back checkable.
+
+## Write and present
+
+Words and pages meant for other people: a slide deck, a demo booking page, the drafts for a launch, a novel plan and a party mystery game.
+
+<table>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-deck"><img src="gallery/nk-deck.gif" alt="nk-deck demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-deck">nk-deck</a></b> · creation<br>One sentence in: ten slides whose titles make the case on their own, and a printout that is the same deck page for page.<br><code>git clone https://github.com/NickkkLian/nk-deck ~/.claude/skills/nk-deck</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-landing"><img src="gallery/nk-landing.gif" alt="nk-landing demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-landing">nk-landing</a></b> · creation<br>Describe a small business, get one page people can book from — nothing is sent until someone approves the exact words.<br><code>git clone https://github.com/NickkkLian/nk-landing ~/.claude/skills/nk-landing</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-post-kit"><img src="gallery/nk-post-kit.gif" alt="nk-post-kit demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-post-kit">nk-post-kit</a></b> · discipline<br>Turn a finished repo into a thread, a video script and Chinese cards — every number traced to a file, and the posts drawn as pictures before they go out.<br><code>git clone https://github.com/NickkkLian/nk-post-kit ~/.claude/skills/nk-post-kit</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-novel"><img src="gallery/nk-novel.gif" alt="nk-novel demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-novel">nk-novel</a></b> · creation<br>One story idea in: a staged novel plan, checked for holes, and a one-page story bible you can open.<br><code>git clone https://github.com/NickkkLian/nk-novel ~/.claude/skills/nk-novel</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-jubensha"><img src="gallery/nk-jubensha.gif" alt="nk-jubensha demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-jubensha">nk-jubensha</a></b> · creation<br>One premise in: a five-player murder-mystery game with booklets and clue cards, proven solvable by a detective that never saw the answer.<br><code>git clone https://github.com/NickkkLian/nk-jubensha ~/.claude/skills/nk-jubensha</code></td></tr>
+</table>
+
+- [nk-deck](https://github.com/NickkkLian/nk-deck): Turn one sentence into a ten-slide single-file HTML deck whose titles carry the argument on their own, with a source under every number and a printout that is the same deck page for page.
+- [nk-landing](https://github.com/NickkkLian/nk-landing): Turn a written description of a small business into one self-contained HTML page with a booking form, where every confirmation waits for a member of staff to approve that exact draft.
+- [nk-post-kit](https://github.com/NickkkLian/nk-post-kit): Turn a finished repository into six drafts a person publishes by hand (an X post, a build log, a video script, a vertical cut, a GIF script and a Chinese Xiaohongshu version), with every claim traced to a file or a real run.
+- [nk-novel](https://github.com/NickkkLian/nk-novel): Turn one story idea into a staged novel plan that holds together, plus a one-page visual story bible.
+- [nk-jubensha](https://github.com/NickkkLian/nk-jubensha): Build a playable jubensha (剧本杀, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook).
 
 ## Install (example: nk-evidence-audit)
 
@@ -197,6 +196,13 @@ python3 tools/skill_lint.py --selftest
 
 ## How these were built
 
+- Every skill is one folder: a `SKILL.md` that says when to use it and where its rules came from, Python scripts
+  that need only the standard library (two nk-post-kit scripts also need Pillow), and reference files such as
+  formats, checklists and worked examples; for several skills they also record the incidents or review rounds
+  behind the rules.
+- Every script ships a `--selftest`; each skill's README says which of them were broken on purpose before
+  publishing to prove they react.
+- Each skill lives in its own repository; this one is the directory, the plugin marketplace and the shared lint.
 - Every SKILL.md ends with a Provenance section that says where its rules came from; for most skills that is
   the incidents or review rounds behind them. Two guardrail rules (`rm -rf` on a project root, `curl | sh`) have
   no recorded incident; their prompts say why the step is irreversible or dangerous.

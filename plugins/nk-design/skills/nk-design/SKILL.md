@@ -4,7 +4,7 @@ description: Build a single-file data tool from one sentence (a review queue, a 
 license: MIT
 metadata:
   provenance: the author's own product-family design system (2026-09), rebuilt after four public data tools shipped with different looks and no visible sources; see Provenance
-  version: 0.1.8
+  version: 0.1.9
 ---
 # Evidence-visible design
 
@@ -46,8 +46,8 @@ status words are a fixed vocabulary, simulated actions say so, and the footer sa
 5. **Use the status vocabulary as given** (`references/components.md` §tag): Needs review · Approved / Booked
    / Sent · Rejected / Failed · Draft · Simulated · Excluded · Blocked. A second channel beside the word — a dot,
    a check mark or a stop sign, drawn as line SVG and never typed as a symbol or emoji — never colour alone.
-6. **Be honest by construction** (`references/honesty.md`): synthetic data looks synthetic and is labelled
-   `Demo ·`; every number on the page is computed from the loaded data; nothing simulated shows as sent;
+6. **Be honest by construction** (`references/honesty.md`): synthetic data is invented (believable
+   made-up names, never a real customer or company) and the page is labelled `Demo ·`; every number on the page is computed from the loaded data; nothing simulated shows as sent;
    the footer carries About this demo / Not verified here / Source.
 7. **Keep the appearance contract.** A small script in `<head>`, before the first stylesheet, reads the saved
    palette and scheme (or `?theme=` / `?scheme=` in the URL) and sets `data-theme` / `data-scheme` before the

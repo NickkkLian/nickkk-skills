@@ -5,7 +5,7 @@ license: MIT
 compatibility: the deck and make_deck.py / deck_check.py are standard library only; print_check.py needs Google Chrome or Chromium to print.
 metadata:
   provenance: own practice (2026-09) — two portfolio decks that had to print cleanly, and a design system built for pages that say where their numbers come from; see Provenance
-  version: 0.1.6
+  version: 0.1.7
 ---
 # Deck: ten slides, titles that argue
 
@@ -27,7 +27,7 @@ the deck — ten slides, ten pages, nothing cut off.
    each title a sentence that states a conclusion, in the order the reader needs them. Read the paragraph back.
    If it does not make the case on its own, the deck will not either. The last title is the decision or the ask.
 2. **Fill in the outline**: `python3 <skill-dir>/scripts/make_deck.py --init deck.json` gives the
-   example; replace every slide. Each slide has a `title`, and either a `sub` (one sentence) or up to five
+   example (a real argument whose numbers are counted from the two files in `references/example-data/`); replace every slide. Each slide has a `title`, and either a `sub` (one sentence) or up to five
    `points`. A point that measures something — digits, or words like "four of the last six", "doubled", "two
    thirds" — carries a `source`; dates, times and years do not count, and a small count that only describes
    reads best in words ("two people"). If the numbers are made up for a draft, set `"illustrative": true`: the

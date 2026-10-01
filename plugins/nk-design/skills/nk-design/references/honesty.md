@@ -2,8 +2,11 @@
 
 1. Never present: real customer names, real company logos, invented statistics (users, hours saved,
    accuracy), stars, testimonials, "trusted by".
-2. Synthetic data looks synthetic and is not ugly: `Demo Utility 02`, `Test Customer 01`, phones only in
-   the officially fictional ranges, `123 Example Road`; regular names and aligned numbers look like a ledger.
+2. Synthetic data is invented, labelled, and reads like a ledger: believable made-up names (`Tarnbeck Hydro`,
+   `Fernwood Print Shop`), never a real customer or company, and not `Demo … 01` / `Test … 02` filler, which
+   makes a page read as a tutorial. The `Demo · synthetic data` pill and the footer carry the label, so the
+   rows do not have to. Phones only in the officially fictional ranges, `123 Example Road`; regular names and
+   aligned numbers.
 3. Every number on the page is computed from the loaded data when the page runs; a claim from the README
    is re-computed in the browser or shown as "as of build <date>".
 4. Anything that did not really go out or get written carries `Simulated`; there is no "Sent ✓" without it.

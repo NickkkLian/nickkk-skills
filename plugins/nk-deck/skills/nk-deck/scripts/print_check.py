@@ -129,15 +129,15 @@ def selftest():
         # it shrinks the type and the margins instead, measured 2026-09-22; deck_check D06 catches that one.)
         grow = open(starter, encoding="utf-8").read()
         grow = grow.replace("display: flex !important; height: 720px; overflow: hidden;", "display: flex !important; min-height: 720px;", 1)
-        grow = grow.replace('"sub": "If we both agree, the notice goes up on 1 November. If either of us does not, we talk again on Friday."',
-                            '"sub": "' + "If we both agree, the notice goes up. " * 40 + '"', 1)
+        grow = grow.replace('"sub": "If the self-test stays green with a line switched off, add the sample or delete the line. The break run goes in the README next to the self-test command."',
+                            '"sub": "' + "If the self-test stays green, add the sample. " * 40 + '"', 1)
         p = os.path.join(t, "grow.html"); open(p, "w", encoding="utf-8").write(grow)
         f, info = check(p, binary)
         chk("a slide that grows onto a second printed page is caught", any("pages for" in x for x in f), str(f))
         # a slide with far too much on it
         s = open(starter, encoding="utf-8").read()
-        s = s.replace('"sub": "A fixed menu for the month keeps most of the cake income and gives the oven back to the bread."',
-                      '"sub": "' + "A fixed menu keeps most of the income. " * 30 + '"', 1)
+        s = s.replace('"sub": "Thirteen scripts in ten published tools all had a green self-test. A break run on 30 September 2026 showed what those passes did not cover."',
+                      '"sub": "' + "A break run showed what the passes did not cover. " * 30 + '"', 1)
         p = os.path.join(t, "full.html"); open(p, "w", encoding="utf-8").write(s)
         f, info = check(p, binary)
         chk("a slide with too much on it is caught", any("too full" in x for x in f), str(f))

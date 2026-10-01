@@ -1,0 +1,291 @@
+{
+  "title": "The Seven-Day City",
+  "idea": "An apprentice mapmaker discovers that every map she draws becomes true a week later.",
+  "retelling": "An apprentice mapmaker whose maps come true a week later redraws her city to save its poorest district from a flood, then erases her own name from every map to undo the price the magic exacts, saving the people she loves at the cost of ever being known as their maker.",
+  "caps": {
+    "main_characters": 4,
+    "places": 4
+  },
+  "world": {
+    "rules": [
+      {
+        "id": "R1",
+        "rule": "A map drawn by a true cartographer's own hand becomes real exactly seven days after it is finished; only the mapmaker remembers the world it replaced",
+        "cost": "every change a finished map makes real is paid by an equal erasure nearby that the mapmaker cannot choose or foresee"
+      }
+    ],
+    "not_allowed": [
+      "tracing or copying another's map does nothing; only an original hand triggers the change",
+      "the seven days cannot be rushed, paused, or called back once the map is finished",
+      "nothing that appears on no map can be altered by one",
+      "when two maps of the same ground would both come true, only the later-finished one does",
+      "no one but the mapmaker keeps the memory of the world a map overwrote"
+    ],
+    "places": [
+      {
+        "id": "P1",
+        "name": "The Guild drawing-loft"
+      },
+      {
+        "id": "P2",
+        "name": "The Low Quarter"
+      },
+      {
+        "id": "P3",
+        "name": "The river wall"
+      },
+      {
+        "id": "P4",
+        "name": "The Magistrate's archive"
+      }
+    ]
+  },
+  "characters": [
+    {
+      "id": "C1",
+      "name": "Wren",
+      "role": "protagonist",
+      "desire": "to be trusted as a true cartographer, not a hand that only traces others' lines",
+      "fear": "that she ruins whatever she touches",
+      "secret": "she believes a map she drew as a child preceded the fire that killed her family, and has never dared draw her old street since",
+      "introduced_in": 1,
+      "exits_in": 10,
+      "relations": [
+        { "to": "C2", "kind": "apprentice to" },
+        { "to": "C4", "kind": "beloved friend" },
+        { "to": "C3", "kind": "adversary" }
+      ]
+    },
+    {
+      "id": "C2",
+      "name": "Alder",
+      "role": "main",
+      "desire": "to keep the craft from ever being used to remake the world again",
+      "fear": "that the price of his last map is still unpaid",
+      "secret": "a map he finished years ago erased his own wife; he is the only one who remembers she lived",
+      "introduced_in": 2,
+      "exits_in": 10,
+      "relations": [
+        { "to": "C1", "kind": "master of" }
+      ]
+    },
+    {
+      "id": "C3",
+      "name": "Doss",
+      "role": "antagonist",
+      "desire": "to be the author of the city, holding a power that outlasts him",
+      "fear": "being forgotten, leaving nothing with his name on it",
+      "secret": "he has known the flood was coming for a year and planned to let the Low Quarter drown to fund a new harbour",
+      "introduced_in": 4,
+      "exits_in": 9,
+      "relations": [
+        { "to": "C1", "kind": "would-be master of" }
+      ]
+    },
+    {
+      "id": "C4",
+      "name": "Juno",
+      "role": "main",
+      "desire": "to keep her home and the Low Quarter she grew up in",
+      "fear": "being uprooted and left with nowhere that remembers her",
+      "secret": "",
+      "introduced_in": 3,
+      "exits_in": 10,
+      "relations": [
+        { "to": "C1", "kind": "beloved friend" }
+      ]
+    }
+  ],
+  "spine": [
+    {
+      "id": "E1",
+      "t": 1,
+      "title": "The straightened alley",
+      "what_happened": "The Tanners' crooked alley now runs dead straight, and Wren finds her own week-old practice sheet where she had idly drawn it that way",
+      "so_what_changed": "Wren realises that every map she draws with her own hand comes true seven days later",
+      "participants": ["C1"],
+      "place": "P2",
+      "depends_on_rules": ["R1"]
+    },
+    {
+      "id": "E2",
+      "t": 2,
+      "title": "What the master knew",
+      "what_happened": "Wren brings the sheet to Master Alder, who admits he has always known the craft is real and that he laid down his pen years ago",
+      "so_what_changed": "Wren learns the gift takes a price the mapmaker cannot choose, and that her mentor is terrified of his own hand",
+      "participants": ["C1", "C2"],
+      "place": "P1",
+      "causes": ["E1"]
+    },
+    {
+      "id": "E3",
+      "t": 3,
+      "title": "High water",
+      "what_happened": "Copying the official survey, Wren sees the river will overtop the wall and drown the Low Quarter within the month, and runs to warn Juno, who refuses to leave her home",
+      "so_what_changed": "Wren resolves to save the Quarter herself by redrawing the wall",
+      "participants": ["C1", "C4"],
+      "place": "P2",
+      "causes": ["E1"]
+    },
+    {
+      "id": "E4",
+      "t": 4,
+      "title": "The Magistrate's design",
+      "what_happened": "Magistrate Doss reveals he has learned of Wren's gift and orders her to redraw the city to his design, moving the wall so the Low Quarter floods and the new harbour is funded",
+      "so_what_changed": "Wren is trapped between obeying the man who owns the archive and defying him in secret",
+      "participants": ["C1", "C3"],
+      "place": "P4",
+      "causes": ["E2", "E3"]
+    },
+    {
+      "id": "E5",
+      "t": 5,
+      "title": "The wall she draws",
+      "what_happened": "Alone in the loft, Wren finishes a map raising the river wall to hold back the flood, defying Doss",
+      "so_what_changed": "The saving of the Quarter is now set for seven days on, but the price the map will exact is still hidden",
+      "participants": ["C1"],
+      "place": "P1",
+      "causes": ["E4"],
+      "depends_on_rules": ["R1"]
+    },
+    {
+      "id": "E6",
+      "t": 12,
+      "title": "The price falls",
+      "what_happened": "Seven days later the wall stands and the Quarter is dry, but Juno is gone as though she never lived, her house unwritten beneath the new wall, and only Wren remembers her",
+      "so_what_changed": "Wren learns the cost took the very person she meant to protect, and that she can never aim the price",
+      "participants": ["C1"],
+      "place": "P3",
+      "causes": ["E5"],
+      "depends_on_rules": ["R1"]
+    },
+    {
+      "id": "E7",
+      "t": 13,
+      "title": "Undrawing is drawing",
+      "what_happened": "Wren begs Alder to help her draw Juno back; he tells her that undrawing is only drawing again, that it will exact its own price, and finally that a map of his once erased his wife",
+      "so_what_changed": "Wren understands there is no clean reversal, and that her master has carried this exact grief for years",
+      "participants": ["C1", "C2"],
+      "place": "P1",
+      "causes": ["E6"]
+    },
+    {
+      "id": "E8",
+      "t": 14,
+      "title": "The author's hand",
+      "what_happened": "Doss seizes Wren's maps and pen and forces her to begin drawing his city, meaning to become the sole author of everyone's world",
+      "so_what_changed": "The power to remake reality passes to the man who fears only being forgotten, raising the stakes from one district to the whole city",
+      "participants": ["C1", "C3"],
+      "place": "P4",
+      "causes": ["E4", "E6"]
+    },
+    {
+      "id": "E9",
+      "t": 15,
+      "title": "The unsigned map",
+      "what_happened": "Wren draws a last map that restores Juno and undoes Doss's design by aiming the only price she can — she draws out every record and memory that she was ever the mapmaker",
+      "so_what_changed": "Juno and the Quarter are saved and Doss is left holding blank paper with no author, while the world forgets Wren ever held the gift",
+      "participants": ["C1", "C3", "C4"],
+      "place": "P1",
+      "causes": ["E7", "E8"],
+      "depends_on_rules": ["R1"]
+    },
+    {
+      "id": "E10",
+      "t": 22,
+      "title": "A week later, unsigned",
+      "what_happened": "Seven days on the city holds, Juno lives and does not know what was traded for her, and Wren works as an unnamed hand who has laid down the pen for good",
+      "so_what_changed": "Wren has exchanged being known for having done right, and chooses that trade rather than mourning it",
+      "participants": ["C1", "C4"],
+      "place": "P2",
+      "causes": ["E9"]
+    }
+  ],
+  "structure": {
+    "acts": [
+      {
+        "name": "I — The gift and the water",
+        "beats": [
+          { "name": "Inciting incident", "events": ["E1"] },
+          { "name": "The master's warning", "events": ["E2"] },
+          { "name": "The threat named", "events": ["E3", "E4"] }
+        ]
+      },
+      {
+        "name": "II — The price",
+        "beats": [
+          { "name": "The choice to defy", "events": ["E5"] },
+          { "name": "Midpoint reversal", "events": ["E6"] },
+          { "name": "No clean undoing", "events": ["E7"] },
+          { "name": "The stakes widen", "events": ["E8"] }
+        ]
+      },
+      {
+        "name": "III — The unsigned hand",
+        "beats": [
+          { "name": "Climax", "events": ["E9"] },
+          { "name": "Resolution", "events": ["E10"] }
+        ]
+      }
+    ]
+  },
+  "foreshadowing": [
+    {
+      "id": "F1",
+      "clue": "Wren flinches at the smell of smoke and will not draw her old street",
+      "planted_in": 1,
+      "paid_off_in": 9
+    },
+    {
+      "id": "F2",
+      "clue": "Alder's drawing hand is scarred and he never lets a map be finished",
+      "planted_in": 2,
+      "paid_off_in": 7
+    },
+    {
+      "id": "F3",
+      "clue": "The guild ledger lists an apprentice whose name has been smudged out",
+      "planted_in": 2,
+      "paid_off_in": 10
+    },
+    {
+      "id": "F4",
+      "clue": "Doss keeps a single blank map framed on his archive wall",
+      "planted_in": 4,
+      "paid_off_in": 9
+    },
+    {
+      "id": "F5",
+      "clue": "Juno hums a tune no one remembers teaching her",
+      "planted_in": 10,
+      "paid_off_in": null,
+      "left_open_on_purpose": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "question": "Are the maps really causing the changes, or is Wren reading a pattern into coincidence?",
+      "opened_in": 1,
+      "answered_in": 6
+    },
+    {
+      "id": "Q2",
+      "question": "Can Juno be brought back, and will undoing cost more than it restores?",
+      "opened_in": 6,
+      "answered_in": 9
+    }
+  ],
+  "chapters": [
+    { "n": 1, "title": "The Crooked Alley", "pov": "C1", "events": ["E1"], "summary": "Wren, a tracer weary of copying others' lines, finds an alley remade to match her idle sketch and grasps what her hand can do; she flinches from smoke and will not draw her old street." },
+    { "n": 2, "title": "What the Master Knew", "pov": "C1", "events": ["E2"], "summary": "Alder confesses the craft is real and that he stopped drawing; his scarred hand and the ledger's smudged-out name hint at what it once cost." },
+    { "n": 3, "title": "High Water", "pov": "C1", "events": ["E3"], "summary": "The survey shows the Low Quarter will drown; Wren warns Juno, who will not leave, and resolves to redraw the wall herself." },
+    { "n": 4, "title": "The Magistrate's Design", "pov": "C1", "events": ["E4"], "summary": "Doss reveals he knows her gift and orders her to draw the Quarter's ruin for profit; a blank map hangs framed on his wall." },
+    { "n": 5, "title": "The Wall", "pov": "C1", "events": ["E5"], "summary": "Wren defies Doss and finishes a map raising the wall; the saving is set for seven days on, the price still unseen." },
+    { "n": 6, "title": "The Price", "pov": "C1", "events": ["E6"], "summary": "The wall holds and the Quarter is dry — but Juno is unwritten, remembered by Wren alone. The gift is proven, and its cruelty." },
+    { "n": 7, "title": "Undrawing", "pov": "C1", "events": ["E7"], "summary": "Alder tells Wren that undoing is only drawing again, and that a map of his once erased his wife; there is no clean reversal." },
+    { "n": 8, "title": "The Author", "pov": "C1", "events": ["E8"], "summary": "Doss seizes her pen to remake the whole city in his name; the power now sits with the man who fears only being forgotten." },
+    { "n": 9, "title": "The Unsigned Map", "pov": "C1", "events": ["E9"], "summary": "Wren draws a final map that restores Juno and empties Doss's design by paying the only price she can aim — erasing that she was ever the mapmaker." },
+    { "n": 10, "title": "A Week Later", "pov": "C1", "events": ["E10"], "summary": "The city holds, Juno lives unknowing, and Wren — the smudge in the ledger now — works unnamed, having chosen the trade. Juno hums a tune no one taught her." }
+  ]
+}

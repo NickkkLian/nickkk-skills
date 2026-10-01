@@ -1,0 +1,119 @@
+# breakcheck.py --auto, default pattern, on the versions of the ten tools that were public on the morning of 2026-09-30
+== git-guardrail-hook/guardrail.py
+$ breakcheck.py --root <nk-git-guardrail-hook>/scripts --cmd "python3 guardrail.py --selftest" --auto guardrail.py
+auto mode: 2 candidate lines in guardrail.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control (no mutation)                                       green  ok
+  ✘ L190: raise                                                 green  UNCOVERED
+  ✘ L238: bad.append((cmd.replace("\n", "⏎")[:70], want, got))  green  UNCOVERED
+✘ 2 mutations, 2 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== git-guardrail-hook/replay.py
+$ breakcheck.py --root <nk-git-guardrail-hook>/scripts --cmd "python3 replay.py --selftest" --auto replay.py
+auto mode: 0 candidate lines in replay.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control only
+✘ 0 mutations — nothing was broken, so this proves nothing. With --auto, pass --pattern for this file's style (e.g. 'print\("FAIL|findings\.append\(') or write the mutations with --spec.
+exit 2
+== publish-gate/publish_gate.py
+$ breakcheck.py --root <nk-publish-gate>/scripts --cmd "python3 publish_gate.py --selftest" --auto publish_gate.py
+auto mode: 6 candidate lines in publish_gate.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control (no mutation)                                               green  ok
+  ✔ L88: red.append((rid, label, rx, re.I))                             red    CAUGHT
+  ✔ L225: members.append((inner, None if info.file_size > MAX_MEMBER e  red    CAUGHT
+  ✘ L294: raise RuntimeError(f"git {' '.join(args)} failed: {r.stderr.  green  UNCOVERED
+  ✔ L335: raise ValueError(f"allow entry needs RULES::GLOB::REGEX or G  red    CAUGHT
+  ✘ L336: out.append((rules_ok, glob, re.compile(rx)))                  red    CRASH
+  ✘ L539: return 1 if res.red else 0                                    green  UNCOVERED
+✘ 6 mutations, 3 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== breakable-selftest/breakcheck.py
+$ breakcheck.py --root <nk-breakable-selftest>/scripts --cmd "python3 breakcheck.py --selftest" --auto breakcheck.py
+auto mode: 7 candidate lines in breakcheck.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control (no mutation)                                               green  ok
+  ✘ L14: matches --pattern (default: append((, assert, raise, sys.exi   green  UNCOVERED
+  ✔ L45: raise ValueError(f"anchor occurs {n} times (need exactly 1):   red    CAUGHT
+  ✔ L92: rows.append((m["name"], "-", f"BAD-ANCHOR {e}")); continue     red    CAUGHT
+  ✘ L94: rows.append((m["name"], "red" if rc else "green", judge(rc0,   red    CRASH
+  ✔ L120: out.append(("A", "rule A"))                                   red    CAUGHT
+  ✔ L122: out.append(("B", "rule B"))                                   red    CAUGHT
+  ✔ L172: rows = matrix(tmp, f"{sys.executable} -c 'import sys; sys.ex  red    CAUGHT
+✘ 7 mutations, 2 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== evidence-audit/evidence.py
+$ breakcheck.py --root <nk-evidence-audit>/scripts --cmd "python3 evidence.py --selftest" --auto evidence.py
+auto mode: 5 candidate lines in evidence.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control (no mutation)                                              green  ok
+  ✘ L78: rows.append((d, "INCOMPLETE", ", ".join(missing))); bad += 1  red    CRASH
+  ✔ L81: rows.append((d, "EDITED", ", ".join(edited))); bad += 1       red    CAUGHT
+  ✘ L83: rows.append((d, "intact", ""))                                red    CRASH
+  ✔ L91: rows.append((d, str(m.get("exit")), (m.get("claim") or "-")[  red    CAUGHT
+  ✘ L155: return 1 if bad else 0                                       green  UNCOVERED
+✘ 5 mutations, 3 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== rewrite-coverage/rewrite_coverage.py
+$ breakcheck.py --root <nk-rewrite-coverage>/scripts --cmd "python3 rewrite_coverage.py --selftest" --auto rewrite_coverage.py
+auto mode: 1 candidate lines in rewrite_coverage.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control (no mutation)  green  ok
+  ✘ L128: return 1, lines  red    CRASH
+✘ 1 mutations, 1 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== regression-baseline/baseline.py
+$ breakcheck.py --root <nk-regression-baseline>/scripts --cmd "python3 baseline.py --selftest" --auto baseline.py
+auto mode: 0 candidate lines in baseline.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control only
+✘ 0 mutations — nothing was broken, so this proves nothing. With --auto, pass --pattern for this file's style (e.g. 'print\("FAIL|findings\.append\(') or write the mutations with --spec.
+exit 2
+== indent-guard/indent_guard.py
+$ breakcheck.py --root <nk-indent-guard>/scripts --cmd "python3 indent_guard.py --selftest" --auto indent_guard.py
+auto mode: 3 candidate lines in indent_guard.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control (no mutation)                                              green  ok
+  ✔ L36: raise RuntimeError(r.stderr.decode("utf-8", "replace").strip  red    CAUGHT
+  ✔ L55: changed.append((f, was, now))                                 red    CAUGHT
+  ✘ L131: return 1 if changed else 0                                   green  UNCOVERED
+✘ 3 mutations, 1 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== memory-with-conditions/memguard.py
+$ breakcheck.py --root <nk-memory-with-conditions>/scripts --cmd "python3 memguard.py --selftest" --auto memguard.py
+auto mode: 1 candidate lines in memguard.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control (no mutation)                                              green  ok
+  ✘ L87: out.append("     add = append; edit = anchored replace (asse  green  UNCOVERED
+✘ 1 mutations, 1 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== rules-that-land/rules_check.py
+$ breakcheck.py --root <nk-rules-that-land>/scripts --cmd "python3 rules_check.py --selftest" --auto rules_check.py
+auto mode: 9 candidate lines in rules_check.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✔ control (no mutation)                                              green  ok
+  ✔ L35: out.append((start, "\n".join(cur))); cur = []                 red    CAUGHT
+  ✘ L41: out.append((start, "\n".join(cur)))                           green  UNCOVERED
+  ✔ L58: findings.append(("NO-INCIDENT", line_no, title))              red    CAUGHT
+  ✘ L60: findings.append(("NO-ENFORCEMENT", line_no, title)); continu  red    CRASH
+  ✔ L66: findings.append(("MISSING-TARGET", line_no, f"{title}  → {fi  red    CAUGHT
+  ✔ L73: findings.append(("FAILED-RUN", line_no, f"{title}  → exit {r  red    CAUGHT
+  ✘ L75: findings.append(("FAILED-RUN", line_no, f"{title}  → {type(e  green  UNCOVERED
+  ✔ L77: findings.append(("OVERFIT", 0, f"{len(rules)} directives in   red    CAUGHT
+  ✘ L144: return 1 if findings else 0                                  green  UNCOVERED
+✘ 9 mutations, 4 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== handoff-package/handback_check.py
+$ breakcheck.py --root <nk-handoff-package>/scripts --cmd "python3 handback_check.py --selftest" --auto handback_check.py
+auto mode: 3 candidate lines in handback_check.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✘ control (no mutation)                                               RED    CONTROL-RED
+  ✘ L132: return 1 if fails else 0                                      red    CONTROL-RED
+  ✘ L182: open(os.path.join(pkg, "output", "project_gates.py"), "w").w  red    CONTROL-RED
+  ✘ L214: raise                                                         red    CONTROL-RED
+✘ 3 mutations, 4 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== handoff-package/handoff_init.py
+$ breakcheck.py --root <nk-handoff-package>/scripts --cmd "python3 handoff_init.py --selftest" --auto handoff_init.py
+auto mode: 2 candidate lines in handoff_init.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✘ control (no mutation)                                              RED    CONTROL-RED
+  ✘ L41: raise SystemExit(f"refusing: {pkg} exists and is not empty —  red    CONTROL-RED
+  ✘ L75: raise SystemExit("nothing to pin: output/handback_check.py i  red    CONTROL-RED
+✘ 2 mutations, 3 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1
+== handoff-package/handoff_verify.py
+$ breakcheck.py --root <nk-handoff-package>/scripts --cmd "python3 handoff_verify.py --selftest" --auto handoff_verify.py
+auto mode: 1 candidate lines in handoff_verify.py matching /\.append\(\(|\bassert\b|\braise\b|sys\.exit\(1\)|\breturn 1\b/
+  ✘ control (no mutation)                                               RED    CONTROL-RED
+  ✘ L136: open(os.path.join(pkg, "output", "project_gates.py"), "w").w  red    CONTROL-RED
+✘ 1 mutations, 2 problems — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection
+exit 1

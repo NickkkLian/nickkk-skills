@@ -5,7 +5,7 @@ license: MIT
 compatibility: standard library only, no packages and no build step; the page it writes has no dependencies, evaluates its formula without eval, and carries a Content-Security-Policy under which the browser loads nothing from anywhere and runs no code but its own. probe_check.py needs Google Chrome or Chromium; without one, open the page with ?probe=1 in any browser.
 metadata:
   provenance: own practice (2026-09) — the "show the query behind every click, grade on the result" idea from Query Mirror, a SQL teaching tool of mine, carried over to formulas; see Provenance
-  version: 0.1.3
+  version: 0.1.4
 ---
 # Concept explorer
 

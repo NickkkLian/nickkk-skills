@@ -5,7 +5,7 @@ license: MIT
 compatibility: termgif.py and preview_cards.py need Pillow (pip install pillow); termgif needs a monospace TrueType font and preview_cards needs a font with Chinese glyphs (macOS has one; elsewhere pass --cjk-font); its Latin faces ship in assets/fonts (Inter, Space Mono, Fraunces; SIL OFL 1.1). postkit_check.py is stdlib only.
 metadata:
   provenance: own practice (2026-09) writing launch material for a set of open-source skills; see Provenance
-  version: 0.2.4
+  version: 0.2.5
 ---
 # Post kit
 

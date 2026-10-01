@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Stop taking custom cake orders in December</title>
+<title>Break each check on purpose before you trust its self-test</title>
 <meta name="description" content="Starter deck for nk-deck: ten slides whose titles carry the argument, five points at most, a source under every number, and a printout that is the same deck.">
 <!-- why: a favicon cannot read CSS variables; literal band, point and on-band colours from the default palette -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http%3A//www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Crect%20x='1'%20y='1'%20width='22'%20height='22'%20rx='5'%20fill='%23053333'/%3E%3Crect%20x='5'%20y='7'%20width='14'%20height='9'%20rx='1.5'%20fill='none'%20stroke='%23f7f0e9'%20stroke-width='1.6'/%3E%3Cpath%20d='M8%2019h8'%20stroke='%23ca6980'%20stroke-width='1.8'%20stroke-linecap='round'/%3E%3C/svg%3E">
@@ -73,62 +73,140 @@
 
 <script type="application/json" id="deck">
 {
-  "title": "Stop taking custom cake orders in December",
-  "for": "The two of us, before the season starts",
-  "illustrative": true,
+  "title": "Break each check on purpose before you trust its self-test",
+  "for": "Anyone who ships a checker, a linter or a gate with a --selftest",
   "slides": [
-    {"title": "Stop taking custom cake orders in December",
-     "sub": "A fixed menu for the month keeps most of the cake income and gives the oven back to the bread."},
-    {"title": "December custom cakes took a third of our baking hours for an eighth of the money",
-     "points": [
-       {"text": "Custom cakes: 31% of oven hours, 12% of December revenue", "source": "illustrative — last year's order book and the oven log"},
-       {"text": "Bread and pastries: 58% of oven hours, 71% of revenue", "source": "illustrative — same"},
-       {"text": "The rest went on the Saturday baking table"}
-     ]},
-    {"title": "One custom cake ties up the only oven for most of a morning",
-     "points": [
-       {"text": "Two bakes, a cooling rack and a decorating bench nobody else can use"},
-       {"text": "The consultation happens in the shop, while the queue waits"},
-       {"text": "About four hours of one of us per cake, before any changes", "source": "illustrative — our own estimate, not timed"}
-     ]},
-    {"title": "The loaves we did not bake were the ones our regulars came for",
-     "points": [
-       {"text": "We ran out of the seeded loaf by ten on most December Saturdays"},
-       {"text": "Standing orders are the bread our week is built on"},
-       {"text": "A regular who leaves in December does not come back in January"}
-     ]},
-    {"title": "Most December complaints were about bread, not about cakes",
-     "points": [
-       {"text": "Three of five written complaints: a standing order short or missing", "source": "illustrative — the complaints book"},
-       {"text": "None were about a cake we declined"},
-       {"text": "Every complaint arrived on a day we were decorating"}
-     ]},
-    {"title": "A four-cake December menu keeps most of the cake income",
-     "points": [
-       {"text": "Four cakes, two sizes, ordered by the 15th"},
-       {"text": "Baked in two batches, not one at a time"},
-       {"text": "Expected to recover about two thirds of last December's cake revenue", "source": "illustrative — assumes half the custom customers pick from the menu"}
-     ]},
-    {"title": "What we give up is the cake only we would make",
-     "points": [
-       {"text": "The wedding-adjacent orders, and the people who send photos"},
-       {"text": "Some of them will go elsewhere and stay there"},
-       {"text": "We say so in the notice rather than pretend nothing changes"}
-     ]},
-    {"title": "If the menu fails, custom orders reopen on 6 January",
-     "points": [
-       {"text": "Failure means cake revenue below half of last December"},
-       {"text": "We look at the order book on 2 January, together"},
-       {"text": "Nothing about this is permanent until we both say it is"}
-     ]},
-    {"title": "The notice goes up on 1 November, with the menu beside it",
-     "points": [
-       {"text": "One sheet on the door, the same words on the website"},
-       {"text": "Existing custom orders for December are kept"},
-       {"text": "Standing-order customers hear it from us first, in person"}
-     ]},
-    {"title": "Decision: a fixed December menu, reviewed on 2 January",
-     "sub": "If we both agree, the notice goes up on 1 November. If either of us does not, we talk again on Friday."}
+    {
+      "title": "Break each check on purpose before you trust its self-test",
+      "sub": "Thirteen scripts in ten published tools all had a green self-test. A break run on 30 September 2026 showed what those passes did not cover."
+    },
+    {
+      "title": "A green self-test noticed only half of the lines we switched off",
+      "points": [
+        {
+          "text": "34 lines that record a finding or set an exit code were switched off, one at a time",
+          "source": "references/example-data/break-run-before-fixes.txt"
+        },
+        {
+          "text": "17 turned the self-test red on a failing sample",
+          "source": "references/example-data/break-run-before-fixes.txt"
+        },
+        {
+          "text": "11 left it green, and 6 only crashed the script",
+          "source": "references/example-data/break-run-before-fixes.txt"
+        },
+        {
+          "text": "Every one of those self-tests had passed that morning"
+        }
+      ]
+    },
+    {
+      "title": "The line most often left untested is the one that sets the exit code",
+      "points": [
+        {
+          "text": "In 4 of the 8 scripts with a line to break, `return 1 if … else 0` could go and the self-test stayed green",
+          "source": "references/example-data/break-run-before-fixes.txt"
+        },
+        {
+          "text": "A CI job or a git hook reads that exit code, not the printed report"
+        },
+        {
+          "text": "A sample that checks the printed finding does not check the code the script returns"
+        }
+      ]
+    },
+    {
+      "title": "A crash is not a catch, and the verdict has to keep them apart",
+      "points": [
+        {
+          "text": "6 of the 34 breaks ended in a traceback instead of a failing sample",
+          "source": "references/example-data/break-run-before-fixes.txt"
+        },
+        {
+          "text": "A traceback turns the run red for any reason, including a typo in the break itself"
+        },
+        {
+          "text": "Counted as catches, they would have hidden the gap they came from"
+        }
+      ]
+    },
+    {
+      "title": "A script with nothing to break has proved nothing yet",
+      "points": [
+        {
+          "text": "5 of the 13 scripts gave the default pattern no line to break",
+          "source": "references/example-data/break-run-before-fixes.txt"
+        },
+        {
+          "text": "They report in another style, so the pattern has to be told about it"
+        },
+        {
+          "text": "No break run is a missing result, never a pass"
+        }
+      ]
+    },
+    {
+      "title": "One day of fixes moved the count, and the remainder is written down",
+      "points": [
+        {
+          "text": "After the fixes, 67 lines were broken in 12 of the 13 scripts, with wider patterns",
+          "source": "references/example-data/break-run-after-fixes.txt"
+        },
+        {
+          "text": "55 turned the self-test red; 12 still did not",
+          "source": "references/example-data/break-run-after-fixes.txt"
+        },
+        {
+          "text": "Each tool's README now lists its uncovered lines by number instead of saying all were tested"
+        }
+      ]
+    },
+    {
+      "title": "The fix for an uncovered line is one more sample, not a framework",
+      "points": [
+        {
+          "text": "For an exit code: run the script on a failing input and compare what it returns"
+        },
+        {
+          "text": "For a finding: one input that only this line can flag"
+        },
+        {
+          "text": "If no sample can reach the line, the line is decoration and can be deleted"
+        }
+      ]
+    },
+    {
+      "title": "A break run shows which lines are covered, not that nothing else can fail",
+      "points": [
+        {
+          "text": "Only lines that report were broken; the logic that feeds them was not"
+        },
+        {
+          "text": "A mutation-testing framework covers more code and takes longer to set up"
+        },
+        {
+          "text": "This is the check that fits in the minutes before a release"
+        }
+      ]
+    },
+    {
+      "title": "A release note that says the self-test passes should carry its break run",
+      "points": [
+        {
+          "text": "Lines broken, lines caught, lines not caught, with their numbers"
+        },
+        {
+          "text": "The command, so a reader can run it again"
+        },
+        {
+          "text": "The date, because a later edit can uncover a line again"
+        }
+      ]
+    },
+    {
+      "title": "Decision: no checker ships until each reporting line has been switched off once",
+      "sub": "If the self-test stays green with a line switched off, add the sample or delete the line. The break run goes in the README next to the self-test command."
+    }
   ]
 }
 </script>

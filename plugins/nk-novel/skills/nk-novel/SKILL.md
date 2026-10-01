@@ -25,7 +25,8 @@ story bible, that a collaborator can read in a few minutes.
 ## Procedure
 
 Write each stage into `story.json` (field names in [references/schema.md](references/schema.md); a complete
-example is `assets/example-story.json`). Do the stages in order; go back when a later stage breaks an earlier one.
+example is `assets/example-story.json`; a longer one, written by an agent run of this skill, is
+`assets/example-mapmaker.json`). Do the stages in order; go back when a later stage breaks an earlier one.
 
 1. **Premise and retelling.** Write the idea, the genre, and the whole story as one sentence a stranger could
    repeat. If the sentence needs words like "in the story within the story" or "the second timeline", the

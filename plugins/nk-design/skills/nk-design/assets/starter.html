@@ -521,24 +521,26 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
     };
   }
   var KINDS = [
-    {cat: "Utilities", payee: "Demo Utility", lo: 3500, hi: 42000},
-    {cat: "Rent", payee: "Demo Landlord", lo: 110000, hi: 240000},
-    {cat: "Software", payee: "Demo Software", lo: 900, hi: 64000},
-    {cat: "Travel", payee: "Demo Travel", lo: 2400, hi: 185000},
-    {cat: "Supplies", payee: "Demo Supply", lo: 700, hi: 36000}
+    {cat: "Utilities", payees: ["Tarnbeck Hydro", "Pellbrook Water", "Orrin Gas & Power"], lo: 3500, hi: 42000},
+    {cat: "Rent", payees: ["Kestrel Yard Properties", "Marrowby Estates"], lo: 110000, hi: 240000},
+    {cat: "Software", payees: ["Quillstack", "Ledgerfern Cloud", "Brindle Hosting"], lo: 900, hi: 64000},
+    {cat: "Travel", payees: ["Halden Coastline Rail", "Sorrel Air", "Wickham Car Hire"], lo: 2400, hi: 185000},
+    {cat: "Supplies", payees: ["Tindle Office Supply", "Fernwood Print Shop", "Ashby Paper Co"], lo: 700, hi: 36000}
   ];
+  /* a bank export line whose text matches no naming rule: invented, like every payee above (the Demo pill says so) */
+  var UNMATCHED = ["E-TRANSFER REF 20418", "CARD TERMINAL 4471", "CHEQUE 0193", "WIRE IN, NO MEMO", "POS 7730 HALDEN ST"];
   var rnd = mulberry32(SEED), rows = [];
   for (var i = 0; i < COUNT; i++) {
-    var kind = KINDS[Math.floor(rnd() * KINDS.length)], roll = rnd(), no = String(i + 1).padStart(2, "0");
+    var kind = KINDS[Math.floor(rnd() * KINDS.length)], roll = rnd();
     /* amounts are integer cents, so the sums below are exact and "reconciles to the cent" is a real comparison */
-    var r = {id: i + 1, src: "A:" + (i + 2), name: kind.payee + " " + no, cat: kind.cat,
+    var r = {id: i + 1, src: "A:" + (i + 2), name: kind.payees[i % kind.payees.length], cat: kind.cat,
              cents: kind.lo + Math.floor(rnd() * (kind.hi - kind.lo)), rule: "exact alias", status: "Approved",
              reason: "The name matched an exact alias.", history: ["rule exact alias → " + kind.cat]};
     if (roll < 0.05) {
       r.cents = null; r.status = "Needs review";
       r.reason = "The amount cell is empty or not a number."; r.history = ["rule exact alias → " + kind.cat + "; amount unreadable"];
     } else if (roll < 0.12) {
-      r.cat = null; r.rule = "none"; r.name = "Demo Payee " + no; r.status = "Needs review";
+      r.cat = null; r.rule = "none"; r.name = UNMATCHED[i % UNMATCHED.length]; r.status = "Needs review";
       r.reason = "No rule matched the name."; r.history = ["no rule matched"];
     } else if (roll < 0.20) {
       r.rule = "prefix"; r.status = "Needs review";

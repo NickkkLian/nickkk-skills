@@ -5,7 +5,7 @@ license: MIT
 compatibility: standard library only, no packages and no build step; the page it writes has no dependencies and fetches nothing when it opens. probe_check.py needs Google Chrome or Chromium; without one, open the page with ?probe=1 in any browser.
 metadata:
   provenance: own practice (2026-09) — an offline booking-desk template with a staff-approval guard, and a design system built for pages whose numbers can be checked; see Provenance
-  version: 0.1.4
+  version: 0.1.5
 ---
 # Landing page with a booking door
 

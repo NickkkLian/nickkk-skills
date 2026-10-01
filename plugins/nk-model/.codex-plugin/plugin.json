@@ -1,6 +1,6 @@
 {
   "name": "nk-model",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Turn a description of a small business and a few assumptions \u2014 price, units sold, costs, the days customers take to pay, equipment, a loan, tax \u2014 into a three-statement financial model in one .xlsx: income statement, balance sheet and cash flow that tie to each other, a checks sheet, charts, and a sheet of every assumption and the method.",
   "author": {
     "name": "Nick Lian",
