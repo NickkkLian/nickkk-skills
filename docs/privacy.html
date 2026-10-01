@@ -1,61 +1,108 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Privacy policy · nickkk-skills</title>
-<meta name="description" content="Privacy policy for the nk-* agent skills by Nick Lian: the skills run in your own environment and send nothing to the author.">
+<title>Privacy Policy · nickkk-skills</title>
+<meta name="description" content="Privacy Policy for the nk-* agent skills and the nickkk-skills website, published by Nick Lian.">
 <meta name="theme-color" content="#faece9">
 <link rel="stylesheet" href="fonts/brand-fonts.css">
 <link rel="stylesheet" href="design-tokens.css">
 <style>
 *,*::before,*::after{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:var(--weight-regular) var(--text-md)/var(--leading-normal) var(--font-sans)}
-main{max-width:720px;margin:0 auto;padding:var(--space-8) var(--gutter) var(--space-8)}
+body{margin:0;background:var(--bg);color:var(--text);font:var(--weight-regular) var(--text-md)/1.65 var(--font-sans)}
+main{max-width:760px;margin:0 auto;padding:var(--space-8) var(--gutter) var(--space-8)}
 a{color:var(--accent-text)}
-h1{font-family:var(--font-display);font-size:var(--text-2xl);margin:0 0 var(--space-2)}
-h2{font-family:var(--font-display);font-size:var(--text-lg);margin:var(--space-6) 0 var(--space-2)}
-p,li{max-width:65ch}
-.meta{color:var(--text-2);font-size:var(--text-sm);margin:0 0 var(--space-4)}
-table{border-collapse:collapse;width:100%;margin:var(--space-2) 0}
-th,td{text-align:left;vertical-align:top;padding:8px 12px 8px 0;border-bottom:1px solid var(--border);font-size:var(--text-sm)}
-th{color:var(--text-2);font-weight:var(--weight-regular);width:38%}
+.crumb{color:var(--text-2);font-size:var(--text-sm);margin:0 0 var(--space-4)}
+h1{font-family:var(--font-display);font-size:var(--text-2xl);line-height:1.2;margin:0 0 var(--space-2)}
+.dates{color:var(--text-2);font-size:var(--text-sm);margin:0 0 var(--space-6);padding-bottom:var(--space-4);border-bottom:1px solid var(--border)}
+h2{font-family:var(--font-display);font-size:var(--text-lg);line-height:1.3;margin:var(--space-6) 0 var(--space-2)}
+h3{font-size:var(--text-md);font-weight:600;margin:var(--space-4) 0 var(--space-1)}
+p,li{max-width:68ch}
+ul{padding-left:1.2em}
+li{margin-bottom:6px}
+table{border-collapse:collapse;width:100%;margin:var(--space-3) 0}
+th,td{text-align:left;vertical-align:top;padding:10px 14px 10px 0;border-bottom:1px solid var(--border);font-size:var(--text-sm)}
+thead th{color:var(--text-2);font-weight:600;border-bottom:1px solid var(--text-2)}
+tbody th{font-weight:600;width:30%}
+.toc{font-size:var(--text-sm);margin:0 0 var(--space-4);padding-left:1.4em}
+.toc li{margin-bottom:2px}
+address{font-style:normal}
+footer{margin-top:var(--space-8);padding-top:var(--space-4);border-top:1px solid var(--border);color:var(--text-2);font-size:var(--text-sm)}
 </style>
 </head>
 <body>
 <main>
-<p class="meta"><a href="./">nickkk-skills</a></p>
-<h1>Privacy policy</h1>
-<p class="meta">Applies to the nk-* agent skills published by Nick Lian at github.com/NickkkLian, including their listings in plugin directories. Last updated 2026-10-01.</p>
+<p class="crumb"><a href="./">nickkk-skills</a> / Privacy Policy</p>
+<h1>Privacy Policy</h1>
+<p class="dates">Effective date: October 1, 2026 · Last updated: October 1, 2026</p>
 
-<h2>The short version</h2>
-<p>These skills run where your assistant runs them. They send nothing to me. I do not collect, receive, store or sell any data about you or your files.</p>
+<p>This Privacy Policy describes how Nick Lian ("we", "us" or "our") handles information in connection with (a) the nk-* agent skills and plugins published at <a href="https://github.com/NickkkLian">github.com/NickkkLian</a>, including their listings in third-party plugin directories (the "Skills"), and (b) the website at nickkklian.github.io/nickkk-skills (the "Site"). By installing or using the Skills, or by visiting the Site, you acknowledge the practices described in this Policy.</p>
 
-<h2>What a skill is</h2>
-<p>A skill is a folder of written instructions and small Python scripts. Your AI assistant (ChatGPT, Codex or Claude Code) reads the instructions, and the scripts run on your computer or in the assistant's own sandbox. There is no server of mine behind them, no account and no sign-up.</p>
+<ol class="toc">
+<li><a href="#summary">Summary</a></li>
+<li><a href="#how-skills-work">How the Skills operate</a></li>
+<li><a href="#collect">Information we collect</a></li>
+<li><a href="#use">How we use and disclose information</a></li>
+<li><a href="#third-parties">Third-party services</a></li>
+<li><a href="#retention">Data retention</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#rights">Your rights and choices</a></li>
+<li><a href="#children">Children's privacy</a></li>
+<li><a href="#changes">Changes to this Policy</a></li>
+<li><a href="#contact">Contact</a></li>
+</ol>
 
-<h2>What I collect</h2>
+<h2 id="summary">1. Summary</h2>
+<p>The Skills are executed entirely within the environment of the AI assistant you use. We do not operate any server that receives data from the Skills, and we do not collect, store, sell or share personal information through them. The Site does not use cookies, advertising or analytics.</p>
+
+<h2 id="how-skills-work">2. How the Skills operate</h2>
+<p>Each Skill consists of written instructions and Python scripts that are distributed as files. When a Skill is used, your AI assistant (for example ChatGPT, Codex or Claude Code) reads the instructions and runs the scripts on your device or within the assistant's own sandboxed environment. The Skills require no account with us and no registration. The scripts included in the Skills do not initiate network requests. Files, prompts and outputs processed by a Skill remain within your environment and that of your assistant.</p>
+
+<h2 id="collect">3. Information we collect</h2>
 <table>
-<tr><th>Personal data collected by me</th><td>None.</td></tr>
-<tr><th>Purposes of use</th><td>None, because nothing is collected.</td></tr>
-<tr><th>Recipients</th><td>None. Nothing is shared or sold.</td></tr>
-<tr><th>Retention</th><td>Nothing reaches me, so nothing is kept.</td></tr>
-<tr><th>Analytics or tracking in the skills</th><td>None. I cannot see who installed a skill or what you do with it.</td></tr>
+<thead><tr><th scope="col">Category</th><th scope="col">Skills</th><th scope="col">Site</th></tr></thead>
+<tbody>
+<tr><th scope="row">Personal information you provide</th><td>None collected</td><td>None collected</td></tr>
+<tr><th scope="row">Files, prompts and outputs</th><td>Not transmitted to us</td><td>Not applicable</td></tr>
+<tr><th scope="row">Usage data, analytics and telemetry</th><td>None collected</td><td>None collected</td></tr>
+<tr><th scope="row">Cookies and similar technologies</th><td>Not applicable</td><td>No cookies. A display-theme preference is stored in your browser's local storage and is not transmitted.</td></tr>
+<tr><th scope="row">Server logs</th><td>Not applicable</td><td>Maintained by the hosting provider (see Section 5); not accessible to us in identifiable form.</td></tr>
+</tbody>
 </table>
-<p>The scripts in the skills make no network requests of their own. Your files, prompts and results stay where your assistant works with them.</p>
+<p>We do not have the technical means to identify who has installed a Skill or how it is used.</p>
 
-<h2>Other parties you should know about</h2>
+<h2 id="use">4. How we use and disclose information</h2>
+<p>Because we do not collect personal information through the Skills or the Site, we do not use, sell, rent, share or otherwise disclose personal information, and we do not use any information for advertising, profiling or the training of machine-learning models.</p>
+
+<h2 id="third-parties">5. Third-party services</h2>
+<p>Your use of the Skills and the Site may involve third parties whose processing is governed by their own terms and privacy policies, which we encourage you to review:</p>
 <ul>
-<li><strong>Your assistant.</strong> The company that runs your assistant (for example OpenAI or Anthropic) handles your conversation and the files you give it under its own privacy policy. The skills do not change that.</li>
-<li><strong>Programs you already use.</strong> Some skills start programs that are on your machine, such as git, a browser for a print check, or your assistant's command-line tool. Those programs talk to the services you have set up for them (for example your own git remote), as they would if you ran them yourself.</li>
-<li><strong>Web fonts in generated pages.</strong> Several skills write an HTML page for you (a report, a deck, a tool). When you open such a page with an internet connection, your browser may load fonts from Google Fonts, so Google receives an ordinary font request (your IP address and browser details). Your data is inside the page file and is not sent. Offline, the pages fall back to system fonts.</li>
-<li><strong>This website and the code.</strong> This site and the repositories are hosted by GitHub, which keeps its own visit logs under GitHub's privacy statement. I set no cookies and run no analytics here. The site remembers your colour theme in your browser's local storage.</li>
+<li><strong>AI assistant providers.</strong> The provider of the assistant in which you run a Skill (for example OpenAI or Anthropic) processes your conversations and files in accordance with its own policies. The Skills do not alter that processing.</li>
+<li><strong>Software on your device.</strong> Certain Skills invoke software already installed in your environment, such as Git, a web browser or your assistant's command-line interface. Such software communicates only with the services you have configured for it, as it would if you ran it directly.</li>
+<li><strong>Google Fonts.</strong> Some Skills generate HTML documents (for example reports or slide decks). When such a document is opened with an internet connection, your browser may request font files from Google Fonts, which results in Google receiving standard request information such as your IP address and browser type. The contents of the document are not transmitted. Without a connection, system fonts are used.</li>
+<li><strong>GitHub.</strong> The Site and the Skills' source repositories are hosted by GitHub, Inc. GitHub may log technical information about visits, including IP addresses, in accordance with the GitHub Privacy Statement.</li>
 </ul>
 
-<h2>Your controls</h2>
-<p>Uninstall a skill at any time from your assistant's plugin settings. Files a skill wrote are ordinary files in your own folders: delete them as you would any file. There is nothing to request from me, because I hold nothing.</p>
+<h2 id="retention">6. Data retention</h2>
+<p>We do not receive personal information through the Skills or the Site and therefore retain none. Files created by a Skill are stored in locations you control and remain there until you delete them.</p>
 
-<h2>Children</h2>
-<p>The skills are developer and office tools and are not directed at children.</p>
+<h2 id="security">7. Security</h2>
+<p>The Skills are published as open source, and their complete contents can be inspected before installation. Because no data is transmitted to us, the security of information processed by a Skill depends on your own environment and on your assistant provider.</p>
 
-<h2>Changes and contact</h2>
-<p>If this policy changes, the date at the top changes and the earlier text stays in the repository history. Questions: open an issue at <a href="https://github.com/NickkkLian/nickkk-skills/issues">github.com/NickkkLian/nickkk-skills/issues</a>.</p>
+<h2 id="rights">8. Your rights and choices</h2>
+<p>You may uninstall a Skill at any time through your assistant's plugin or skill settings, and you may delete any file a Skill has created. Depending on where you live, you may have rights under applicable law to access, correct or delete personal information held about you. As we hold no personal information relating to users of the Skills or visitors to the Site, there is ordinarily nothing for us to provide, correct or delete; you may nonetheless contact us with any request or question using the details in Section 11. Requests concerning data held by a third party listed in Section 5 should be directed to that party.</p>
+
+<h2 id="children">9. Children's privacy</h2>
+<p>The Skills and the Site are intended for a general professional audience and are not directed to children under the age of 13. We do not knowingly collect personal information from children.</p>
+
+<h2 id="changes">10. Changes to this Policy</h2>
+<p>We may update this Policy from time to time. The "Last updated" date above indicates when it was most recently revised, and prior versions remain available in the public history of the repository. Material changes take effect when the revised Policy is posted on this page.</p>
+
+<h2 id="contact">11. Contact</h2>
+<address>
+Nick Lian<br>
+Privacy inquiries: <a href="https://github.com/NickkkLian/nickkk-skills/issues">github.com/NickkkLian/nickkk-skills/issues</a><br>
+Developer profile: <a href="https://github.com/NickkkLian">github.com/NickkkLian</a>
+</address>
+
+<footer>© 2026 Nick Lian. The Skills are released under the MIT License.</footer>
 </main>
 </body></html>
