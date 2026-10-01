@@ -1,0 +1,27 @@
+{
+  "name": "nk-x-post-desk",
+  "version": "0.1.0",
+  "description": "Turn drafted X posts and threads into a one-tap posting page: prefilled composer links, replies chained in order, character counts. No API key, no account connection; you press Post.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-x-post-desk",
+  "repository": "https://github.com/NickkkLian/nk-x-post-desk",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "x",
+    "twitter",
+    "posting"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "X Post Desk",
+    "shortDescription": "Post drafts to X by hand",
+    "longDescription": "Turn a folder of drafted X posts into one page of prefilled composer links that the user presses themselves. The agent writes each post as a folder (post.md: the root post, then each reply, separated by a line of =====; at most one picture; an optional picture description), and scripts/build_desk.py checks every part the way X counts it (280, any link or bare domain counts 23, wide characters count 2), refuses a link in the root post unless that is allowed, and a folder that does not keep the format, and writes one self-contained desk.html: a card per post with the picture, a button that opens X's composer with the text filled in, a field for the published post's link that turns the next part into a reply to it, copy buttons and a posted mark. Nothing is posted, no account is connected, no API key, and the page asks no other site for anything. Use when you have drafted posts or a thread for X and the user will publish by hand. Not a scheduler, and it cannot attach the picture.",
+    "developerName": "Nick Lian",
+    "category": "Productivity",
+    "capabilities": []
+  }
+}
