@@ -3,6 +3,7 @@
 
     python3 breakcheck.py --root <dir> --cmd "python3 checker.py --selftest" --spec mutations.json
     python3 breakcheck.py --root <dir> --cmd "python3 checker.py --selftest" --auto checker.py [--pattern REGEX]
+    python3 breakcheck.py --demo        # the same matrix on a bundled 12-line checker whose rule B has no sample
     python3 breakcheck.py --selftest
 
 The target directory is copied to a temporary sandbox; only the copy is mutated. For every mutation four
@@ -14,6 +15,7 @@ things must hold (a "break matrix"):
           matches --pattern (default: append((, assert, raise, sys.exit(1), return 1); a mutation that leaves
           the self-test green is reported as UNCOVERED — the line is decorative or the self-test has no
           sample for it. A mutation that produces a traceback is reported as CRASH (not a detection).
+          Lines inside a docstring are skipped: they are text, not code.
 Exit: 0 every mutation caught and control green · 1 otherwise · 2 self-test failed / usage error / zero mutations
 (a matrix that broke nothing proves nothing, so it is never green).
 """
@@ -46,12 +48,30 @@ def apply_mutation(dst, m):
     open(p, "w", encoding="utf-8").write(s.replace(m["find"], m["replace"], 1))
 
 
+def docstring_lines(src):
+    """0-based numbers of the lines that sit inside a docstring (a module, class or function's first string). Until
+    0.1.2 a docstring line that mentioned `raise` or `return 1` was neutralised like code and reported as UNCOVERED."""
+    import ast
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return set()
+    out = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)) and node.body:
+            first = node.body[0]
+            if isinstance(first, ast.Expr) and isinstance(getattr(first, "value", None), ast.Constant) and isinstance(first.value.value, str):
+                out.update(range(first.lineno - 1, first.end_lineno))
+    return out
+
+
 def auto_mutations(root, rel, pattern):
-    lines = open(os.path.join(root, rel), encoding="utf-8").read().split("\n")
-    rx, out = re.compile(pattern), []
+    src = open(os.path.join(root, rel), encoding="utf-8").read()
+    lines = src.split("\n")
+    rx, out, doc = re.compile(pattern), [], docstring_lines(src) if rel.endswith(".py") else set()
     for i, line in enumerate(lines):
         st = line.strip()
-        if not st or st.startswith("#") or not rx.search(line):
+        if not st or st.startswith("#") or i in doc or not rx.search(line):
             continue
         indent = line[: len(line) - len(line.lstrip())]
         out.append({"name": f"L{i + 1}: {st[:60]}", "line": i, "file": rel, "indent": indent})
@@ -107,7 +127,8 @@ def report(rows):
     for name, colour, verdict in rows:
         mark = "✔" if verdict in ("ok", "CAUGHT") else "✘"
         print(f"  {mark} {name.ljust(w)}  {colour:<6} {verdict}")
-    print(f"{'✔' if not bad else '✘'} {len(rows) - 1} mutations, {len(bad)} problems"
+    n = len(rows) - 1
+    print(f"{'✔' if not bad else '✘'} {n} mutation{'' if n == 1 else 's'}, {len(bad)} problem{'' if len(bad) == 1 else 's'}"
           + ("" if not bad else " — UNCOVERED = decorative check or missing sample; CRASH = mutation invalid, not a detection"))
     return 0 if not bad else 1
 
@@ -161,21 +182,27 @@ def selftest():
             {"name": "red elsewhere", "file": "checker.py", "find": 'if "AAA" in s:', "replace": "if False:", "must_mention": "rule Z"}]
     rows = matrix(tmp, cmd, spec)
     v = {r[0]: r[2] for r in rows}
-    chk(v["flip rule A"] == "CAUGHT", f"spec: flipping rule A is CAUGHT and names 'rule A' ({v['flip rule A']})")
-    chk(v["syntax error"] == "CRASH", f"spec: a syntax error is CRASH, not a detection ({v['syntax error']})")
-    chk(v["wrong anchor"].startswith("BAD-ANCHOR"), f"spec: a missing anchor is refused ({v['wrong anchor'][:10]})")
-    chk(v["red elsewhere"] == "RED-ELSEWHERE", f"spec: red on the wrong assertion is RED-ELSEWHERE ({v['red elsewhere']})")
+    got = lambda name: v.get(name, "no row")             # a missing row fails its check instead of crashing the self-test
+    chk(got("flip rule A") == "CAUGHT", f"spec: flipping rule A is CAUGHT and names 'rule A' ({got('flip rule A')})")
+    chk(got("syntax error") == "CRASH", f"spec: a syntax error is CRASH, not a detection ({got('syntax error')})")
+    chk(got("wrong anchor").startswith("BAD-ANCHOR"), f"spec: a missing anchor is refused ({got('wrong anchor')[:10]})")
+    chk(got("red elsewhere") == "RED-ELSEWHERE", f"spec: red on the wrong assertion is RED-ELSEWHERE ({got('red elsewhere')})")
+    word = "rai" + "se"                                  # kept apart so that this line is not a candidate itself
+    doc_checker = CHECKER.replace("def check(s):\n", f'def check(s):\n    """Collects findings; callers {word} on any."""\n')
+    open(os.path.join(tmp, "doc.py"), "w").write(doc_checker)
+    names = [m["name"] for m in auto_mutations(tmp, "doc.py", DEFAULT_PATTERN)]
+    chk(len(names) == 2 and not any("Collects" in n for n in names), f"auto: a docstring line that matches the pattern is not a candidate ({len(names)} candidates)")
     import contextlib, io
     with contextlib.redirect_stdout(io.StringIO()) as quiet:
         zero = report(matrix(tmp, cmd, auto_mutations(tmp, "checker.py", r"NO_LINE_MATCHES_THIS"), auto=True))
     chk(zero == 2 and "proves nothing" in quiet.getvalue(), f"zero candidate lines is exit 2 'proves nothing', never a green 0 mutations ({zero})")
     rows = matrix(tmp, f"{sys.executable} -c 'import sys; sys.exit(1)'", spec[:1])
-    chk(rows[0][2] == "CONTROL-RED" and rows[1][2] == "CONTROL-RED", "an always-red command is reported as CONTROL-RED, never as caught")
+    chk([r[2] for r in rows] == ["CONTROL-RED", "CONTROL-RED"], "an always-red command is reported as CONTROL-RED, never as caught")
     open(os.path.join(tmp, "checker.py"), "w").write(MIXED_CHECKER)
     rows = matrix(tmp, cmd, [{"name": "passing name only", "file": "checker.py", "find": 'if "BBB" in s:',
                               "replace": "if False:", "must_mention": "rule A"}])
-    chk(rows[0][2] == "ok" and rows[1][2] == "RED-ELSEWHERE",
-        f"spec: must_mention only on a passing line is RED-ELSEWHERE ({rows[1][2]})")
+    chk([r[2] for r in rows] == ["ok", "RED-ELSEWHERE"],
+        f"spec: must_mention only on a passing line is RED-ELSEWHERE ({[r[2] for r in rows]})")
     for prefix in ("✘", "✗", "×", "FAIL", "FAILED:", "failure", "eRrOr:"):
         chk(judge(0, 1, f"  {prefix} rule A", "rule A") == "CAUGHT", f"failure prefix {prefix} names the assertion")
     for output in ("  ✔ rule A", "rule A", "  FAILEDLY rule A", "note: FAIL rule A", ""):
@@ -184,10 +211,22 @@ def selftest():
     return ok, lines
 
 
+def demo():
+    """The matrix on the bundled example: a checker with two rules and a self-test that has a sample for rule A only."""
+    tmp = tempfile.mkdtemp(prefix="breakcheck_demo_")
+    open(os.path.join(tmp, "checker.py"), "w").write(CHECKER)
+    print("demo: a 12-line checker with rule A and rule B; its self-test has a sample for rule A only\n"
+          "$ python3 checker.py --selftest   →  selftest ok (exit 0)\n"
+          "$ breakcheck.py --root . --cmd \"python3 checker.py --selftest\" --auto checker.py --pattern '\\.append\\(\\('")
+    code = report(matrix(tmp, f"{sys.executable} checker.py --selftest", auto_mutations(tmp, "checker.py", r"\.append\(\("), auto=True))
+    shutil.rmtree(tmp, ignore_errors=True)
+    return code
+
+
 def main():
     ap = argparse.ArgumentParser(add_help=False)
     ap.add_argument("--root"); ap.add_argument("--cmd"); ap.add_argument("--spec"); ap.add_argument("--auto")
-    ap.add_argument("--pattern", default=DEFAULT_PATTERN); ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--pattern", default=DEFAULT_PATTERN); ap.add_argument("--selftest", action="store_true"); ap.add_argument("--demo", action="store_true")
     ap.add_argument("-h", "--help", action="store_true")
     a = ap.parse_args()
     ok, lines = selftest()
@@ -197,12 +236,14 @@ def main():
             print("✘ selftest failed — results would not be trustworthy"); return 2
         if a.selftest:
             return 0
+    if a.demo:
+        return demo()
     if a.help or not (a.root and a.cmd and (a.spec or a.auto)):
         print(__doc__); return 2
     root = os.path.abspath(a.root)
     if a.auto:
         muts = auto_mutations(root, a.auto, a.pattern)
-        print(f"auto mode: {len(muts)} candidate lines in {a.auto} matching /{a.pattern}/")
+        print(f"auto mode: {len(muts)} candidate line{'' if len(muts) == 1 else 's'} in {a.auto} matching /{a.pattern}/")
         return report(matrix(root, a.cmd, muts, auto=True))
     muts = json.load(open(a.spec))["mutations"]
     return report(matrix(root, a.cmd, muts))

@@ -4,7 +4,7 @@ description: Make a checker, validator, linter, gate or test suite prove it can 
 license: MIT
 metadata:
   provenance: own practice (2026-08 to 2026-09); no external source
-  version: 0.1.0
+  version: 0.1.3
 ---
 # Breakable self-test
 
@@ -70,6 +70,8 @@ self-test "works" without the table is the thing this skill exists to stop.
 ## Boundaries
 
 - `--auto` only understands Python line structure; for shell/JS/other files use `--spec`.
+- `--auto` skips docstrings (0.1.3); a pattern word inside any other string still counts as a line.
+- To see a matrix before pointing it at your own code: `python3 <skill-dir>/scripts/breakcheck.py --demo`.
 - Point `--auto` at the file that does the checking, not at the self-test's own assertions: neutralising an
   assertion can only make the self-test *more* lenient, so every such row reads UNCOVERED by construction.
 - Neutralising a line that is part of a multi-line expression yields `CRASH`; use `--spec` for those.

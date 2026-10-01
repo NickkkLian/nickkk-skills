@@ -93,6 +93,18 @@ def freeze_line(name, rec, with_stderr=True):
             + ("   ⚠️ empty output and no files — is the baseline alive?" if not rec["stdout"] and not rec["file_sha"] else ""))
 
 
+def usage_problem(cmd, bdir, name, manifest, mode):
+    """What is missing from the command line, as one line, or None. Until 0.1.1 `compare` without --name ended in a
+    Python traceback instead of this line."""
+    if not bdir:
+        return "--dir is required"
+    if cmd in ("freeze", "compare") and not name:
+        return f"{cmd} needs --name <name> (see: baseline.py list --dir {bdir})"
+    if cmd == "run" and (not manifest or not mode):
+        return "run needs --manifest <file> and --mode freeze|compare"
+    return None
+
+
 def selftest():
     ok, lines = True, []
 
@@ -121,6 +133,11 @@ def selftest():
         chk(rc == 1 and any("exit code 0 → 3" in m for m in msg) and any("out.json: missing now" in m for m in msg), "exit-code change and missing output file are both reported")
         rc, msg = compare(bdir, "nope")
         chk(rc == 2, "an unknown baseline name is exit 2, not a clean 0")
+        chk("needs --name" in (usage_problem("compare", bdir, None, None, None) or "") and "needs --name" in (usage_problem("freeze", bdir, None, None, None) or ""),
+            "compare or freeze without --name is a one-line usage message, not a traceback")
+        chk("--manifest" in (usage_problem("run", bdir, None, None, "compare") or "") and "--dir" in (usage_problem("list", None, None, None, None) or ""),
+            "run without --manifest, and any command without --dir, say what is missing")
+        chk(usage_problem("compare", bdir, "totals", None, None) is None and usage_problem("list", bdir, None, None, None) is None, "a complete command line has no usage problem (control)")
         open(tool, "w").write("print('total 42')\nprint('run at 2026-01-01T00:00:00')\nimport json; json.dump({'a':1}, open('out.json','w'))\n")
         rec = freeze(bdir, "t2", cmd, d, [], [r"\d{4}-\d{2}-\d{2}T[\d:.]+"])
         open(tool, "w").write("print('total 42')\nprint('run at 2027-05-05T11:22:33')\n")
@@ -142,8 +159,9 @@ def main():
     if a.selftest or not ok:
         print(f"baseline selftest · {sum(l.startswith('  ✔') for l in lines)}/{len(lines)} passed"); print("\n".join(lines))
         return 0 if ok else 2
-    if not a.dir:
-        print("--dir is required"); return 2
+    problem = usage_problem(a.cmd, a.dir, a.name, a.manifest, a.mode)
+    if problem:
+        print(problem); return 2
     if a.cmd == "list":
         for f in sorted(glob.glob(os.path.join(a.dir, "*.json"))):
             r = json.load(open(f)); print(f"{r['name']:<24} exit={r['exit']} stdout={nbytes(r['stdout'])}B files={len(r['file_sha'])}  {' '.join(r['cmd'])[:60]}")

@@ -4,7 +4,7 @@ description: Write rules for an AI agent that actually change what it does. Use 
 license: MIT
 metadata:
   provenance: own practice (2026-07 to 2026-09), learned partly from reading published prompt-engineering material and then rebuilt from own incidents; see Provenance
-  version: 0.1.3
+  version: 0.1.4
 ---
 # Rules that land
 
@@ -60,6 +60,14 @@ finds every directive (must / never / always / do not …) and reports:
 | OVERFIT | more than twelve directives in one file |
 
 Read the result as a to-do list: each NO-ENFORCEMENT is a rule that will be broken on a busy day.
+
+Say it plainly: the script checks one convention, the two tags above, and nothing else. It is for someone who has
+decided to write rules that way and wants to see which ones still lack a reason or an enforcement. On a rules file
+that never used the tags, every rule is listed and the first line of the output says so; that is an inventory of
+rules that rely on being remembered, not a verdict on the file. If the file already marks reasons or enforcement
+with its own words, pass them: `--why-tags because,reason --enforced-tags ci,test`. For a general review of an
+instruction file (outdated or conflicting instructions), Claude Code's own `/doctor prompt-audit` is the tool;
+this script does not do that.
 
 ## Writing the rule itself (form)
 

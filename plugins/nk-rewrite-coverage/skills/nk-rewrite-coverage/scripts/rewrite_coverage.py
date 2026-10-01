@@ -102,7 +102,7 @@ def report(old_p, new_p, min_len=3, ledger_p=None, out_p=None):
     if not old.strip() or not new.strip():
         return 2, ["one of the files is empty"]
     its, un, so, sn = coverage(old, new, min_len)
-    lines = [f"old: {len(its)} items (headings, bold terms, table cells) · unaccounted in new: {len(un)}"]
+    lines = [f"old: {len(its)} item{'' if len(its) == 1 else 's'} (headings, bold terms, table cells) · unaccounted in new: {len(un)}"]
     lines.append("structure  " + "  ".join(f"{k} {so[k]}→{sn[k]}" for k in so))
     ratio = sn["chars"] / max(1, so["chars"])
     if ratio < 0.6:

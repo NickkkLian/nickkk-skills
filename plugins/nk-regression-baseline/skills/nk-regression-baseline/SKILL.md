@@ -4,7 +4,7 @@ description: Freeze the byte-exact output of production code on its default inpu
 license: MIT
 metadata:
   provenance: own practice (2026-08 to 2026-09); no external source
-  version: 0.1.0
+  version: 0.1.2
 ---
 # Regression baseline
 

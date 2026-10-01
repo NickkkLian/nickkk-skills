@@ -4,7 +4,7 @@ description: Stop a one-line edit to a JSON or YAML data file from re-indenting 
 license: MIT
 metadata:
   provenance: own practice (2026-08); no external source
-  version: 0.1.0
+  version: 0.1.2
 ---
 # Indent guard
 

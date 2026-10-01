@@ -75,13 +75,28 @@ def verify(evdir):
         meta = json.load(open(os.path.join(evdir, d, "meta.json")))
         missing = [f for f in FILES if not os.path.isfile(os.path.join(evdir, d, f))]
         if missing:
-            rows.append((d, "INCOMPLETE", ", ".join(missing))); bad += 1; continue
+            rows.append((d, "INCOMPLETE", ", ".join(missing))); bad += 1
+        if missing:
+            continue
         edited = [f for f in FILES if sha(os.path.join(evdir, d, f)) != meta.get("sha256", {}).get(f)]
         if edited:
             rows.append((d, "EDITED", ", ".join(edited))); bad += 1
         else:
             rows.append((d, "intact", ""))
     return rows, bad
+
+
+def verify_report(evdir, out=print):
+    """Print the verify table and return the exit code. A folder that is missing, or holds no bundle, is a failure:
+    nothing was verified, and "0 bundles, 0 not trustworthy" used to print green on exactly that (fixed in 0.1.4)."""
+    rows, bad = verify(evdir)
+    if not rows:
+        out(f"✘ no such evidence folder: {evdir} (nothing was verified)" if not os.path.isdir(evdir) else f"✘ 0 bundles in {evdir} (nothing was verified)")
+        return 1
+    for d, state, detail in rows:
+        out(f"  {'✔' if state == 'intact' else '✘'} {d}  {state} {detail}")
+    out(f"{'✔' if not bad else '✘'} {len(rows)} bundle{'' if len(rows) == 1 else 's'}, {bad} not trustworthy")
+    return 1 if bad else 0
 
 
 def index(evdir):
@@ -107,15 +122,25 @@ def selftest():
         meta = json.load(open(os.path.join(b, "meta.json")))
         chk(meta["claim"] == "prints hello" and meta["sha256"]["stdout.txt"] == sha(os.path.join(b, "stdout.txt")), "meta carries the claim and matching hashes")
         chk(open(os.path.join(b, "command.txt")).read().startswith("cd "), "command.txt starts with the cwd (re-runnable)")
+        said = []
+        chk(verify_report(os.path.join(tmp, "no-such-folder"), said.append) == 1 and "no such evidence folder" in " ".join(said),
+            "verify: a missing folder fails and says so (never green on nothing)")
+        os.makedirs(os.path.join(tmp, "empty")); said = []
+        chk(verify_report(os.path.join(tmp, "empty"), said.append) == 1 and "0 bundles" in " ".join(said), "verify: a folder with no bundle fails and says so")
+        state = lambda rows, i=1: rows[0][i] if rows else ""   # a missing row fails its check instead of crashing the self-test
         rows, bad = verify(ev)
-        chk(bad == 0 and rows[0][1] == "intact", "verify: untouched bundle is intact (control)")
+        chk(bad == 0 and state(rows) == "intact", "verify: untouched bundle is intact (control)")
+        said = []
+        chk(verify_report(ev, said.append) == 0 and said and said[-1].startswith("✔ 1 bundle, 0 not"), "verify: an intact folder exits 0 with the count")
         with open(os.path.join(b, "stdout.txt"), "a") as fh:
             fh.write("all tests passed\n")
         rows, bad = verify(ev)
-        chk(bad == 1 and rows[0][1] == "EDITED" and "stdout.txt" in rows[0][2], "verify: an appended line is reported as EDITED stdout.txt")
+        chk(bad == 1 and state(rows) == "EDITED" and "stdout.txt" in state(rows, 2), "verify: an appended line is reported as EDITED stdout.txt")
+        said = []
+        chk(verify_report(ev, said.append) == 1 and said and said[-1].startswith("✘ 1 bundle, 1 not"), "verify: an edited bundle exits 1")
         os.remove(os.path.join(b, "stderr.txt"))
         rows, bad = verify(ev)
-        chk(rows[0][1] == "INCOMPLETE", "verify: a deleted file is reported as INCOMPLETE")
+        chk(bad == 1 and state(rows) == "INCOMPLETE", "verify: a deleted file is reported as INCOMPLETE")
         b2, rc2 = run_bundle(ev, "missing", argv=["definitely-not-a-command-xyz"], cwd=tmp, quiet=True)
         chk(rc2 == 127 and "not found" in open(os.path.join(b2, "stderr.txt")).read(), "a missing command is exit 127 with the reason in stderr, bundle still written")
         b3, rc3 = run_bundle(ev, "slow", argv=[sys.executable, "-c", "import time; time.sleep(5)"], cwd=tmp, timeout=1, quiet=True)
@@ -148,11 +173,7 @@ def main():
         for d, rc, claim, h, cmd in index(a.dir):
             print(f"{d}  exit={rc:<4} {h}  {claim}  | {cmd}")
         return 0
-    rows, bad = verify(a.dir)
-    for d, state, detail in rows:
-        print(f"  {'✔' if state == 'intact' else '✘'} {d}  {state} {detail}")
-    print(f"{'✔' if not bad else '✘'} {len(rows)} bundles, {bad} not trustworthy")
-    return 1 if bad else 0
+    return verify_report(a.dir)
 
 
 if __name__ == "__main__":

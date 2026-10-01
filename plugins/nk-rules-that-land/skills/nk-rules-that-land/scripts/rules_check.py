@@ -2,8 +2,13 @@
 """rules_check.py — audit a rules file (CLAUDE.md, AGENTS.md, a team playbook): does every rule say why (its incident,
 when there is one), and is it enforced by something that exists and runs?
 
-    python3 rules_check.py <rules.md> [--base DIR] [--run] [--json OUT]
+    python3 rules_check.py <rules.md> [--base DIR] [--run] [--json OUT] [--why-tags a,b] [--enforced-tags a,b]
     python3 rules_check.py --selftest
+
+It checks one convention and nothing else: it cannot tell a good rule from a bad one. On a rules file that does not use
+the two tags below, every rule is listed; read that list as "these rely on being remembered", not as a verdict on the
+file. If your file already marks reasons or enforcement with other words (Because:, Reason:, CI:, Test:), pass them with
+--why-tags / --enforced-tags and they count too.
 
 A rule is a list item or paragraph that contains a directive (must / never / always / do not / don't / forbidden /
 required / prohibited / refuse), or one of their Chinese equivalents (references/rule-format.md lists them). Inside
@@ -21,8 +26,6 @@ Exit: 0 clean · 1 findings · 2 selftest failed / usage.
 import json, os, re, shlex, subprocess, sys, tempfile
 
 DIRECTIVE = re.compile(r"\b(must|never|always|do not|don't|forbidden|required|prohibited|refuse)\b|必须|不许|禁止|一律|绝不|不得", re.I)
-INCIDENT = re.compile(r"(?i)\b(incident|why)\s*:")
-ENFORCED = re.compile(r"(?i)\b(enforced by|gate|hook|check)\s*:\s*`?([^`\n]+?)`?\s*$", re.M)
 OVERFIT_AT = 12
 
 
@@ -42,7 +45,14 @@ def blocks(md):
     return out
 
 
-def audit(path, base=None, run=False):
+def tag_rx(words, tail):
+    return re.compile(r"(?i)\b(" + "|".join(re.escape(w.strip()) for w in words if w.strip()) + r")\s*:" + tail, re.M)
+
+
+def audit(path, base=None, run=False, why_tags=(), enforced_tags=()):
+    """why_tags / enforced_tags: extra words accepted in front of the colon, next to the built-in ones."""
+    INCIDENT = tag_rx(["incident", "why", *why_tags], "")
+    ENFORCED = tag_rx(["enforced by", "gate", "hook", "check", *enforced_tags], r"\s*`?([^`\n]+?)`?\s*$")
     md = open(path, encoding="utf-8").read()
     base = base or os.path.dirname(os.path.abspath(path))
     rules, findings = [], []
@@ -57,7 +67,9 @@ def audit(path, base=None, run=False):
         if not has_inc:
             findings.append(("NO-INCIDENT", line_no, title))
         if not target:
-            findings.append(("NO-ENFORCEMENT", line_no, title)); continue
+            findings.append(("NO-ENFORCEMENT", line_no, title))
+        if not target:
+            continue
         tokens = shlex.split(target)
         first, rest = tokens[0], tokens[1:]
         cand = os.path.expanduser(first) if os.path.isabs(os.path.expanduser(first)) else os.path.join(base, first)
@@ -119,7 +131,37 @@ def selftest():
         open(p, "w").write("# Notes\n- The build takes about a minute.\n- See the README for details.\n")
         rules, f = audit(p)
         chk(not rules and not f, "non-directive text is not a rule")
+        open(p, "w").write("# R\n- Fine print.\n- You must keep backups.")          # no newline at the end of the file
+        rules, f = audit(p)
+        chk(len(rules) == 1 and {x[0] for x in f} == {"NO-INCIDENT", "NO-ENFORCEMENT"}, f"the last rule of a file with no final newline is still read ({f})")
+        open(p, "w").write(GOOD + "- Never skip review. Why: a bad merge. Enforced by: no-such-command-xyz --now\n")
+        _, f = audit(p, run=True)
+        chk(len(f) == 1 and f[0][0] == "FAILED-RUN" and "Error" in f[0][2], f"--run: an enforcement command that cannot start is FAILED-RUN ({f})")
+        open(p, "w").write("# R\n- Never push on Friday. Because: the 2026-05 outage. CI: gate.py\n")
+        _, f = audit(p)
+        _, f2 = audit(p, why_tags=["because"], enforced_tags=["ci"])
+        chk({x[0] for x in f} == {"NO-INCIDENT", "NO-ENFORCEMENT"} and not f2, f"--why-tags / --enforced-tags make a file's own words count ({f} → {f2})")
+        open(p, "w").write(GOOD); said = []
+        chk(report(p, out=said.append) == 0 and said and "2 directives" in said[0], "the command exits 0 on a file with no findings")
+        open(p, "w").write("# R\n- Always use tabs.\n- Never use npm.\n"); said = []
+        chk(report(p, out=said.append) == 1 and any("None of the 2 rules" in x for x in said) and sum("NO-ENFORCEMENT" in x for x in said) == 3,
+            "the command exits 1 on findings, and says so when a file does not use the tags at all")
     return ok, lines
+
+
+def report(path, base=None, run=False, out_json=None, why_tags=(), enforced_tags=(), out=print):
+    """Print the audit and return the exit code: 1 when there are findings, else 0."""
+    rules, findings = audit(path, base, run, why_tags, enforced_tags)
+    kinds = {k: sum(1 for f in findings if f[0] == k) for k in ("NO-INCIDENT", "NO-ENFORCEMENT", "MISSING-TARGET", "FAILED-RUN", "OVERFIT")}
+    out(f"{path}: {len(rules)} directive{'' if len(rules) == 1 else 's'} · " + (" · ".join(f"{k} {v}" for k, v in kinds.items() if v) or "0 findings"))
+    if rules and not any(r["incident"] or r["enforced_by"] for r in rules):
+        out(f"  None of the {len(rules)} rules carries a why-tag or an enforced-by tag: this file does not use the convention this "
+            "script checks. The list below is every rule that relies on being remembered, not a verdict on the file.")
+    for kind, line, text in findings:
+        out(f"  {kind:<15} L{line:<4} {text}")
+    if out_json:
+        json.dump({"rules": rules, "findings": findings}, open(out_json, "w"), indent=1, ensure_ascii=False)
+    return 1 if findings else 0
 
 
 def main(argv):
@@ -129,19 +171,13 @@ def main(argv):
     if "--selftest" in argv or not ok:
         print(f"rules_check selftest · {sum(l.startswith('  ✔') for l in lines)}/{len(lines)} passed"); print("\n".join(lines))
         return 0 if ok else 2
-    files = [a for a in argv if not a.startswith("--") and (argv.index(a) == 0 or argv[argv.index(a) - 1] not in ("--base", "--json"))]
+    valued = ("--base", "--json", "--why-tags", "--enforced-tags")
+    files = [a for a in argv if not a.startswith("--") and (argv.index(a) == 0 or argv[argv.index(a) - 1] not in valued)]
     if not files:
         print(__doc__); return 2
-    base = argv[argv.index("--base") + 1] if "--base" in argv else None
-    out = argv[argv.index("--json") + 1] if "--json" in argv else None
-    rules, findings = audit(files[0], base, "--run" in argv)
-    kinds = {k: sum(1 for f in findings if f[0] == k) for k in ("NO-INCIDENT", "NO-ENFORCEMENT", "MISSING-TARGET", "FAILED-RUN", "OVERFIT")}
-    print(f"{files[0]}: {len(rules)} directives · " + " · ".join(f"{k} {v}" for k, v in kinds.items() if v))
-    for kind, line, text in findings:
-        print(f"  {kind:<15} L{line:<4} {text}")
-    if out:
-        json.dump({"rules": rules, "findings": findings}, open(out, "w"), indent=1, ensure_ascii=False)
-    return 1 if findings else 0
+    opt = lambda k: argv[argv.index(k) + 1] if k in argv and argv.index(k) + 1 < len(argv) else None
+    tags = lambda k: [w for w in (opt(k) or "").split(",") if w.strip()]
+    return report(files[0], opt("--base"), "--run" in argv, opt("--json"), tags("--why-tags"), tags("--enforced-tags"))
 
 
 if __name__ == "__main__":

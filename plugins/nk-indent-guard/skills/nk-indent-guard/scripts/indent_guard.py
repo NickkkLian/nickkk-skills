@@ -59,7 +59,7 @@ def check(repo, ref="HEAD", exts=(".json", ".yaml", ".yml"), paths=()):
 
 
 def show(u):
-    return "none" if u is None else ("tab" if u == "\t" else f"{len(u)} spaces")
+    return "none" if u is None else ("tab" if u == "\t" else f"{len(u)} space{'' if len(u) == 1 else 's'}")
 
 
 def selftest():
@@ -100,7 +100,25 @@ def selftest():
         open(os.path.join(d, "data", "x.json"), "w").write('{\n\t"a": 1,\n\t"b": {\n\t\t"c": 2\n\t}\n}\n')
         changed, _, _ = check(d)
         chk(len(changed) == 1 and changed[0][2] == "\t", "spaces → tabs is caught")
+        said = []
+        chk(report(d, out=said.append) == 1 and said and "2 spaces → tab" in said[0] and said[-1].startswith("✘ 1 re-indented"),
+            "the command exits 1 on a re-indented file and names the change")
+        open(os.path.join(d, "data", "x.json"), "w").write('{\n "a": 1,\n "b": {\n  "c": 3\n }\n}\n'); said = []
+        chk(report(d, out=said.append) == 1 and said and "2 spaces → 1 space " in said[0], "one space is written '1 space', not '1 spaces'")
+        open(os.path.join(d, "data", "x.json"), "w").write(two); said = []
+        chk(report(d, out=said.append) == 0 and said and said[-1].startswith("✔ 0 re-indented"), "the command exits 0 on a clean tree")
     return ok, lines
+
+
+def report(repo, ref="HEAD", exts=(".json", ".yaml", ".yml"), paths=(), out=print):
+    """Print the findings and return the exit code: 1 when any file was re-indented, else 0."""
+    changed, new, same = check(repo, ref, exts, tuple(paths))
+    for f, was, now in changed:
+        out(f"✘ {f}: {show(was)} → {show(now)}  (whole file re-indented; rewrite it with the original unit)")
+    for f in new:
+        out(f"· {f}: new file, no baseline at {ref}")
+    out(f"{'✘' if changed else '✔'} {len(changed)} re-indented, {same} unchanged, {len(new)} new (vs {ref}, ext {','.join(exts)})")
+    return 1 if changed else 0
 
 
 def main(argv):
@@ -122,13 +140,7 @@ def main(argv):
         repo = git(".", "rev-parse", "--show-toplevel").decode().strip()
     except RuntimeError as e:
         print(f"not a git repository: {e}"); return 2
-    changed, new, same = check(repo, ref, exts, tuple(paths))
-    for f, was, now in changed:
-        print(f"✘ {f}: {show(was)} → {show(now)}  (whole file re-indented; rewrite it with the original unit)")
-    for f in new:
-        print(f"· {f}: new file, no baseline at {ref}")
-    print(f"{'✘' if changed else '✔'} {len(changed)} re-indented, {same} unchanged, {len(new)} new (vs {ref}, ext {','.join(exts)})")
-    return 1 if changed else 0
+    return report(repo, ref, exts, paths)
 
 
 if __name__ == "__main__":

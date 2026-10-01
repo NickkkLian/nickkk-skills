@@ -4,7 +4,7 @@ description: Hand a line of work to an executor that has no context — another 
 license: MIT
 metadata:
   provenance: own practice (2026-09); no external source
-  version: 0.1.0
+  version: 0.1.2
 ---
 # Handoff package
 

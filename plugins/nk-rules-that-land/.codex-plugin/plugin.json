@@ -1,6 +1,6 @@
 {
   "name": "nk-rules-that-land",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Write rules for an AI agent that actually change what it does.",
   "author": {
     "name": "Nick Lian",

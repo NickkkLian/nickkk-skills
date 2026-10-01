@@ -4,7 +4,7 @@ description: Turn "done, fixed, tested" into evidence a second agent judges. Use
 license: MIT
 metadata:
   provenance: own practice (2026-07 to 2026-09); no external source
-  version: 0.1.3
+  version: 0.1.4
 ---
 # Evidence audit
 
@@ -82,6 +82,8 @@ decide up front who the auditor is protecting against (a colleague who makes mis
 ## Boundaries
 
 - The bundler records what a command printed; it cannot tell whether the command was the right one.
+- `verify` exits 1 on a folder that is missing or holds no bundle: nothing verified is not a pass (0.1.4; until
+  0.1.3 it printed a green "0 bundles").
 - `verify` detects edited bundles, not staged ones — a claimer can run a different command. The auditor
   reads `command.txt` for that reason.
 
