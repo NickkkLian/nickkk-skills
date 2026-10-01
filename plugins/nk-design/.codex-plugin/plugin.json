@@ -1,6 +1,6 @@
 {
   "name": "nk-design",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.",
   "author": {
     "name": "Nick Lian",

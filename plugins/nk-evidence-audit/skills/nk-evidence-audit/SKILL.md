@@ -4,7 +4,7 @@ description: Turn "done, fixed, tested" into evidence a second agent judges. Use
 license: MIT
 metadata:
   provenance: own practice (2026-07 to 2026-09); no external source
-  version: 0.1.0
+  version: 0.1.2
 ---
 # Evidence audit
 

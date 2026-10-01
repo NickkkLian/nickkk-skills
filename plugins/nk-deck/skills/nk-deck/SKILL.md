@@ -5,7 +5,7 @@ license: MIT
 compatibility: the deck and make_deck.py / deck_check.py are standard library only; print_check.py needs Google Chrome or Chromium to print.
 metadata:
   provenance: own practice (2026-09) — two portfolio decks that had to print cleanly, and a design system built for pages that say where their numbers come from; see Provenance
-  version: 0.1.3
+  version: 0.1.5
 ---
 # Deck: ten slides, titles that argue
 
