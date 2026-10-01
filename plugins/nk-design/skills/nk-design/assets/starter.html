@@ -117,6 +117,10 @@ code,.mono,.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums l
 .sum-eq .ok::before{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.6 5.3 4 7.6 8.4 2.4' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")} .sum-eq .bad::before{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.4 2.4 7.6 7.6M7.6 2.4 2.4 7.6' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E")}
 .sum-eq .ok{color:var(--on-band)}
 .sum-eq .bad{padding:1px var(--space-2);border-radius:var(--radius-xs);background:var(--danger-tint);color:var(--danger-tint-text);font-weight:700}
+/* the clickable numbers take a click on a box larger than their digits (a single digit is about 7 px wide); the text does not
+   move. 2 px above and below is the most that keeps two wrapped lines of the equation from overlapping at phone width. */
+.sum-strip [data-nk-src]{position:relative}
+.sum-strip [data-nk-src]::after{content:"";position:absolute;inset:-2px -9px}
 .band .chip{border-color:var(--band-line);background:transparent;color:var(--on-band-2)}
 .band .chip b{color:var(--on-band)}
 
@@ -934,11 +938,11 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
 </script>
 <script type="application/json" id="nk-sources">{
   "nk_sources": 1,
-  "generator": "nk-design 0.1.8 starter",
+  "generator": "nk-design 0.1.10 starter",
   "inputs": [
     {
       "id": "rows",
-      "name": "the page's generated rows (seeded generator, synthetic)",
+      "name": "the page's generated rows (seeded generator)",
       "synthetic": true
     }
   ],

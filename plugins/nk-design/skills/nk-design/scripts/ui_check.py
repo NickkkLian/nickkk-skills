@@ -161,6 +161,14 @@ _SRC.add("rows", "Input rows", [{"text": "the sample's rows"}], "computation", "
 GOOD = numsrc.inject(GOOD.replace("3 + 2 = 5", '3 + 2 = <b data-nk-src="rows">5</b>'), _SRC)
 
 
+def starter_label(skill_md, starter_html):
+    """(the version the starter's generator label states, the version SKILL.md states); None for one that is not there.
+    The label is hand-typed in assets/starter.html, and 0.1.9 shipped with one that still said 0.1.8."""
+    label = re.search(r'"generator":\s*"nk-design (\d+\.\d+\.\d+) starter"', starter_html)
+    version = re.search(r"^\s*version:\s*(\d+\.\d+\.\d+)\s*$", skill_md, re.M)
+    return (label.group(1) if label else None, version.group(1) if version else None)
+
+
 def selftest():
     ok, lines = True, []
 
@@ -209,6 +217,19 @@ def selftest():
     hidden = GOOD.replace(".x{color:var(--accent);", ".x{-webkit-mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
                           "viewBox='0 0 10 10'%3E%3Ctext%3E+1 604 000 0000%3C/text%3E%3C/svg%3E\");color:var(--accent);")
     chk({c for c, _ in checks(hidden)} == {"C12"}, f"a number written as text inside a data: URI SVG → C12 ({checks(hidden)})")
+    # the starter's generator label names the version that shipped it. First the comparison on two samples, then the two
+    # real files, when this script sits in the skill folder (scripts/ beside SKILL.md and assets/starter.html); copied
+    # out without both of them, there is nothing to compare and no line is added.
+    stale = starter_label("metadata:\n  version: 0.1.9\n", '{"generator": "nk-design 0.1.8 starter"}')
+    same = starter_label("metadata:\n  version: 0.1.9\n", '{"generator": "nk-design 0.1.9 starter"}')
+    chk(stale == ("0.1.8", "0.1.9") and stale[0] != stale[1] and same[0] == same[1] == "0.1.9" and starter_label("", "{}") == (None, None),
+        f"starter label sample → a stale label differs from the version, a current one equals it ({stale}, {same})")
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    skill_p, starter_p = os.path.join(root, "SKILL.md"), os.path.join(root, "assets", "starter.html")
+    if os.path.exists(skill_p) and os.path.exists(starter_p):
+        label, version = starter_label(open(skill_p, encoding="utf-8").read(), open(starter_p, encoding="utf-8").read())
+        chk(label is not None and label == version,
+            f"assets/starter.html says the version SKILL.md says (label {label}, SKILL.md {version})")
     # in-process, with the self-test switched off: main() runs this self-test on every start, so calling the command
     # line from here would recurse without end (it did once, 2026-09-16, and filled the machine's process table)
     import contextlib, io

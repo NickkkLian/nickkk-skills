@@ -6,7 +6,8 @@
    `Fernwood Print Shop`), never a real customer or company, and not `Demo … 01` / `Test … 02` filler, which
    makes a page read as a tutorial. The `Demo · synthetic data` pill and the footer carry the label, so the
    rows do not have to. Phones only in the officially fictional ranges, `123 Example Road`; regular names and
-   aligned numbers.
+   aligned numbers. An invented date is a real calendar date: the page says the year, and a weekday shown beside a
+   date is the weekday that date falls on in that year (work it out, do not type it from memory).
 3. Every number on the page is computed from the loaded data when the page runs; a claim from the README
    is re-computed in the browser or shown as "as of build <date>".
 4. Anything that did not really go out or get written carries `Simulated`; there is no "Sent ✓" without it.

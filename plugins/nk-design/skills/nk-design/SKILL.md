@@ -4,7 +4,7 @@ description: Build a single-file data tool from one sentence (a review queue, a 
 license: MIT
 metadata:
   provenance: the author's own product-family design system (2026-09), rebuilt after four public data tools shipped with different looks and no visible sources; see Provenance
-  version: 0.1.9
+  version: 0.1.10
 ---
 # Evidence-visible design
 
@@ -87,6 +87,12 @@ where from, how and what was not checked, and the runtime is the shipped one, by
   page must open offline with system fonts in their place and nothing else changed.
 - The starter ships synthetic data only. Loading real records is the user's decision, and it changes what
   the footer has to say.
+- At phone width the starter's table scrolls sideways inside its own box. At 375 px the first two columns show,
+  the third is cut, and the amount, the status and the Open button need a swipe; the page itself does not scroll
+  sideways.
+- The clickable numbers are small touch targets. A click lands on a box about 25 px wide and 21 px tall around a
+  single digit, below the 44 px usually asked of a touch target. They were clicked by script in headless Chrome;
+  nobody has tried them with a finger.
 
 ## Provenance
 
