@@ -4,7 +4,7 @@ description: Build a single-file data tool from one sentence (a review queue, a 
 license: MIT
 metadata:
   provenance: the author's own product-family design system (2026-09), rebuilt after four public data tools shipped with different looks and no visible sources; see Provenance
-  version: 0.1.5
+  version: 0.1.6
 ---
 # Evidence-visible design
 
