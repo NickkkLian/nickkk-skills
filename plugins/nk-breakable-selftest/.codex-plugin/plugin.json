@@ -1,6 +1,6 @@
 {
   "name": "nk-breakable-selftest",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Make a checker, validator, linter, gate or test suite prove it can fail.",
   "author": {
     "name": "Nick Lian",

@@ -4,7 +4,7 @@ description: Make a checker, validator, linter, gate or test suite prove it can 
 license: MIT
 metadata:
   provenance: own practice (2026-08 to 2026-09); no external source
-  version: 0.1.4
+  version: 0.1.5
 ---
 # Breakable self-test
 
