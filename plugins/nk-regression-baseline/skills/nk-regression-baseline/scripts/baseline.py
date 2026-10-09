@@ -2,7 +2,7 @@
 """baseline.py — freeze the byte-exact output of commands on their default inputs before you change production
 code; compare after. New-feature tests never exercise the path existing users are on; this does.
 
-    python3 baseline.py freeze  --dir <baseline-dir> --name <name> [--cwd DIR] [--files GLOB ...] [--normalize REGEX ...] -- <command> [args]
+    python3 baseline.py freeze  --dir <baseline-dir> --name <name> [--cwd DIR] [--files GLOB ...] [--normalize REGEX ...] [--depends-on FILE] -- <command> [args]
     python3 baseline.py compare --dir <baseline-dir> --name <name> [--cwd DIR]
     python3 baseline.py run     --dir <baseline-dir> --manifest baselines.json --mode freeze|compare
     python3 baseline.py list    --dir <baseline-dir>
@@ -13,10 +13,17 @@ writes), plus the command, cwd and normalizers. compare re-runs the same command
 (regexes replaced by <NORM> — for timestamps, temp paths, run ids) and reports byte differences with a unified
 diff of stdout/stderr and per-file hash changes. A baseline is only meaningful if the frozen run was alive:
 freeze prints the exit code and output size so a silently empty baseline is noticed at freeze time.
+freeze --depends-on FILE refuses a dead baseline: one whose output does not depend on the input you are about to
+work on. FILE is an input inside the folder the command runs in. The folder is copied twice to a temporary place;
+the command runs in one copy as it is and in the other with FILE emptied (your own FILE is never touched). Identical
+output means the saved baseline would pass whatever you break in FILE: nothing is saved, exit 1. Different output:
+the command then runs in your folder as usual and the baseline is saved. If two runs with nothing changed already
+differ, the check cannot tell and nothing is saved (exit 2). Without --depends-on, freeze does what it always did.
 manifest: [{"name": "…", "cmd": ["python3", "tool.py"], "files": ["out/*.json"], "normalize": ["\\d{4}-\\d{2}-\\d{2}"]}]
-Exit: freeze/list 0 · compare 0 identical / 1 differences / 2 no such baseline · run: 1 if any compare differs.
+Exit: freeze 0 (with --depends-on: 1 refused as dead, 2 cannot tell) · list 0 · compare 0 identical / 1 differences /
+2 no such baseline · run: 1 if any compare differs.
 """
-import argparse, difflib, glob, hashlib, json, os, re, subprocess, sys, tempfile
+import argparse, difflib, glob, hashlib, json, os, re, shutil, subprocess, sys, tempfile
 
 
 def sha(b):
@@ -48,15 +55,83 @@ def file_hashes(cwd, globs):
     return out
 
 
-def freeze(bdir, name, cmd, cwd, files, norms):
-    cwd = os.path.abspath(cwd or os.getcwd())
+def record(name, cmd, cwd, files, norms):
+    """One run of the command, as a baseline record. Nothing is written."""
     rc, out, err = run_cmd(cmd, cwd)
-    rec = {"name": name, "cmd": cmd, "cwd": cwd, "files": files, "normalize": norms, "exit": rc,
-           "stdout": normalize(out.decode("utf-8", "replace"), norms), "stderr": normalize(err.decode("utf-8", "replace"), norms),
-           "file_sha": file_hashes(cwd, files)}
+    return {"name": name, "cmd": cmd, "cwd": cwd, "files": files, "normalize": norms, "exit": rc,
+            "stdout": normalize(out.decode("utf-8", "replace"), norms), "stderr": normalize(err.decode("utf-8", "replace"), norms),
+            "file_sha": file_hashes(cwd, files)}
+
+
+def save(bdir, rec):
     os.makedirs(bdir, exist_ok=True)
-    json.dump(rec, open(os.path.join(bdir, name + ".json"), "w"), indent=1, ensure_ascii=False)
+    json.dump(rec, open(os.path.join(bdir, rec["name"] + ".json"), "w"), indent=1, ensure_ascii=False)
     return rec
+
+
+def freeze(bdir, name, cmd, cwd, files, norms):
+    return save(bdir, record(name, cmd, os.path.abspath(cwd or os.getcwd()), files, norms))
+
+
+PARTS = {"exit": "the exit code", "stdout": "stdout", "stderr": "stderr", "file_sha": "the output files"}
+
+
+def depends_problem(path, cwd):
+    """Why the file named with --depends-on cannot be used, as one line, or None."""
+    p, root = os.path.realpath(path), os.path.realpath(cwd)
+    if not os.path.isfile(p):
+        return f"--depends-on {path}: no such file"
+    if not p.startswith(root + os.sep):
+        return f"--depends-on {path}: the file has to be inside the folder the command runs in ({cwd}); that folder is what gets copied"
+    if os.path.getsize(p) == 0:
+        return f"--depends-on {path}: the file is already empty, so emptying it would change nothing"
+    return None
+
+
+def output_of(rec, folders):
+    """The parts of a record that compare looks at, with the folder's own path taken out of the text."""
+    out = {}
+    for k in PARTS:
+        v = rec[k]
+        if isinstance(v, str):
+            for f in sorted(folders, key=len, reverse=True):
+                v = v.replace(f, "<folder>")
+        out[k] = v
+    return out
+
+
+def freeze_alive(bdir, name, cmd, cwd, files, norms, path):
+    """freeze, after showing that the output depends on the input file `path`. Returns (verdict, lines, record):
+    "dead" (identical output with the file emptied; nothing saved), "unsteady" (two unchanged runs differ; nothing
+    saved) or "alive" (saved). The file is emptied only in a temporary copy of the folder."""
+    cwd = os.path.abspath(cwd or os.getcwd())
+    root = os.path.realpath(cwd)
+    rel = os.path.relpath(os.path.realpath(path), root)
+    with tempfile.TemporaryDirectory() as t:
+        runs = []
+        for label in ("as-it-is", "emptied"):               # a fresh copy each: the first run's leftovers must not reach the second
+            copy = os.path.join(os.path.realpath(t), label, os.path.basename(root) or "folder")
+            shutil.copytree(root, copy, symlinks=True)
+            if label == "emptied":
+                open(os.path.join(copy, rel), "wb").close()
+            there = [a.replace(root, copy).replace(cwd, copy) for a in cmd]   # a path into the folder, written out in full, goes to the copy
+            runs.append(output_of(record(name, there, copy, files, norms), [copy]))
+    as_it_is, emptied = runs
+    changed = [PARTS[k] for k in PARTS if as_it_is[k] != emptied[k]]
+    if not changed:
+        return "dead", [f"refused: the output is identical with and without {path}, so this baseline would pass whatever you break "
+                        f"in that file. Nothing was saved."], None
+    rec = record(name, cmd, cwd, files, norms)
+    real = output_of(rec, [cwd, root])
+    unsteady = [PARTS[k] for k in PARTS if real[k] != as_it_is[k]]
+    if unsteady:
+        return "unsteady", [f"not saved: cannot tell whether the output depends on {path}, because two runs with nothing changed already "
+                            f"differ ({', '.join(unsteady)}). Add --normalize for what changes from run to run, then freeze again."], None
+    save(bdir, rec)
+    return "alive", [freeze_line(name, rec), f"alive: with {path} emptied in a temporary copy of the folder, {' and '.join(changed)} changed"], rec
+
+
+VERDICT_EXIT = {"alive": 0, "dead": 1, "unsteady": 2}
 
 
 def compare(bdir, name, cwd=None):
@@ -143,6 +218,43 @@ def selftest():
         open(tool, "w").write("print('total 42')\nprint('run at 2027-05-05T11:22:33')\n")
         rc, _ = compare(bdir, "t2")
         chk(rc == 0, "normalizer hides a changed timestamp (control for volatile output)")
+    with tempfile.TemporaryDirectory() as top:              # freeze --depends-on: the folder below is what gets copied
+        d = os.path.join(top, "shop"); os.makedirs(os.path.join(d, "data")); bdir = os.path.join(top, "baselines")
+        prices = os.path.join(d, "data", "prices.csv"); was = b"widget,14\ngadget,3\n"; open(prices, "wb").write(was)
+        py = [sys.executable, "-c"]
+        cached = py + ["print('rows 3 total 42')"]                                           # never opens the prices
+        reads = py + ["print(sum(int(l.split(',')[1]) for l in open('data/prices.csv')))"]   # prints 17 from the prices
+        verdict, msg, rec = freeze_alive(bdir, "cached", cached, d, [], [], prices)
+        chk(verdict == "dead" and rec is None and "would pass whatever you break" in msg[0] and not os.path.exists(os.path.join(bdir, "cached.json")),
+            f"--depends-on: a command that never reads the file is refused and nothing is saved ({verdict})")
+        verdict, msg, rec = freeze_alive(bdir, "reads", reads, d, [], [], prices)
+        plain = record("reads", reads, d, [], [])
+        chk(verdict == "alive" and rec == plain and json.load(open(os.path.join(bdir, "reads.json"))) == plain and compare(bdir, "reads")[0] == 0
+            and msg[0] == freeze_line("reads", plain) and msg[1].startswith("alive:") and "stdout" in msg[1],
+            f"--depends-on: a command that reads the file is saved, and the saved baseline is the one a plain freeze makes ({verdict})")
+        chk(open(prices, "rb").read() == was and sorted(os.listdir(d)) == ["data"] and os.listdir(os.path.join(d, "data")) == ["prices.csv"],
+            "--depends-on: your own file and folder are left as they were (only the copy's file is emptied)")
+        verdict, msg, _ = freeze_alive(bdir, "abs", py + ["import sys; print(open(sys.argv[1]).read())", prices], d, [], [], prices)
+        chk(verdict == "alive", f"--depends-on: a command that names the file by its full path is sent to the copy, not judged dead ({verdict})")
+        logs = py + ["open('run.log', 'a').write('x'); print(len(open('run.log').read()))"]   # prints 1 in a fresh folder, 2 in a used one
+        verdict, _, _ = freeze_alive(bdir, "logs", logs, d, [], [], prices)
+        os.remove(os.path.join(d, "run.log")) if os.path.exists(os.path.join(d, "run.log")) else None
+        chk(verdict == "dead", f"--depends-on: each of the two runs gets a fresh copy, so one run's leftovers are not read as a change ({verdict})")
+        clock = py + ["import time; print(time.time_ns(), open('data/prices.csv').read())"]
+        verdict, msg, rec = freeze_alive(bdir, "clock", clock, d, [], [], prices)
+        chk(verdict == "unsteady" and rec is None and "cannot tell" in msg[0] and not os.path.exists(os.path.join(bdir, "clock.json")),
+            f"--depends-on: output that differs between two unchanged runs is 'cannot tell', not 'alive', and nothing is saved ({verdict})")
+        verdict, _, _ = freeze_alive(bdir, "clock2", clock, d, [], [r"^\d+"], prices)
+        chk(verdict == "alive", f"--depends-on: the same command with its clock normalized is alive ({verdict})")
+        where = py + ["import os; print(os.getcwd(), open('data/prices.csv').read())"]
+        verdict, _, _ = freeze_alive(bdir, "where", where, d, [], [], prices)
+        chk(verdict == "alive", f"--depends-on: a command that prints the folder it runs in is not 'cannot tell' because the copy has another path ({verdict})")
+        outside = os.path.join(top, "elsewhere.csv"); open(outside, "w").write("x\n"); empty = os.path.join(d, "data", "empty.csv"); open(empty, "w").close()
+        said = [depends_problem(os.path.join(d, "nope.csv"), d), depends_problem(outside, d), depends_problem(empty, d), depends_problem(prices, d)]
+        os.remove(empty)
+        chk("no such file" in (said[0] or "") and "inside the folder" in (said[1] or "") and "already empty" in (said[2] or "") and said[3] is None,
+            "--depends-on: a missing file, a file outside the folder and an empty file each get a one-line reason; a usable file gets none")
+        chk(VERDICT_EXIT == {"alive": 0, "dead": 1, "unsteady": 2}, "--depends-on: exit 0 saved, 1 refused as dead, 2 cannot tell")
     return ok, lines
 
 
@@ -151,6 +263,7 @@ def main():
     ap.add_argument("cmd", nargs="?", choices=["freeze", "compare", "run", "list"]); ap.add_argument("--dir"); ap.add_argument("--name")
     ap.add_argument("--cwd"); ap.add_argument("--files", nargs="*", default=[]); ap.add_argument("--normalize", nargs="*", default=[])
     ap.add_argument("--manifest"); ap.add_argument("--mode", choices=["freeze", "compare"]); ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--depends-on")
     ap.add_argument("-h", "--help", action="store_true")
     a, rest = ap.parse_known_args()
     if a.help or (not a.cmd and not a.selftest):
@@ -170,6 +283,13 @@ def main():
         argv = rest[1:] if rest and rest[0] == "--" else rest
         if not a.name or not argv:
             print("freeze needs --name and a command after --"); return 2
+        if a.depends_on:
+            problem = depends_problem(a.depends_on, a.cwd or os.getcwd())
+            if problem:
+                print(problem); return 2
+            verdict, said, _ = freeze_alive(a.dir, a.name, argv, a.cwd, a.files, a.normalize, a.depends_on)
+            print("\n".join(said))
+            return VERDICT_EXIT[verdict]
         rec = freeze(a.dir, a.name, argv, a.cwd, a.files, a.normalize)
         print(freeze_line(a.name, rec))
         return 0

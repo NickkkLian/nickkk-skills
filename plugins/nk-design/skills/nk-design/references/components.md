@@ -24,14 +24,27 @@ and the long form is visually hidden on narrow bars and kept for screen readers.
 a reminder not to take the numbers as real.
 
 **Signature plate** — the first screen, on the band: eyebrow, page title in the display face, a one-paragraph lede
-that says what the page does to its rows, a short `--point` rule, then the reconciliation bar. It holds no buttons.
+that says what the page does to its rows, a short `--point` rule, then the chosen form and adds-up line. It holds no buttons.
 
-**Reconciliation bar** (class `sum-strip`) — `role="group"`, and the question it answers is its `aria-label` ("where did
-the input rows go, and do the parts add up?"). An 8px segmented bar with 2px gaps: the first group in `--point`, the next in
-`--on-band-2`, then `--on-band-3`; rows whose value is unknown are a hatched segment sized from the data and kept
-out of the sums. Below it, a legend (swatch + label + monospace count) and one monospace equation line computed
-from the loaded rows: `26 + 8 + 6 = 40 rows · 19,527.19 + 3,632.67 + 7,103.32 = 30,263.18`, then a check mark and
-`reconciles to the cent`. The total after each `=` comes from a separate pass over every input row, in whole cents,
+**First-screen forms** (class `sum-strip`) — `role="group"`, with the chosen form's question as its `aria-label`.
+One `#form-marks` container is filled by the shipped form engine; agents edit SHAPE, not drawing code.
+All marks use only `--point`, `--on-band-2`, `--on-band-3` and a line SVG hatch for unknown values. Text uses
+`--on-band` / `--on-band-2`, never the third mark token. The point colour also has a positional or verbal channel:
+- **split:** 8 px bar, 2 px gaps, two to five ordered parts. Legend matches bar order. Amounts precede counts.
+  First part uses point. Unknown amounts are hatched, counted and excluded from amount sums.
+- **gaps:** up to six largest absolute nonzero differences; B below A runs left of a centre line, B above A right.
+  Every bar shares the largest drawn difference's scale. Signed numbers say short/over. The rest row names both
+  directional sums with a third-token swatch; missing pairs are counted outside both totals. Phone names wrap.
+- **waiting:** one square per thing, oldest groups first, exclusive labelled age bands. Point means past the stated
+  limit (or oldest band with no limit). Missing dates are hatched. Outcomes are hollow after a divider. Over 120 waiting
+  rows, a band's squares merge into blocks on a shared count scale that fits each equal-width lane. Decided squares
+  wrap. Caption states the scale, date and UTC day counting.
+- **steps:** three to seven ordered boxes with names/counts and 6 px bars scaled to the fullest stage. Line SVG
+  chevrons connect stages. The point box says “most … are here”; exits are dashed, say “left the line”, have a divider
+  and no chevrons between exits. On phones boxes stack and stage chevrons point down.
+Each form ends in its written identity and the shared line SVG check/cross from `verdict()`. A SHAPE/data-form mismatch
+shows “form mismatch” on the first screen. See `forms.md` for identities, required fields and exact cross conditions.
+The total after each `=` comes from a separate pass over every input row, in whole cents,
 so a row that lands in no group, or a cent lost in a group, turns the check mark into a cross in danger colour:
 `off by 4 rows and 6,232.17` when a status is left out of every group, `off by 0.01` when one cent goes astray.
 Comparing rounded strings instead of integers would make the cross impossible; that is the failure to look for.
@@ -54,7 +67,13 @@ translated or abbreviated; never clickable (use a button).
 category shows a dashed hollow square and muted text, so "none" is visible rather than blank.
 
 **Table** — in a scroll container (`overflow:auto`, 1px `--border`, `--radius-md`, `--paper`) so a wide table never
-widens the page. Two line weights: the container border outside, `--hairline` between rows. Header row sticky on
+widens the page. Give `.tablewrap` `min-width:0`, `max-width:100%`, `overflow-x:auto`, `tabindex="0"`,
+`role="region"` and an accessible label. Keep at most eight columns including Source and Actions; move extra
+attributes into details. C03 counts authored headers, including spans; count generated headers in the browser.
+Cells, category text and status words wrap between words before the table grows beyond the box.
+Keep horizontal columns in normal flow, including Open, so no column starts covered by another.
+At narrow widths scroll inside the box when whole words, source chips or buttons still need more space.
+Two line weights: the container border outside, `--hairline` between rows. Header row sticky on
 `--surface-2`, caps `--text-2xs`. Numbers right-aligned, monospace, tabular. Sorting: a `<button>` inside each
 `<th>`, `aria-sort` on the `<th>`, cycle ascending → descending → none. One filter row above (search, status select,
 Clear filters) and a `showing 40 of 40` chip that is announced politely (`aria-live`) as filters change. Each row has

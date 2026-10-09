@@ -1,7 +1,7 @@
 {
   "name": "nk-design",
-  "version": "0.1.10",
-  "description": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.",
+  "version": "0.2.0",
+  "description": "Build a one-page data tool from one sentence, with every number traceable to its rows.",
   "author": {
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "nk-design",
     "shortDescription": "Data tools that show sources",
-    "longDescription": "Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked. The page carries provenance chips beside derived values, a reconciliation bar on the first screen whose parts are computed live and add up, a fixed status vocabulary that never relies on colour alone, a Demo marker for synthetic data and a footer that says what is not verified. Three palettes and light/dark come from one token file, restored before first paint. Ships the token file, a working starter page and scripts/ui_check.py with fifteen machine rules. Use when asked for a dashboard, queue, ledger, tracker or internal tool, when a demo has to read as a real product in thirty seconds, or to review such a page. Not a marketing-site style and not a component library.",
+    "longDescription": "Build a one-page data tool from one sentence, with every number traceable to its rows. The first screen uses one of four forms chosen from the shape of the data (parts of a whole, two sources compared, things waiting, things moving through steps), each ending in a sum computed live that adds up. Provenance chips, a fixed status vocabulary with a second channel, a Demo marker and an honesty footer carry the tracing promise. Ships tokens for three palettes in light/dark, a working offline starter and sixteen machine rules. Use when asked for a dashboard, queue, ledger, tracker or internal tool, or to review such a page. Not for marketing sites or component libraries.",
     "developerName": "Nick Lian",
     "category": "Productivity",
     "capabilities": []

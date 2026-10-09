@@ -4,7 +4,7 @@ description: Stop a one-line edit to a JSON or YAML data file from re-indenting 
 license: MIT
 metadata:
   provenance: own practice (2026-08); no external source
-  version: 0.1.2
+  version: 0.1.3
 ---
 # Indent guard
 
@@ -32,8 +32,9 @@ happening a third time; a machine check did.
    `2 spaces → none` for pretty → single line). Rewrite the file with the original unit — read it first:
    `references/write-back.md` shows how to detect and preserve the unit in Python and Node.
 3. New files have no baseline; they are listed, not judged. Decide their unit deliberately.
-4. To make it automatic, install the pre-commit snippet in `references/pre-commit.md` (hooks live in
-   `.git/hooks`, so every clone installs it once).
+4. To make it automatic, use one of the two hooks in `references/pre-commit.md`. A repository that already uses
+   the pre-commit framework adds three lines to its `.pre-commit-config.yaml`; any other repository gets a plain
+   `.git/hooks/pre-commit` file (hooks live in `.git/hooks`, so every clone installs it once).
 
 ## What it does not do
 
@@ -42,6 +43,8 @@ happening a third time; a machine check did.
   with the rest is judged by that first line.
 - Key order changes, trailing-newline changes and reformatting inside a line are invisible to it —
   those also inflate diffs, but they are a different guard.
+- The pre-commit framework entry was checked against that framework's documentation and started by hand the way
+  the documentation describes; it has not been run under the framework itself, and not on Windows.
 
 ## Provenance
 

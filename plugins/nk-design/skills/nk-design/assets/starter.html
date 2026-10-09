@@ -2,6 +2,59 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script id="nk-build-guard">
+/* Keep this independent of the editable data/configuration script, including its syntax. */
+(function () {
+  var root = document.documentElement, failure = "", pending = "", loaded = false, drawn = false;
+  root.setAttribute("data-nk-build", "pending");
+  function showFailure() {
+    var eq = document.getElementById("sum-eq");
+    if (!eq) return;
+    var cross = document.createElement("span");
+    cross.className = "bad";
+    cross.textContent = "Page did not build: " + failure;
+    eq.replaceChildren(cross);
+  }
+  function fail(message) {
+    if (!failure) failure = String(message || "unknown script error");
+    root.setAttribute("data-nk-build", "error");
+    root.setAttribute("data-nk-build-error", failure);
+    pending = "";
+    showFailure();
+  }
+  function publish() {
+    if (failure || !loaded || !pending || !drawn) return;
+    document.getElementById("sum-eq").innerHTML = pending;
+    root.setAttribute("data-nk-build", "built");
+  }
+  function complete() { drawn = true; publish(); }
+  window.nkBuild = {
+    fail: fail,
+    failed: function () { return Boolean(failure); },
+    begin: function () {
+      pending = "";
+      drawn = false;
+      if (failure) { showFailure(); return; }
+      root.setAttribute("data-nk-build", "pending");
+      document.getElementById("sum-eq").innerHTML = '<span class="bad">Page did not build: drawing has not completed.</span>';
+    },
+    result: function (markup) { if (!failure) pending = markup; },
+    complete: complete
+  };
+  window.addEventListener("error", function (event) { if (event.message) fail(event.message); });
+  window.addEventListener("unhandledrejection", function (event) {
+    fail(event.reason && event.reason.message || String(event.reason));
+  });
+  document.addEventListener("DOMContentLoaded", showFailureIfNeeded);
+  function showFailureIfNeeded() { if (failure) showFailure(); }
+  window.addEventListener("load", function () {
+    loaded = true;
+    if (failure) showFailure();
+    else if (!pending || !drawn) fail("drawing did not complete");
+    else publish();
+  });
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Demo Bench — nk-design starter</title>
 <meta name="description" content="Starter page for nk-design: a review workbench whose numbers are computed from the loaded rows and show where they came from.">
@@ -106,13 +159,15 @@ code,.mono,.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums l
 .s-point{background:var(--point)}
 .s-strong{background:var(--on-band-2)}
 .s-soft{background:var(--on-band-3)}
-.s-hatch{background:repeating-linear-gradient(135deg,var(--on-band-2) 0 2px,transparent 2px 5px)}
+.plate{--hatch:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' viewBox='0 0 6 6'%3E%3Cpath d='M-1 1 1-1M0 6 6 0M5 7 7 5' stroke='black' stroke-width='2'/%3E%3C/svg%3E")}
+.s-hatch{background:var(--on-band-2);-webkit-mask:var(--hatch);mask:var(--hatch)}
 .sum-legend{display:flex;flex-wrap:wrap;gap:var(--space-2) var(--space-6);margin:0;padding:0;list-style:none;font-size:var(--text-xs);color:var(--on-band-2)}
 .sum-legend li{display:inline-flex;align-items:center;gap:var(--space-2)}
 .sum-legend b{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:700;color:var(--on-band)}
 .sw{flex:none;width:9px;height:9px;border-radius:2px}
 .sum-eq{padding-top:var(--space-3);border-top:1px solid var(--band-line);font:var(--weight-regular) var(--text-xs)/1.8 var(--font-mono);font-variant-numeric:tabular-nums;color:var(--on-band-2)}
-.sum-eq .ok,.sum-eq .bad{white-space:nowrap}
+.sum-eq .ok{white-space:nowrap}
+.sum-eq .bad{overflow-wrap:anywhere}
 .sum-eq .ok::before,.sum-eq .bad::before{content:"";display:inline-block;width:.8em;height:.8em;margin-right:.35em;vertical-align:-.04em;background:currentColor;-webkit-mask:var(--glyph) center/contain no-repeat;mask:var(--glyph) center/contain no-repeat}
 .sum-eq .ok::before{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.6 5.3 4 7.6 8.4 2.4' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")} .sum-eq .bad::before{--glyph:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2.4 2.4 7.6 7.6M7.6 2.4 2.4 7.6' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E")}
 .sum-eq .ok{color:var(--on-band)}
@@ -124,8 +179,85 @@ code,.mono,.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums l
 .band .chip{border-color:var(--band-line);background:transparent;color:var(--on-band-2)}
 .band .chip b{color:var(--on-band)}
 
+/* ---- first-screen forms: marks use only the three existing band tokens ---- */
+.form-marks{min-width:0}
+.fm{margin:0;padding:0;list-style:none;display:grid;gap:var(--space-2)}
+.fm b{font-family:var(--font-mono);color:var(--on-band)}
+.fm-label,.step-note{font-size:var(--text-xs);color:var(--on-band-2)}
+.gap-row,.gap-head{display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr) minmax(0,12rem);align-items:center;gap:var(--space-2) var(--space-4)}
+.gap-name{min-width:0;overflow-wrap:anywhere;font-size:var(--text-sm);color:var(--on-band)}
+.gap-num{text-align:right;font:var(--text-xs)/1.5 var(--font-mono);color:var(--on-band-2);overflow-wrap:anywhere}
+.gap-track,.gap-directions{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-width:0}
+.gap-track{height:10px}
+.gap-track::before{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:var(--on-band-2)}
+.gap-track i{display:block;height:100%;max-width:100%}
+.gap-track .short{justify-self:end;border-radius:2px 0 0 2px}
+.gap-track .over{grid-column:2;justify-self:start;border-radius:0 2px 2px 0}
+.gap-track .rest{background:var(--on-band-3)}
+.gap-directions span:first-child{text-align:right;padding-right:var(--space-2)}
+.gap-directions span:last-child{padding-left:var(--space-2)}
+.gap-rest .gap-name{color:var(--on-band-2)}
+.gap-rest{grid-template-columns:9px minmax(0,1fr)}
+.gap-rest-total{font:var(--text-xs)/1.5 var(--font-mono);color:var(--on-band-2)}
+.wait{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-4) var(--space-6)}
+.wait li{display:grid;gap:var(--space-2);min-width:0;max-width:100%;flex:0 1 auto}
+.wait-cells{display:flex;flex-wrap:wrap;gap:3px;max-width:none;min-width:0}
+.wait-cells i{flex:none;width:14px;height:14px;border-radius:2px;background:var(--on-band-2)}
+.wait-cells i.s-point{background:var(--point)}
+.wait-cells i.s-hatch{background:var(--on-band-2);-webkit-mask:var(--hatch);mask:var(--hatch)}
+.wait-cells i.hollow{background:transparent;border:1.5px solid var(--on-band-3)}
+.wait-cells:has(.merged){gap:0;width:100%;max-width:none}
+.wait[data-merged="true"]{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-3)}
+.wait[data-merged="true"] li{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:var(--space-3)}
+.wait[data-merged="true"] .done{padding-left:0;border-left:0;padding-top:var(--space-3);border-top:1px solid var(--band-line)}
+.wait .done{padding-left:var(--space-5);border-left:1px solid var(--band-line)}
+.steps{display:flex;align-items:stretch;gap:0}
+.step{position:relative;flex:1 1 0;min-width:0;display:grid;align-content:start;gap:var(--space-2);padding:var(--space-3);border:1px solid var(--band-line);border-radius:var(--radius-sm)}
+.step + .step{margin-left:20px}
+.step + .step::before{content:"";position:absolute;left:-16px;top:50%;width:12px;height:12px;margin-top:-6px;background:var(--on-band-2);-webkit-mask:var(--chevron) center/contain no-repeat;mask:var(--chevron) center/contain no-repeat}
+.step-n{font:700 var(--text-2xl)/1 var(--font-mono);color:var(--on-band)}
+.step-bar{height:6px;background:var(--band-line);border-radius:var(--radius-xs)}
+.step-bar i{display:block;height:100%;background:var(--on-band-2);border-radius:inherit}
+.step.most .step-bar i{background:var(--point)}
+.step-note{font-size:var(--text-2xs);overflow-wrap:anywhere}
+.step.exit{border-style:dashed}
+.step.first-exit{margin-left:32px}
+.step.exit + .step.exit{margin-left:var(--space-2)}
+.step.exit + .step.exit::before{display:none}
+.step.first-exit::before{left:-17px;top:0;bottom:0;width:1px;height:auto;margin:0;background:var(--band-line);-webkit-mask:none;mask:none}
+.step .fm-label{overflow-wrap:anywhere}
+.form-marks{--chevron:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M3.2 1.6 6.8 5 3.2 8.4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+@media(max-width:719px){
+  .plate[data-form]{padding-top:var(--space-4);padding-bottom:var(--space-4)}
+  .plate-in{gap:var(--space-4)}
+  .display{font-size:var(--text-2xl)}
+  .lede{margin-top:var(--space-2);font-size:var(--text-md);line-height:var(--leading-normal)}
+  .rule{margin-top:var(--space-3)}
+  .gap-row,.gap-head{grid-template-columns:minmax(0,1fr) minmax(0,9rem);gap:var(--space-1) var(--space-2)}
+  .gap-row .gap-track{grid-column:1/-1;grid-row:2;margin:2px 0}
+  .gap-head>span:first-child,.gap-head>span:last-child{display:none}
+  .gap-directions{grid-column:1/-1}
+  .gap-name{line-height:1.35}
+  .gap-rest{grid-template-columns:9px minmax(0,1fr)}
+  .wait{display:grid;gap:var(--space-2)}
+  .wait li{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:var(--space-3)}
+  .wait .done{border-left:0;border-top:1px solid var(--band-line);padding:var(--space-2) 0 0}
+  .steps{display:grid;gap:12px}
+  .step{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 2.5rem;align-items:center;gap:var(--space-1) var(--space-2);padding:var(--space-2) var(--space-3)}
+  .step + .step,.step.first-exit,.step.exit + .step.exit{margin-left:0}
+  .step-n{grid-column:3;grid-row:1;text-align:right;font-size:var(--text-lg)}
+  .step-bar{grid-column:2;grid-row:1}
+  .step-note{grid-column:1/-1}
+  .step-note:empty{display:none}
+  .step + .step::before{left:50%;top:-11px;width:10px;height:10px;margin:0;transform:rotate(90deg)}
+  .step.first-exit{margin-top:var(--space-2)}
+  .step.first-exit::before{left:0;right:0;top:-12px;bottom:auto;width:auto;height:1px;transform:none}
+}
+
+
 /* ---- work area ---- */
 .work{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-8);align-items:start;max-width:var(--content-max);margin:0 auto;padding:var(--space-8) var(--gutter) var(--space-12)}
+.work > section{min-width:0}
 .side{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-6);align-content:start}
 .section-label{margin-bottom:var(--space-3)}
 .filters{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);margin-bottom:var(--space-3)}
@@ -164,9 +296,12 @@ select.input{padding-right:var(--space-2)}
 .missing{color:var(--text-3)}
 
 /* ---- table: two line weights (outer --border, rows --hairline) ---- */
-.tablewrap{overflow:auto;overscroll-behavior-x:contain;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--paper);box-shadow:var(--shadow-1)}
+.tablewrap{position:relative;min-width:0;max-width:100%;overflow-x:auto;overflow-y:auto;overscroll-behavior-x:contain;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--paper);box-shadow:var(--shadow-1)}
 table.data{width:100%;border-collapse:separate;border-spacing:0;font-size:var(--text-sm)}
-table.data th,table.data td{height:var(--row-h);padding:0 var(--space-4);border-bottom:1px solid var(--hairline);text-align:left;white-space:nowrap}
+table.data th,table.data td{height:var(--row-h);padding:var(--space-2) var(--space-4);border-bottom:1px solid var(--hairline);text-align:left;white-space:normal;overflow-wrap:normal;word-break:normal}
+table.data .sort{max-width:100%;white-space:normal}
+table.data .cat{min-width:0;max-width:100%}
+table.data .tag{height:auto;min-height:21px;max-width:100%;white-space:normal}
 table.data tbody tr:last-child td{border-bottom:0}
 table.data thead th{position:sticky;top:0;z-index:1;background:var(--surface-2);border-bottom-color:var(--border);color:var(--text-2);font-size:var(--text-2xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-caps);text-transform:uppercase}
 table.data th.num,table.data td.num{text-align:right}
@@ -257,7 +392,12 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
 @media (min-width:640px){.tablewrap{max-height:min(40rem, calc(100vh - var(--topbar-h) - var(--space-8)))}}
 @media (min-width:900px){.honest-in{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:1200px){.work{grid-template-columns:minmax(0,1fr) var(--inspector-w)}}
-@media (max-width:719px){.positioning{display:none}} /* below 720px no useful part of the line fits */
+@media (max-width:719px){
+  .positioning{display:none}
+  .brand{flex:1 1 0;min-width:0}
+  .brand-name{flex:1 1 auto;min-width:0;white-space:normal;overflow-wrap:anywhere}
+  .spacer{display:none}
+} /* below 720px no useful part of the line fits */
 @media (max-width:639px){
   .topbar{gap:var(--space-2)}
   .pill .long{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -381,7 +521,7 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
   <a class="tbtn" href="https://github.com/NickkkLian/nk-design">Source</a>
 </header>
 
-<section class="plate band" aria-labelledby="page-title">
+<section class="plate band" data-form="split" data-nk-scope aria-labelledby="page-title">
   <div class="plate-in">
     <div>
       <p class="eyebrow">Reconciliation · synthetic batch</p>
@@ -390,10 +530,9 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
       <div class="rule" aria-hidden="true"></div>
     </div>
     <div class="sum-strip" role="group" aria-label="Where did the input rows go, and do the parts add up to the totals?">
-      <div class="sum-bar" id="sum-bar" aria-hidden="true"></div>
-      <ul class="sum-legend" id="sum-legend"></ul>
-      <p class="sum-eq" id="sum-eq"></p>
-      <p class="caption">The total after each = comes from a separate pass over every input row, so a row that lands in no group turns the check into a cross.</p>
+      <div class="form-marks" id="form-marks"></div>
+      <p class="sum-eq" id="sum-eq"><span class="bad">Page did not build: drawing has not completed.</span></p>
+      <p class="caption" id="form-caption"></p>
     </div>
   </div>
 </section>
@@ -416,7 +555,7 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
       <button class="btn btn-ghost" type="button" id="clear">Clear filters</button>
       <span class="chip" id="showing" aria-live="polite"></span>
     </div>
-    <div class="tablewrap">
+    <div class="tablewrap" tabindex="0" role="region" aria-label="Rows; scroll to see more columns">
       <table class="data" id="table">
         <caption class="sr-only">Input rows. Arrow keys move between rows; Enter opens a row in the details panel.</caption>
         <thead><tr>
@@ -501,7 +640,7 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
    Every number on the page is computed from the rows array below; nothing is typed into the HTML.
    To adapt it to another tool, change three things and keep the structure:
      what one row is                  → KINDS and the generator loop (section 1)
-     what the first screen adds up    → GROUPS (section 3); their statuses must cover every status you use
+     what the first screen adds up    → data-form + SHAPE (section 3); record the choice in nk-sources
      what a person decides for a row  → approveBlock() and the two buttons (section 5) */
 (function () {
   "use strict";
@@ -570,87 +709,305 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
     return String(s).replace(/[&<>"']/g, function (ch) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[ch]; });
   }
 
-  /* ---- 3. reconciliation: group sums against totals computed in a separate pass ---- */
-  var GROUPS = [
-    {label: "Approved", statuses: ["Approved"], cls: "s-point"},
-    {label: "Needs review", statuses: ["Needs review"], cls: "s-strong"},
-    {label: "Rejected or excluded", statuses: ["Rejected", "Excluded"], cls: "s-soft"}
-  ];
+  /* SHAPE:start the only block an agent edits to choose and feed the form */
+  var SHAPE = {
+    "form": "split", "unit": {"one": "row", "many": "rows"},
+    "amount": {"field": "cents", "label": "known amount", "kind": "money"},
+    "parts": [{"label": "Approved", "statuses": ["Approved"]},
+              {"label": "Needs review", "statuses": ["Needs review"]},
+              {"label": "Rejected or excluded", "statuses": ["Rejected", "Excluded"]}],
+    "unknownLabel": "No amount"
+  };
+  /* SHAPE:end */
   var TAGS = {"Needs review": "tag-warning", "Approved": "tag-success", "Rejected": "tag-danger", "Excluded": "tag-neutral"};
   var STATUS_ORDER = ["Needs review", "Approved", "Rejected", "Excluded"];
-
-  function reconcile() {
-    var total = {rows: rows.length, cents: 0, unknown: 0};
-    rows.forEach(function (row) { if (row.cents === null) total.unknown++; else total.cents += row.cents; });
-    var parts = GROUPS.map(function (g) {
-      var p = {g: g, rows: 0, cents: 0, unknown: 0};
-      rows.forEach(function (row) {
-        if (g.statuses.indexOf(row.status) === -1) return;
-        p.rows++;
-        if (row.cents === null) p.unknown++; else p.cents += row.cents;
-      });
-      return p;
-    });
-    var sumRows = 0, sumCents = 0;
-    parts.forEach(function (p) { sumRows += p.rows; sumCents += p.cents; });
-    return {total: total, parts: parts, rowGap: total.rows - sumRows, centGap: total.cents - sumCents};
+  var focusNumbers = {}, traceEntries = {};
+  function number(id, value, passive) {
+    var tab = passive || focusNumbers[id] ? ' tabindex="-1"' : '';
+    if (!passive) focusNumbers[id] = true;
+    return '<span data-nk-src="' + id + '"' + tab + '>' + esc(value) + '</span>';
   }
-
-  function renderStrip() {
-    var rec = reconcile(), bar = [], legend = [];
-    rec.parts.forEach(function (p, i) {
-      var known = p.rows - p.unknown;
-      if (known) bar.push('<span class="' + p.g.cls + '" style="flex-grow:' + known + '"></span>');
-      if (p.unknown) bar.push('<span class="s-hatch" style="flex-grow:' + p.unknown + '"></span>');
-      legend.push('<li><i class="sw ' + p.g.cls + '"></i>' + p.g.label + ' <b data-nk-src="rec.part' + i + '">' + int(p.rows) + '</b></li>');
+  function qty(n, kind) { return kind === "money" ? money(n) : int(n); }
+  function valid(n) { return typeof n === "number" && Number.isSafeInteger(n); }
+  function missing(n) { return n === null || n === undefined || n === ""; }
+  function sum(rs, fn) { return rs.reduce(function (n, r) { return n + fn(r); }, 0); }
+  function unit(n) { return plural(n, SHAPE.unit.one, SHAPE.unit.many); }
+  function record(id, label, value, rs, how) {
+    traceEntries[id] = {label: label, value: String(value), live: true,
+      from: [{input: "rows", rows: rs.slice(0, 50).map(function (r) { return r.id; }), rows_total: rs.length,
+        text: rs.length ? "cells " + rs.slice(0, 8).map(function (r) { return r.src; }).join(", ") : "No rows match this group."}],
+      how: {kind: "computation", text: how}, not_checked: ["Invented rows; source accuracy and the recorded status have not been verified."]};
+  }
+  function trace() {
+    if (!window.NkSources) return;
+    Object.keys(traceEntries).forEach(function (id) { NkSources.set(id, traceEntries[id]); });
+  }
+  function count(id, label, rs, how) { record(id, label, int(rs.length), rs, how); return rs.length; }
+  function configText(id, label, value) {
+    record(id, label, value, [], "Stated configuration in SHAPE, not a measurement from the invented rows.");
+    traceEntries[id].from = [{text: "The page's SHAPE configuration: " + label}];
+    traceEntries[id].how.kind = "stated";
+    return number(id, value);
+  }
+  function common() {
+    traceEntries = {};
+    var ids = new Set(rows.map(function (r) { return r.id; }));
+    return {rows: count("rec.rows", "All rows", rows, "Separate pass: count every loaded row."), errors: ids.size !== rows.length ? ["a row id is compared twice"] : []};
+  }
+  function classified(rs, groups, field, key, prefix, rec) {
+    var lists = groups.map(function (g, i) {
+      var hit = rs.filter(function (r) { return g[key].indexOf(r[field]) >= 0; });
+      count(prefix + i, g.label, hit, "Count rows where " + field + " is one of " + g[key].join(", ") + ".");
+      return {g: g, hit: hit, n: hit.length};
     });
-    legend.push('<li><i class="sw s-hatch"></i>No amount <b data-nk-src="rec.unknown">' + int(rec.total.unknown) + '</b> (counted as rows, kept out of the sums)</li>');
-    $("#sum-bar").innerHTML = bar.join("");
-    $("#sum-legend").innerHTML = legend.join("");
-    var gaps = [];
-    if (rec.rowGap) gaps.push(int(Math.abs(rec.rowGap)) + plural(Math.abs(rec.rowGap), " row", " rows"));
-    if (rec.centGap) gaps.push(money(Math.abs(rec.centGap)));
-    $("#sum-eq").innerHTML =
-      '<span>' + rec.parts.map(function (p, i) { return '<span data-nk-src="rec.part' + i + '">' + int(p.rows) + '</span>'; }).join(" +&nbsp;") +
-        ' =&nbsp;<span data-nk-src="rec.rows">' + int(rec.total.rows) + '</span>' + plural(rec.total.rows, " row", " rows") + '</span>' +
-      ' <span aria-hidden="true">·</span> ' +
-      '<span>' + rec.parts.map(function (p, i) { return '<span data-nk-src="rec.part' + i + '.cents">' + money(p.cents) + '</span>'; }).join(" +&nbsp;") +
-        ' =&nbsp;<span data-nk-src="rec.cents">' + money(rec.total.cents) + '</span></span> ' +
-      (gaps.length ? '<span class="bad">off by ' + gaps.join(" and ") + '</span>' : '<span class="ok">reconciles to the cent</span>');
-    $("#page-title").textContent = "Where the " + int(rec.total.rows) + " input " + plural(rec.total.rows, "row", "rows") + " went";
-    document.querySelectorAll("[data-n]").forEach(function (el) { el.textContent = int(rec.total.rows); });
-    traceStrip(rec);
+    if (rs.some(function (r) { return sum(groups, function (g) { return g[key].indexOf(r[field]) >= 0 ? 1 : 0; }) !== 1; })) rec.errors.push("a row is in no group or more than one group");
+    return lists;
+  }
+  function verdict(rec, success) {
+    return rec.errors.length ? '<span class="bad">' + esc(rec.errors.join("; ")) + '</span>' : '<span class="ok">' + esc(success) + '</span>';
+  }
+  function signed(n, words, kind) { return (n < 0 ? "−" : n > 0 ? "+" : "") + qty(Math.abs(n), kind) + " " + (n < 0 ? words.lower : n > 0 ? words.higher : words.match); }
+  function dateDay(value) {
+    if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return NaN;
+    var n = Date.parse(value + "T00:00:00Z");
+    return Number.isFinite(n) && new Date(n).toISOString().slice(0, 10) === value ? n / 86400000 : NaN;
+  }
+  function age(row) { return dateDay(SHAPE.today) - dateDay(row[SHAPE.since.field]); }
+  function gap(row) {
+    var a = row[SHAPE.a.field], b = row[SHAPE.b.field];
+    return valid(a) && valid(b) ? b - a : null;
+  }
+  function bandRow(label, id, n, cells, cls) {
+    return '<li class="' + (cls || '') + '"><div class="wait-cells" aria-hidden="true">' + cells + '</div><span class="fm-label">' + esc(label) + ' <b>' + number(id, int(n)) + '</b></span></li>';
+  }
+  function cells(n, merged, cls, scale) {
+    if (!n) return "";
+    return merged ? '<i class="merged ' + (cls || '') + '" style="width:' + (n / scale * 100) + '%" data-count="' + n + '"></i>' : Array.from({length: n}, function () { return '<i class="' + (cls || '') + '"></i>'; }).join("");
+  }
+  function gapBar(lower, higher, scale, rest) {
+    return '<div class="gap-track" aria-hidden="true"><i class="short ' + (rest ? 'rest' : SHAPE.point === "lower" ? 's-point' : 's-strong') + '" style="width:' + (100 * lower / scale) + '%"></i><i class="over ' + (rest ? 'rest' : SHAPE.point === "higher" ? 's-point' : 's-strong') + '" style="width:' + (100 * higher / scale) + '%"></i></div>';
+  }
+  var FORMS = {
+    split: {
+      question: "Where did the whole go, and do the parts add up to it?",
+      reconcile: function () {
+        var rec = common(), amount = SHAPE.amount, field = amount && amount.field;
+        if (SHAPE.countParts) {
+          rec.counts = classified(rows, SHAPE.countParts, "status", "statuses", "rec.count", rec);
+          rec.parts = SHAPE.parts.map(function (g, i) { var hit = rows.filter(function (r) { return g.statuses.indexOf(r.status) >= 0; }); count("rec.part" + i, g.label, hit, "Count rows contributing to this amount part (amount parts may overlap; countParts partition rows)."); return {g: g, hit: hit, n: hit.length}; });
+          if (rows.some(function (r) { return !SHAPE.parts.some(function (g) { return g.statuses.indexOf(r.status) >= 0; }); })) rec.errors.push("a row has a status in no amount part");
+        } else rec.parts = classified(rows, SHAPE.parts, "status", "statuses", "rec.part", rec);
+        var known = rows.filter(function (r) { return !amount || valid(r[field]); });
+        rec.unknown = count("rec.unknown", SHAPE.unknownLabel, rows.filter(function (r) { return amount && (!valid(r[field]) || SHAPE.parts.some(function (g) { return g.statuses.indexOf(r.status) >= 0 && !valid(r[g.field || field]); })); }), "Count unknown whole or component amounts; exclude them from their amount sums, retain them in row counts.");
+        rec.total = amount ? sum(known, function (r) { return r[field]; }) : rec.rows;
+        record("rec.cents", amount ? amount.label : "Whole", qty(rec.total, amount && amount.kind), known, "Separate pass: sum every known " + (field || "row") + " as integers; never rounded strings.");
+        rec.parts.forEach(function (p, i) {
+          var partField = p.g.field || field;
+          var hit = p.hit.filter(function (r) { return !amount || valid(r[partField]); });
+          p.value = amount ? sum(hit, function (r) { return r[partField]; }) : p.n;
+          record("rec.part" + i + ".cents", p.g.label + ": amount", qty(p.value, amount && amount.kind), hit, "Sum integer " + (partField || "row counts") + " in this status part.");
+          if (amount && p.hit.some(function (r) { return !missing(r[partField]) && (!valid(r[partField]) || r[partField] < 0); })) rec.errors.push("invalid component amount");
+        });
+        if (amount && rows.some(function (r) { return !missing(r[field]) && (!valid(r[field]) || r[field] < 0); })) rec.errors.push("invalid amount: use non-negative integer units or cents");
+        if (sum(rec.counts || rec.parts, function (p) { return p.n; }) !== rec.rows || sum(rec.parts, function (p) { return p.value; }) !== rec.total || !Number.isSafeInteger(rec.total)) rec.errors.push("parts do not add up to the whole");
+        return rec;
+      },
+      marks: function (r) {
+        var knownShare = (r.rows - r.unknown) / Math.max(1, r.rows), bar = [], legend = [];
+        r.parts.forEach(function (p, i) {
+          var cls = ["s-point", "s-strong", "s-soft", "s-strong", "s-soft"][i];
+          if (p.value > 0) bar.push('<span class="' + cls + '" style="flex-grow:' + (p.value / Math.max(1, r.total) * knownShare) + '"></span>');
+          legend.push('<li><i class="sw ' + cls + '" aria-hidden="true"></i>' + esc(p.g.label) + ' <b>' + number(SHAPE.amount ? "rec.part" + i + ".cents" : "rec.part" + i, qty(p.value, SHAPE.amount && SHAPE.amount.kind)) + '</b></li>');
+        });
+        if (r.unknown) bar.push('<span class="s-hatch" style="flex-grow:' + (r.unknown / r.rows) + '"></span>');
+        if (SHAPE.amount) legend.push('<li><i class="sw s-hatch" aria-hidden="true"></i>' + esc(SHAPE.unknownLabel) + ' <b>' + number("rec.unknown", int(r.unknown)) + '</b> rows, kept out of amount sums</li>');
+        return '<div class="sum-bar" aria-hidden="true">' + bar.join("") + '</div><ul class="sum-legend">' + legend.join("") + '</ul>';
+      },
+      equation: function (r) {
+        var counts = (r.counts || r.parts).map(function (p, i) { return number((r.counts ? "rec.count" : "rec.part") + i, int(p.n)) + " " + esc(p.g.label); }).join(" + ") + " = " + number("rec.rows", int(r.rows)) + " " + unit(r.rows);
+        return (SHAPE.amount ? r.parts.map(function (p, i) { return number("rec.part" + i + ".cents", qty(p.value, SHAPE.amount.kind)) + " " + esc(p.g.label); }).join(" + ") + " = " + number("rec.cents", qty(r.total, SHAPE.amount.kind)) + " " + esc(SHAPE.amount.label) + " · " : "") + counts;
+      },
+      title: function (r) { return "Where the " + number(SHAPE.amount ? "rec.cents" : "rec.rows", qty(r.total, SHAPE.amount && SHAPE.amount.kind), true) + " " + esc(SHAPE.amount ? SHAPE.amount.label : unit(r.rows)) + " went"; },
+      caption: function () { return "Each total comes from its own pass over all rows. Known segment widths show " + (SHAPE.amount ? "amounts" : "row counts") + "; hatch width shows the share of rows with unknown amounts, never an estimate of missing money."; },
+      success: function () { return SHAPE.amount && SHAPE.amount.kind === "money" ? "adds up to the cent" : "adds up to the unit"; }, trace: trace
+    },
+    gaps: {
+      question: "Where do the two sources disagree, and do the differences explain the gap between their totals?",
+      reconcile: function () {
+        var rec = common(), w = SHAPE.words;
+        rec.hit = rows.filter(function (r) { return gap(r) !== null; });
+        rec.compared = count("rec.compared", w.compared, rec.hit, "Count rows with two valid integer quantities.");
+        rec.unknown = count("rec.unknown", "Kept out", rows.filter(function (r) { return gap(r) === null; }), "Count missing or invalid pairs, kept out of BOTH totals.");
+        rec.a = sum(rows, function (r) { return valid(r[SHAPE.a.field]) && valid(r[SHAPE.b.field]) ? r[SHAPE.a.field] : 0; });
+        rec.b = sum(rows, function (r) { return valid(r[SHAPE.a.field]) && valid(r[SHAPE.b.field]) ? r[SHAPE.b.field] : 0; });
+        record("rec.a", SHAPE.a.label, qty(rec.a, SHAPE.kind), rec.hit, "Separate pass: sum source A on complete pairs only.");
+        record("rec.b", SHAPE.b.label, qty(rec.b, SHAPE.kind), rec.hit, "Separate pass: sum source B on complete pairs only.");
+        ["lower", "higher", "match"].forEach(function (direction) {
+          var hit = rec.hit.filter(function (r) { var d = gap(r); return direction === "lower" ? d < 0 : direction === "higher" ? d > 0 : d === 0; });
+          rec[direction + "Rows"] = count("rec." + direction + ".rows", w[direction], hit, "Count row-by-row differences in this direction.");
+          if (direction !== "match") {
+            rec[direction] = sum(hit, function (r) { return Math.abs(gap(r)); });
+            record("rec." + direction, w[direction], qty(rec[direction], SHAPE.kind), hit, "Third pass: add absolute B minus A differences in this direction.");
+          }
+        });
+        rec.drawn = rec.hit.filter(function (r) { return gap(r) !== 0; }).sort(function (a, b) { return Math.abs(gap(b)) - Math.abs(gap(a)) || a.id - b.id; });
+        var show = Math.min(6, Math.max(1, SHAPE.show || 6));
+        rec.rest = rec.drawn.slice(show); rec.drawn = rec.drawn.slice(0, show);
+        rec.drawn.forEach(function (r, i) { record("rec.gap" + i, r.name, signed(gap(r), w, SHAPE.kind), [r], "Source B minus source A on this row, using integer units or cents."); });
+        rec.restLower = sum(rec.rest, function (r) { return Math.max(0, -gap(r)); });
+        rec.restHigher = sum(rec.rest, function (r) { return Math.max(0, gap(r)); });
+        ["lower", "higher"].forEach(function (d) { record("rec.rest." + d, "Smaller differences: " + w[d], qty(d === "lower" ? rec.restLower : rec.restHigher, SHAPE.kind), rec.rest.filter(function (r) { return d === "lower" ? gap(r) < 0 : gap(r) > 0; }), "Sum this direction among differences below the drawn rows."); });
+        count("rec.rest.rows", "Smaller differences", rec.rest, "Count nonzero differences below the drawn rows.");
+        record("rec.rest", "Smaller differences", int(rec.rest.length) + " smaller differences −" + qty(rec.restLower, SHAPE.kind) + " " + w.lower + " +" + qty(rec.restHigher, SHAPE.kind) + " " + w.higher, rec.rest, "Count undrawn nonzero differences and sum each direction separately.");
+        record("rec.classified", "Compared rows by direction", int(rec.matchRows) + " " + w.match + " + " + int(rec.lowerRows) + " " + w.lower + " + " + int(rec.higherRows) + " " + w.higher, rec.hit, "Classify each complete pair exactly once: B equals, below or above A.");
+        if (rows.some(function (r) { return [SHAPE.a.field, SHAPE.b.field].some(function (f) { return !missing(r[f]) && !valid(r[f]); }); })) rec.errors.push("invalid quantity: text is not a number");
+        if (rec.a - rec.lower + rec.higher !== rec.b || rec.matchRows + rec.lowerRows + rec.higherRows !== rec.compared || ![rec.a, rec.b, rec.lower, rec.higher].every(valid)) rec.errors.push("the three passes disagree");
+        return rec;
+      },
+      marks: function (r) {
+        var scale = Math.max(1, r.drawn.length ? Math.abs(gap(r.drawn[0])) : 0), w = SHAPE.words;
+        var head = '<li class="gap-head fm-label"><span>Thing</span><span class="gap-directions"><span>' + esc(w.lower) + '</span><span>' + esc(w.higher) + '</span></span><span>Difference</span></li>';
+        return '<ul class="fm gaps">' + head + r.drawn.map(function (row, i) {
+          var d = gap(row);
+          record("rec.gap" + i + ".name", "Thing name", row.name, [row], "Read the name from this row.");
+          return '<li class="gap-row"><span class="gap-name">' + number("rec.gap" + i + ".name", row.name, true) + '</span>' + gapBar(Math.max(0, -d), Math.max(0, d), scale, false) + '<span class="gap-num">' + number("rec.gap" + i, signed(d, w, SHAPE.kind)) + '</span></li>';
+        }).join("") + (r.rest.length ? '<li class="gap-row gap-rest"><i class="sw s-soft" aria-hidden="true"></i><span class="gap-rest-total">' + number("rec.rest", traceEntries["rec.rest"].value) + '</span></li>' : '') + '</ul>';
+      },
+      equation: function (r) { var w = SHAPE.words;
+        return number("rec.a", qty(r.a, SHAPE.kind)) + " " + esc(SHAPE.a.label) + " − " + number("rec.lower", qty(r.lower, SHAPE.kind)) + " " + esc(w.lower) + " + " + number("rec.higher", qty(r.higher, SHAPE.kind)) + " " + esc(w.higher) + " = " + number("rec.b", qty(r.b, SHAPE.kind)) + " " + esc(SHAPE.b.label) + " · " + number("rec.classified", traceEntries["rec.classified"].value) + " = " + number("rec.compared", int(r.compared)) + " " + unit(r.compared) + " " + esc(w.compared);
+      },
+      after: function (r) { var net = r.b - r.a;
+        record("rec.net", "Net difference", qty(Math.abs(net), SHAPE.kind), r.hit, "Source B total minus source A total; magnitude shown with direction in words.");
+        return " · " + number("rec.unknown", int(r.unknown)) + " " + unit(r.unknown) + " not counted yet, kept out of both totals · " + number("rec.compared", int(r.compared)) + " compared + " + number("rec.unknown", int(r.unknown)) + " kept out = " + number("rec.rows", int(r.rows)) + " " + unit(r.rows) + " · net " + number("rec.net", qty(Math.abs(net), SHAPE.kind)) + " " + (net < 0 ? "fewer" : net > 0 ? "more" : "difference"); },
+      title: function (r) { var net = r.b - r.a; return number("rec.compared", int(r.compared), true) + " of " + number("rec.rows", int(r.rows), true) + " " + unit(r.rows) + " " + esc(SHAPE.words.compared) + ": " + number("rec.net", qty(Math.abs(net), SHAPE.kind), true) + " " + esc(SHAPE.quantity || "units") + " " + (net < 0 ? "fewer than" : net > 0 ? "more than" : "difference from") + " the “" + esc(SHAPE.a.label) + "” total"; },
+      caption: function () { return "Both totals exclude incomplete pairs. Differences use a third pass; all bars share the largest drawn difference's scale. Point marks mean " + esc(SHAPE.words[SHAPE.point]) + "."; },
+      success: function () { return SHAPE.kind === "money" ? "adds up to the cent" : "adds up to the unit"; }, trace: trace
+    },
+    waiting: {
+      question: "How many are waiting, how long has the oldest waited, and is every thing waiting or decided?",
+      reconcile: function () {
+        var rec = common(), hit = rows.filter(function (r) { return SHAPE.waitingStatuses.indexOf(r.status) >= 0; });
+        rec.waiting = count("rec.waiting", "Waiting", hit, "Separate pass by status: count all waiting rows, including unknown dates.");
+        rec.unknown = count("rec.unknown", "Unknown arrival date", hit.filter(function (r) { return missing(r[SHAPE.since.field]); }), "Count waiting rows with missing dates separately, never as today.");
+        rec.bands = SHAPE.bands.map(function (b, i) {
+          var group = hit.filter(function (r) { var n = age(r); return n >= b.minDays && (i === 0 || n < SHAPE.bands[i - 1].minDays); }).sort(function (a, b) { return age(b) - age(a) || a.id - b.id; });
+          return {g: b, n: count("rec.band" + i, b.label, group, "Count whole UTC calendar days since arrival, in this exclusive age band."), hit: group};
+        });
+        var dated = hit.filter(function (r) { return Number.isFinite(age(r)) && age(r) >= 0; });
+        rec.oldest = dated.length ? Math.max.apply(null, dated.map(age)) : null;
+        record("rec.oldest", "Oldest wait", rec.oldest === null ? "unknown" : int(rec.oldest), dated.filter(function (r) { return age(r) === rec.oldest; }), "Maximum whole calendar-day age among valid waiting dates; unknown if none.");
+        rec.outcomes = classified(rows.filter(function (r) { return SHAPE.waitingStatuses.indexOf(r.status) < 0; }), SHAPE.outcomes, "status", "statuses", "rec.outcome", rec);
+        if (SHAPE.outcomes.some(function (g) { return g.statuses.some(function (s) { return SHAPE.waitingStatuses.indexOf(s) >= 0; }); })) rec.errors.push("waiting and outcome statuses overlap");
+        if (!Number.isFinite(dateDay(SHAPE.today)) || hit.some(function (r) { return !missing(r[SHAPE.since.field]) && (!Number.isFinite(age(r)) || age(r) < 0); }) || sum(rec.bands, function (b) { return b.n; }) + rec.unknown !== rec.waiting) rec.errors.push("a waiting date falls in no band");
+        if (rec.waiting + sum(rec.outcomes, function (p) { return p.n; }) !== rec.rows) rec.errors.push("not every row is accounted for");
+        return rec;
+      },
+      marks: function (r) {
+        var merged = r.waiting > 120;
+        // Every merged lane has the same available width and count scale, including unknowns.
+        var scale = Math.max.apply(null, [1, r.unknown].concat(r.bands.map(function (b) { return b.n; }), r.outcomes.filter(function (p) { return p.n > 120; }).map(function (p) { return p.n; })));
+        return '<p class="fm-label wait-oldest">Oldest wait: ' + number("rec.oldest", r.oldest === null ? "unknown" : int(r.oldest)) + (r.oldest === null ? "" : " days") + '</p><ul class="fm wait" data-merged="' + merged + '">' + r.bands.map(function (b, i) {
+          var limit = SHAPE.limitDays, label = b.g.label, late = limit === null ? i === 0 : b.g.minDays >= limit;
+          if (late) label += limit === null ? ", oldest band" : ", past the " + limit + "-day limit";
+          // A limit cutting a band retains per-row point meaning: split the group's cells at that limit.
+          var old = b.hit.filter(function (row) { return limit === null ? i === 0 : age(row) >= limit; }).length;
+          var markup = bandRow(label, "rec.band" + i, b.n, cells(old, merged, "s-point", scale) + cells(b.n - old, merged, "s-strong", scale));
+          return markup.replace(esc(label), configText("rec.band" + i + ".label", "Age band label", label));
+        }).join("") + (r.unknown ? bandRow("Arrival date unknown", "rec.unknown", r.unknown, cells(r.unknown, merged, "s-hatch", scale)) : '') + r.outcomes.map(function (p, i) { return bandRow(p.g.label + ", decided", "rec.outcome" + i, p.n, cells(p.n, p.n > 120, "hollow", scale), "done"); }).join("") + '</ul>';
+      },
+      equation: function (r) { return r.bands.map(function (b, i) { return number("rec.band" + i, int(b.n)); }).join(" + ") + (r.unknown ? " + " + number("rec.unknown", int(r.unknown)) + " unknown date" : "") + " = " + number("rec.waiting", int(r.waiting)) + " waiting · " + number("rec.waiting", int(r.waiting)) + " waiting" + (r.outcomes.length ? " + " + r.outcomes.map(function (p, i) { return number("rec.outcome" + i, int(p.n)) + " " + esc(p.g.label); }).join(" + ") : "") + " = " + number("rec.rows", int(r.rows)) + " " + unit(r.rows); },
+      title: function (r) { return number("rec.waiting", int(r.waiting), true) + " " + unit(r.waiting) + " waiting, the oldest " + (r.oldest === null ? "unknown" : "for " + number("rec.oldest", int(r.oldest), true) + " days"); },
+      caption: function () { return "As of " + configText("rec.today", "Fixed page date", SHAPE.today) + ": wait = whole UTC calendar days since arrival; today is zero days. Missing dates are hatched and counted separately." + ($("#form-marks .merged") ? " Blocks share one count scale and fit each lane; the largest merged group fills its lane. Decided squares wrap; merged decided groups use the same block scale." : ""); },
+      success: function () { return "every " + SHAPE.unit.one + " accounted for"; }, trace: trace
+    },
+    steps: {
+      question: "How many are at each step, where do they pile up, and is every thing at exactly one step or out?",
+      reconcile: function () {
+        var rec = common(), f = SHAPE.step.field;
+        var exits = SHAPE.exits.reduce(function (a, g) { return a.concat(g.values); }, []);
+        rec.inprogress = count("rec.inprogress", "In progress", rows.filter(function (r) { return exits.indexOf(r[f]) < 0; }), "Separate pass: count rows whose step is not a named exit.");
+        var groups = SHAPE.steps.map(function (s) { return {label: s, values: [s]}; }).concat(SHAPE.exits);
+        var all = classified(rows, groups, f, "values", "rec.group", rec);
+        rec.steps = all.slice(0, SHAPE.steps.length); rec.exits = all.slice(SHAPE.steps.length);
+        rec.steps.forEach(function (p, i) { count("rec.step" + i, p.g.label, p.hit, "Count rows at exactly this step."); });
+        rec.exits.forEach(function (p, i) { count("rec.exit" + i, p.g.label, p.hit, "Count rows with this exit value."); });
+        rec.full = rec.steps.reduce(function (a, b) { return b.n > a.n ? b : a; });
+        rec.fullIndex = rec.steps.indexOf(rec.full);
+        if (sum(rec.steps, function (p) { return p.n; }) !== rec.inprogress || rec.inprogress + sum(rec.exits, function (p) { return p.n; }) !== rec.rows) rec.errors.push("not every row is at one step");
+        return rec;
+      },
+      marks: function (r) {
+        return '<div class="steps">' + r.steps.concat(r.exits).map(function (p, i) {
+          var exit = i >= r.steps.length, most = !exit && p === r.full;
+          return '<div class="step ' + (exit ? 'exit ' + (i === r.steps.length ? 'first-exit' : '') : most ? 'most' : '') + '"><span class="fm-label" data-nk-plain="configured step name">' + esc(p.g.label) + '</span><b class="step-n">' + number(exit ? "rec.exit" + (i - r.steps.length) : "rec.step" + i, int(p.n)) + '</b>' + (!exit ? '<div class="step-bar" aria-hidden="true"><i style="width:' + (100 * p.n / Math.max(1, r.full.n)) + '%"></i></div>' : '') + '<span class="step-note">' + (exit ? 'left the line' : most ? 'most ' + esc(SHAPE.unit.many) + ' are here' : '') + '</span></div>';
+        }).join("") + '</div>';
+      },
+      equation: function (r) { return r.steps.map(function (p, i) { return number("rec.step" + i, int(p.n)); }).join(" + ") + " = " + number("rec.inprogress", int(r.inprogress)) + " in progress · " + number("rec.inprogress", int(r.inprogress)) + " in progress" + (r.exits.length ? " + " + r.exits.map(function (p, i) { return number("rec.exit" + i, int(p.n)) + " " + esc(p.g.label); }).join(" + ") : "") + " = " + number("rec.rows", int(r.rows)) + " " + unit(r.rows); },
+      title: function (r) { return number("rec.inprogress", int(r.inprogress), true) + " " + unit(r.inprogress) + " in progress, " + number("rec.step" + r.fullIndex, int(r.full.n), true) + " of them at " + esc(r.full.g.label); },
+      caption: function () { return "Step counts and the in-progress total use separate passes. Every row is at one step or one exit. Filled bars share the fullest step's scale; in a tie the first step in the line is marked."; },
+      success: function () { return "every " + SHAPE.unit.one + " is at one step"; }, trace: trace
+    }
+  };
+  function renderStrip() {
+    if (window.nkBuild.failed()) return {errors: ["page did not build"]};
+    window.nkBuild.begin();
+    focusNumbers = {};
+    var name = $(".plate").getAttribute("data-form"), form = FORMS[name], rec;
+    try {
+      if (!form || SHAPE.form !== name) throw new Error("form mismatch");
+      rec = form.reconcile();
+      $(".sum-strip").setAttribute("aria-label", form.question);
+      $("#form-marks").innerHTML = form.marks(rec);
+      window.nkBuild.result(form.equation(rec) + " " + verdict(rec, form.success()) + (form.after ? form.after(rec) : ""));
+      $("#page-title").innerHTML = form.title(rec);
+      $("#form-caption").innerHTML = form.caption(rec);
+      form.trace(rec);
+    } catch (e) {
+      window.nkBuild.fail(e.message || String(e));
+      rec = {errors: [e.message || String(e)]};
+      $("#form-marks").innerHTML = "";
+    }
+    document.querySelectorAll("[data-n]").forEach(function (el) { el.textContent = int(rows.length); });
     return rec;
   }
+  addEventListener("DOMContentLoaded", function () { trace(); });
 
-  /* ---- 3b. where each number in the strip comes from (nk-sources): click one to see its rows, how it was
-     computed and what was not checked. The manifest in the page holds each entry's words; this brings the value
-     and the rows up to date after every decision. ---- */
-  function traceStrip(rec) {
-    if (!window.NkSources) return;
-    function rowsOf(test) {
-      var hit = rows.filter(test);
-      return {input: "rows", rows: hit.slice(0, 50).map(function (r) { return r.id; }), rows_total: hit.length,
-              text: "cells " + hit.slice(0, 8).map(function (r) { return r.src; }).join(", ") + (hit.length > 8 ? " …" : "")};
-    }
-    rec.parts.forEach(function (p, i) {
-      var inGroup = function (r) { return p.g.statuses.indexOf(r.status) >= 0; };
-      NkSources.update("rec.part" + i, {value: int(p.rows), from: [rowsOf(inGroup)]});
-      NkSources.update("rec.part" + i + ".cents", {value: money(p.cents), from: [rowsOf(function (r) { return inGroup(r) && r.cents !== null; })]});
-    });
-    NkSources.update("rec.unknown", {value: int(rec.total.unknown), from: [rowsOf(function (r) { return r.cents === null; })]});
-    NkSources.update("rec.rows", {value: int(rec.total.rows), from: [rowsOf(function () { return true; })]});
-    NkSources.update("rec.cents", {value: money(rec.total.cents), from: [rowsOf(function (r) { return r.cents !== null; })]});
-  }
-  addEventListener("DOMContentLoaded", function () { traceStrip(reconcile()); });
 
   /* ---- 4. table: filter, sort (Source asc ↔ desc; other columns asc → desc → back to Source), roving focus ---- */
-  var state = {q: "", status: "", sortKey: "src", sortDir: 1, selected: null, focusId: null};
+  var defaultSort = SHAPE.form === "gaps" ? "difference" : SHAPE.form === "waiting" ? "waiting" : SHAPE.form === "steps" ? "step" : "src";
+  var defaultDir = SHAPE.form === "gaps" || SHAPE.form === "waiting" ? -1 : 1;
+  var state = {q: "", status: "", sortKey: defaultSort, sortDir: defaultDir, selected: null, focusId: null};
+  var columns = SHAPE.form === "gaps" ? [{key: "a", label: SHAPE.a.label}, {key: "b", label: SHAPE.b.label}, {key: "difference", label: "Difference"}] : SHAPE.form === "waiting" ? [{key: "waiting", label: "Waiting"}] : SHAPE.form === "steps" ? [{key: "step", label: "Step"}] : [{key: "cat", label: "Category"}, {key: "amount", label: "Amount"}];
+  if (SHAPE.form === "split" && SHAPE.amount && SHAPE.parts.some(function (p) { return p.field; })) columns = [{key: "cat", label: "Category"}, {key: "whole", label: SHAPE.amount.label, field: SHAPE.amount.field}].concat(SHAPE.parts.map(function (p, i) { return {key: "component" + i, label: p.label, field: p.field || SHAPE.amount.field, statuses: p.statuses}; }));
+  function componentColumn(key) { return columns.filter(function (c) { return c.key === key && c.field; })[0]; }
+  function columnClass(key) { return ["a", "b", "difference", "amount", "whole"].indexOf(key) >= 0 || key.indexOf("component") === 0 ? "num" : key === "waiting" ? "mono" : ""; }
+  $("#table thead tr").innerHTML = [{key: "src", label: "Source"}, {key: "name", label: "Name"}].concat(columns).concat([{key: "status", label: "Status"}]).map(function (c) { return '<th scope="col" class="' + columnClass(c.key) + '"><button class="sort" type="button" data-k="' + c.key + '">' + esc(c.label) + '</button></th>'; }).join("") + '<th scope="col"><span class="sr-only">Actions</span></th>';
+  function cellValue(row, key) {
+    var col = componentColumn(key);
+    if (col) return col.statuses && col.statuses.indexOf(row.status) < 0 ? "outside part" : valid(row[col.field]) ? qty(row[col.field], SHAPE.amount.kind) : "unknown";
+    if (key === "a" || key === "b") return valid(row[SHAPE[key].field]) ? qty(row[SHAPE[key].field], SHAPE.kind) : "unknown";
+    if (key === "difference") return gap(row) === null ? "kept out" : signed(gap(row), SHAPE.words, SHAPE.kind);
+    if (key === "waiting") return SHAPE.waitingStatuses.indexOf(row.status) < 0 ? "decided" : missing(row[SHAPE.since.field]) ? "arrival unknown" : Number.isFinite(age(row)) && age(row) >= 0 ? int(age(row)) + " days · arrived " + row[SHAPE.since.field] : "invalid arrival date";
+    if (key === "step") return esc(row[SHAPE.step.field]);
+    return key === "cat" ? catHtml(row) : amountHtml(row);
+  }
+  function sortValue(row, key) {
+    var col = componentColumn(key);
+    if (col) return col.statuses && col.statuses.indexOf(row.status) < 0 ? null : valid(row[col.field]) ? row[col.field] : null;
+    if (key === "difference") return gap(row) === null ? null : Math.abs(gap(row));
+    if (key === "a" || key === "b") return valid(row[SHAPE[key].field]) ? row[SHAPE[key].field] : null;
+    if (key === "waiting") return SHAPE.waitingStatuses.indexOf(row.status) >= 0 && Number.isFinite(age(row)) && age(row) >= 0 ? age(row) : null;
+    if (key === "step") { var order = SHAPE.steps.concat(SHAPE.exits.reduce(function (a, g) { return a.concat(g.values); }, [])); var n = order.indexOf(row[SHAPE.step.field]); return n < 0 ? null : n; }
+    return null;
+  }
   function find(id) { return rows.filter(function (row) { return row.id === id; })[0] || null; }
 
   function compare(a, b) {
     var k = state.sortKey, x, y;
-    if (k === "amount" || k === "cat") {
+    if (componentColumn(k) || ["a", "b", "difference", "waiting", "step"].indexOf(k) >= 0) {
+      x = sortValue(a, k); y = sortValue(b, k);
+      if (x === null || y === null) return x === y ? a.id - b.id : x === null ? 1 : -1;
+    } else if (k === "amount" || k === "cat") {
       x = k === "amount" ? a.cents : a.cat; y = k === "amount" ? b.cents : b.cat;
       if (x === null || y === null) return x === y ? a.id - b.id : (x === null ? 1 : -1); /* missing values last either way */
     } else if (k === "status") { x = STATUS_ORDER.indexOf(a.status); y = STATUS_ORDER.indexOf(b.status); }
@@ -696,8 +1053,7 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
       return '<tr data-id="' + row.id + '" tabindex="' + (row.id === tabId ? 0 : -1) + '" aria-selected="' + (row.id === state.selected) + '">' +
         '<td><span class="chip" translate="no"><b>' + esc(row.src) + '</b></span></td>' +
         '<td>' + esc(row.name) + '</td>' +
-        '<td>' + catHtml(row) + '</td>' +
-        '<td class="num">' + amountHtml(row) + '</td>' +
+        columns.map(function (c) { return '<td class="' + columnClass(c.key) + '">' + cellValue(row, c.key) + '</td>'; }).join("") +
         '<td><span class="tag ' + TAGS[row.status] + '">' + esc(row.status) + '</span></td>' +
         '<td class="row-action"><button class="btn btn-ghost btn-sm" type="button" tabindex="-1" data-open="' + row.id + '">Open</button></td></tr>';
     }).join("");
@@ -714,13 +1070,13 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
   /* ---- URL state: search, status, sort and the open row live in the query string, so a copied link opens the
      same view. replaceState keeps Back usable; a value equal to its default is removed, never written;
      theme / scheme / seed / rows are left exactly as they are. ---- */
-  var SORT_KEYS = ["src", "name", "cat", "amount", "status"], DEFAULT_ROW = null;
+  var SORT_KEYS = ["src", "name", "status"].concat(columns.map(function (c) { return c.key; })), DEFAULT_ROW = null;
   function readUrl() {
     var p = new URLSearchParams(location.search), q = p.get("q"), st = p.get("status"), k = p.get("sort"), row = p.get("row");
     if (q !== null) state.q = q;
     if (STATUS_ORDER.indexOf(st) !== -1) state.status = st;
     if (SORT_KEYS.indexOf(k) !== -1) state.sortKey = k;
-    if (p.get("dir") === "desc") state.sortDir = -1;
+    if (p.get("dir") === "desc") state.sortDir = -1; else if (p.get("dir") === "asc") state.sortDir = 1;
     if (row === "none") state.selected = null;
     else if (row !== null) { var hit = rows.filter(function (r) { return r.src === row; })[0]; if (hit) state.selected = hit.id; }
   }
@@ -729,8 +1085,8 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
     function put(key, value, isDefault) { if (isDefault) p.delete(key); else p.set(key, value); }
     put("q", state.q, !state.q.trim());
     put("status", state.status, !state.status);
-    put("sort", state.sortKey, state.sortKey === "src");
-    put("dir", "desc", state.sortDir === 1);
+    put("sort", state.sortKey, state.sortKey === defaultSort);
+    put("dir", state.sortDir === 1 ? "asc" : "desc", state.sortDir === defaultDir);
     put("row", sel ? sel.src : "none", state.selected === DEFAULT_ROW);
     var qs = p.toString().replace(/%3A/gi, ":"), url = location.pathname + (qs ? "?" + qs : "") + location.hash;
     if (url === location.pathname + location.search + location.hash) return;
@@ -741,8 +1097,8 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
   function approveBlock(row) {
     if (row.status === "Approved") return "Already approved.";
     if (row.status !== "Needs review") return "Send it back to review before approving it.";
-    if (row.cents === null) return "No amount to approve: the amount cell is empty or not a number.";
-    if (row.cat === null) return "No category to approve: no rule matched this name.";
+    if (SHAPE.form === "split" && row.cents === null) return "No amount to approve: the amount cell is empty or not a number.";
+    if (SHAPE.form === "split" && row.cat === null) return "No category to approve: no rule matched this name.";
     return "";
   }
 
@@ -766,7 +1122,7 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
           '<span class="chip" translate="no">rule <b>' + esc(row.rule) + '</b></span>' +
           '<span class="chip" translate="no">rev <b>' + row.history.length + '</b></span></dd>' +
         '<dt>Category</dt><dd>' + catHtml(row) + '</dd>' +
-        '<dt>Amount</dt><dd class="mono">' + amountHtml(row) + '</dd>' +
+        columns.filter(function (c) { return c.key !== 'cat'; }).map(function (c) { return '<dt>' + esc(c.label) + '</dt><dd class="mono">' + cellValue(row, c.key) + '</dd>'; }).join("") +
         '<dt>Reason</dt><dd>' + esc(row.reason) + '</dd>' +
         '<dt>History</dt><dd><ol class="history">' + row.history.map(function (h, n) {
           return '<li><span class="mono">rev ' + (n + 1) + '</span> ' + esc(h) + '</li>';
@@ -801,9 +1157,11 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
   function decide(status, note) {
     var row = find(state.selected);
     if (!row) return;
-    row.status = status; row.history.push(note);
-    var rec = renderStrip(); renderTable(); renderInspector();
-    announce(row.name + ": " + note + ". " + (rec.rowGap || rec.centGap ? "The totals no longer reconcile." : "The totals still reconcile."));
+    row.status = status;
+    if (SHAPE.form === "steps") row[SHAPE.step.field] = status === "Approved" ? SHAPE.exits[0].values[0] : status === "Rejected" ? SHAPE.exits[SHAPE.exits.length - 1].values[0] : SHAPE.steps[0];
+    row.history.push(note);
+    var rec = renderStrip(); renderTable(); renderInspector(); window.nkBuild.complete();
+    announce(row.name + ": " + note + ". " + (rec.errors.length ? "The totals no longer reconcile." : "The totals still reconcile."));
   }
 
   function clearFilters() {
@@ -820,7 +1178,7 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
       if (k === "src") { state.sortDir = state.sortKey === "src" ? -state.sortDir : 1; state.sortKey = "src"; }
       else if (state.sortKey !== k) { state.sortKey = k; state.sortDir = 1; }
       else if (state.sortDir === 1) { state.sortDir = -1; }
-      else { state.sortKey = "src"; state.sortDir = 1; }
+      else { state.sortKey = defaultSort; state.sortDir = defaultDir; }
       syncSortHeaders();
       renderTable();
     });
@@ -885,7 +1243,7 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
   readUrl();
   $("#q").value = state.q; $("#status").value = state.status; syncSortHeaders();
   state.focusId = state.selected;
-  renderStrip(); renderTable(); renderInspector();
+  renderStrip(); renderTable(); renderInspector(); window.nkBuild.complete();
 })();
 
 /* ============ Appearance: theme picker, scheme toggle, theme-color (same contract as the head script) ============
@@ -936,176 +1294,7 @@ kbd{display:inline-block;min-width:1.6em;padding:0 var(--space-1);border:1px sol
   sync();
 })();
 </script>
-<script type="application/json" id="nk-sources">{
-  "nk_sources": 1,
-  "generator": "nk-design 0.1.10 starter",
-  "inputs": [
-    {
-      "id": "rows",
-      "name": "the page's generated rows (seeded generator)",
-      "synthetic": true
-    }
-  ],
-  "not_checked": [
-    "The rows are generated in the browser from a fixed seed: no real file was read.",
-    "Nobody checked the rows against a source document; the strip only proves the parts add up to the totals."
-  ],
-  "sources": {
-    "rec.part0": {
-      "label": "Approved: rows",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "count of the rows whose status Approved"
-      },
-      "not_checked": [
-        "Whether each row's status is right: a reviewer's decision is taken as recorded."
-      ],
-      "live": true
-    },
-    "rec.part0.cents": {
-      "label": "Approved: amount",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "sum of the amounts (integer cents) of the rows whose status Approved; rows with no amount are counted as rows and kept out of the sum"
-      },
-      "not_checked": [
-        "Whether each amount was read correctly from its cell."
-      ],
-      "live": true
-    },
-    "rec.part1": {
-      "label": "Needs review: rows",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "count of the rows whose status Needs review"
-      },
-      "not_checked": [
-        "Whether each row's status is right: a reviewer's decision is taken as recorded."
-      ],
-      "live": true
-    },
-    "rec.part1.cents": {
-      "label": "Needs review: amount",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "sum of the amounts (integer cents) of the rows whose status Needs review; rows with no amount are counted as rows and kept out of the sum"
-      },
-      "not_checked": [
-        "Whether each amount was read correctly from its cell."
-      ],
-      "live": true
-    },
-    "rec.part2": {
-      "label": "Rejected or excluded: rows",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "count of the rows whose status Rejected or Excluded"
-      },
-      "not_checked": [
-        "Whether each row's status is right: a reviewer's decision is taken as recorded."
-      ],
-      "live": true
-    },
-    "rec.part2.cents": {
-      "label": "Rejected or excluded: amount",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "sum of the amounts (integer cents) of the rows whose status Rejected or Excluded; rows with no amount are counted as rows and kept out of the sum"
-      },
-      "not_checked": [
-        "Whether each amount was read correctly from its cell."
-      ],
-      "live": true
-    },
-    "rec.unknown": {
-      "label": "Rows with no amount",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "count of the rows whose amount cell is empty or not a number"
-      },
-      "not_checked": [
-        "Why the amount is missing: the row only says the cell could not be read."
-      ],
-      "live": true
-    },
-    "rec.rows": {
-      "label": "Input rows",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "count of every input row, in a separate pass from the groups"
-      },
-      "not_checked": [
-        "Whether rows were lost before the page loaded them."
-      ],
-      "live": true
-    },
-    "rec.cents": {
-      "label": "Total amount",
-      "from": [
-        {
-          "input": "rows",
-          "text": "filled in when the page computes the strip"
-        }
-      ],
-      "how": {
-        "kind": "computation",
-        "text": "sum of every readable amount (integer cents), in a separate pass from the groups"
-      },
-      "not_checked": [
-        "Whether rows were lost before the page loaded them."
-      ],
-      "live": true
-    }
-  }
-}</script><script id="nk-sources-runtime">(function () {
+<script type="application/json" id="nk-sources">{"nk_sources":1,"generator":"nk-design 0.2.0 starter","inputs":[{"id":"rows","name":"the page's generated rows (seeded generator)","synthetic":true}],"not_checked":["The rows are generated in the browser from a fixed seed: no real file was read.","Nobody checked the rows against a source document; the strip only proves the parts add up to the totals."],"sources":{"rec.part0":{"label":"Approved: rows","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"count of the rows whose status Approved"},"not_checked":["Whether each row's status is right: a reviewer's decision is taken as recorded."],"live":true},"rec.part0.cents":{"label":"Approved: amount","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"sum of the amounts (integer cents) of the rows whose status Approved; rows with no amount are counted as rows and kept out of the sum"},"not_checked":["Whether each amount was read correctly from its cell."],"live":true},"rec.part1":{"label":"Needs review: rows","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"count of the rows whose status Needs review"},"not_checked":["Whether each row's status is right: a reviewer's decision is taken as recorded."],"live":true},"rec.part1.cents":{"label":"Needs review: amount","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"sum of the amounts (integer cents) of the rows whose status Needs review; rows with no amount are counted as rows and kept out of the sum"},"not_checked":["Whether each amount was read correctly from its cell."],"live":true},"rec.part2":{"label":"Rejected or excluded: rows","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"count of the rows whose status Rejected or Excluded"},"not_checked":["Whether each row's status is right: a reviewer's decision is taken as recorded."],"live":true},"rec.part2.cents":{"label":"Rejected or excluded: amount","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"sum of the amounts (integer cents) of the rows whose status Rejected or Excluded; rows with no amount are counted as rows and kept out of the sum"},"not_checked":["Whether each amount was read correctly from its cell."],"live":true},"rec.unknown":{"label":"Rows with no amount","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"count of the rows whose amount cell is empty or not a number"},"not_checked":["Why the amount is missing: the row only says the cell could not be read."],"live":true},"rec.rows":{"label":"Input rows","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"count of every input row, in a separate pass from the groups"},"not_checked":["Whether rows were lost before the page loaded them."],"live":true},"rec.cents":{"label":"Total amount","from":[{"input":"rows","text":"filled in when the page computes the strip"}],"how":{"kind":"computation","text":"sum of every readable amount (integer cents), in a separate pass from the groups"},"not_checked":["Whether rows were lost before the page loaded them."],"live":true}},"form":{"name":"split","row_is":"one invented export row, with integer cents, status and source cell","why":"question 4: status parts of a whole amount","also_fits":[],"fallback":false}}</script><script id="nk-sources-runtime">(function () {
   'use strict';
   if (window.NkSources) return;
 

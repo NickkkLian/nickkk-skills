@@ -1,6 +1,6 @@
 {
   "name": "nk-indent-guard",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.",
   "author": {
     "name": "Nick Lian",

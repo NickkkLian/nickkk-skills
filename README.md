@@ -33,7 +33,7 @@ A one-page report, a financial model, a data tool and a formula you can move; ev
 
 - [nk-data-story](https://github.com/NickkkLian/nk-data-story): Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.
 - [nk-model](https://github.com/NickkkLian/nk-model): Turn a description of a small business and a few assumptions into a three-statement financial model in one .xlsx whose statements tie to each other; the builder writes nothing unless the balance sheet balances.
-- [nk-design](https://github.com/NickkkLian/nk-design): Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked.
+- [nk-design](https://github.com/NickkkLian/nk-design): Build a one-page data tool from one sentence, with every number traceable to its rows.
 - [nk-explorer](https://github.com/NickkkLian/nk-explorer): Turn a concept that can be written as one formula into one self-contained HTML page: every slider shows the formula it changes, and the page grades its own practice questions.
 
 ## Check an agent's work
@@ -50,7 +50,7 @@ When an agent says done, tested or unchanged, these turn the claim into evidence
 - [nk-evidence-audit](https://github.com/NickkkLian/nk-evidence-audit): Turn "done, fixed, tested" into evidence a second agent judges.
 - [nk-breakable-selftest](https://github.com/NickkkLian/nk-breakable-selftest): Make a checker, validator, linter, gate or test suite prove it can fail.
 - [nk-regression-baseline](https://github.com/NickkkLian/nk-regression-baseline): Freeze the byte-exact output of production code on its default inputs before you change it, and compare after.
-- [nk-rewrite-coverage](https://github.com/NickkkLian/nk-rewrite-coverage): After rewriting a long document — a spec, a research report, a handbook — list what the old version had that the new one no longer mentions, and account for every item with a three-state verdict before the rewrite is accepted.
+- [nk-rewrite-coverage](https://github.com/NickkkLian/nk-rewrite-coverage): Check what a document rewrite lost.
 
 ## Guard a repository
 
@@ -88,7 +88,7 @@ Words and pages meant for other people: a slide deck, a demo booking page, the d
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-novel"><img src="gallery/nk-novel.gif" alt="nk-novel demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-novel">nk-novel</a></b> · creation<br>One story idea in: a staged novel plan, checked for holes, and a one-page story bible you can open.<br><code>git clone https://github.com/NickkkLian/nk-novel ~/.claude/skills/nk-novel</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-jubensha"><img src="gallery/nk-jubensha.gif" alt="nk-jubensha demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-jubensha">nk-jubensha</a></b> · creation<br>One premise in: a five-player murder-mystery game with booklets and clue cards, proven solvable by a detective that never saw the answer.<br><code>git clone https://github.com/NickkkLian/nk-jubensha ~/.claude/skills/nk-jubensha</code></td></tr>
 </table>
 
-- [nk-deck](https://github.com/NickkkLian/nk-deck): Turn one sentence into a ten-slide single-file HTML deck whose titles carry the argument on their own, with a source under every number and a printout that is the same deck page for page.
+- [nk-deck](https://github.com/NickkkLian/nk-deck): Turn one sentence into a ten-slide HTML deck whose titles carry the argument on their own, with a source under every number and a printout that is the same deck page for page.
 - [nk-landing](https://github.com/NickkkLian/nk-landing): Turn a written description of a small business into one self-contained HTML page with a booking form, where every confirmation waits for a member of staff to approve that exact draft.
 - [nk-post-kit](https://github.com/NickkkLian/nk-post-kit): Turn a finished repository into six drafts a person publishes by hand (an X post, a build log, a video script, a vertical cut, a GIF script and a Chinese Xiaohongshu version), with every claim traced to a file or a real run.
 - [nk-x-post-desk](https://github.com/NickkkLian/nk-x-post-desk): Turn drafted X posts and threads into a one-tap posting page: prefilled composer links, replies chained in order, character counts. No API key, no account connection; you press Post.

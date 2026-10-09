@@ -1,0 +1,25 @@
+{
+  "english": [
+    ["number", "1250", "lost", 1, 0],
+    ["number", "73", "lost", 1, 0],
+    ["number", "19%", "lost", 1, 0],
+    ["number", "8", "fewer", 3, 1],
+    ["link", "https://example.org/harbor/plan", "lost", 1, 0],
+    ["code", "harborctl check --batch amber", "lost", 1, 0],
+    ["quoted-string", "carry the amber card", "fewer", 3, 1],
+    ["quoted-string", "leave the side gate open", "lost", 1, 0],
+    ["name", "Mara Fen", "lost", 1, 0],
+    ["bold", "reserveenvelope", "lost", 1, 0],
+    ["table-cell", "quietslot", "lost", 1, 0]
+  ],
+  "chinese": [
+    ["number", "73", "lost", 1, 0],
+    ["number", "5", "fewer", 3, 1],
+    ["link", "https://example.org/zh-extra", "lost", 1, 0],
+    ["code", "mistctl seal --quiet", "lost", 1, 0],
+    ["quoted-string", "先核对再提交", "lost", 1, 0],
+    ["quoted-string", "保留青色副本", "fewer", 3, 1],
+    ["name", "Mira Sedge", "lost", 1, 0],
+    ["bold", "备用签", "lost", 1, 0]
+  ]
+}

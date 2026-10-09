@@ -15,12 +15,13 @@
 Rules of the ledger:
 - one line per unaccounted item, the item text first, then exactly one tag;
 - `[dropped]` always says why; `[restored]` means restored from the old text, not rewritten;
-- the ledger is part of the change: a rewrite without one is a rewrite nobody checked.
+- retain the ledger with the rewrite as the human record of decisions;
+- the ledger annotates the report but does not change literal matching or the exit code.
 
 Command line:
 ```bash
-git show HEAD:docs/spec.md > /tmp/spec-old.md
-python3 scripts/rewrite_coverage.py /tmp/spec-old.md docs/spec.md --out /tmp/unaccounted.md   # exit 1: work to do
+python3 scripts/rewrite_coverage.py spec-old.md spec-new.md --out unaccounted.md --html coverage.html   # exit 1: lost or fewer items
 # … write the ledger …
-python3 scripts/rewrite_coverage.py /tmp/spec-old.md docs/spec.md --ledger rewrite-ledger.md   # exit 0 when complete
+python3 scripts/rewrite_coverage.py spec-old.md spec-new.md --ledger rewrite-ledger.md --html coverage.html
+# exit 0 only when every extracted item is kept; acknowledged losses still exit 1
 ```

@@ -1,16 +1,16 @@
 ---
 name: nk-design
-description: Build a single-file data tool from one sentence (a review queue, a ledger, a tracker, an admin panel) in a design system where every number shows where it came from and what was not checked. The page carries provenance chips beside derived values, a reconciliation bar on the first screen whose parts are computed live and add up, a fixed status vocabulary that never relies on colour alone, a Demo marker for synthetic data and a footer that says what is not verified. Three palettes and light/dark come from one token file, restored before first paint. Ships the token file, a working starter page and scripts/ui_check.py with fifteen machine rules. Use when asked for a dashboard, queue, ledger, tracker or internal tool, when a demo has to read as a real product in thirty seconds, or to review such a page. Not a marketing-site style and not a component library.
+description: Build a one-page data tool from one sentence, with every number traceable to its rows. The first screen uses one of four forms chosen from the shape of the data (parts of a whole, two sources compared, things waiting, things moving through steps), each ending in a sum computed live that adds up. Provenance chips, a fixed status vocabulary with a second channel, a Demo marker and an honesty footer carry the tracing promise. Ships tokens for three palettes in light/dark, a working offline starter and sixteen machine rules. Use when asked for a dashboard, queue, ledger, tracker or internal tool, or to review such a page. Not for marketing sites or component libraries.
 license: MIT
 metadata:
   provenance: the author's own product-family design system (2026-09), rebuilt after four public data tools shipped with different looks and no visible sources; see Provenance
-  version: 0.1.10
+  version: 0.2.0
 ---
 # Evidence-visible design
 
 **A data tool is believed when its numbers can be traced, added up and questioned on the screen, not when
 it is pretty.** This skill turns that into rules a page either meets or does not: every derived value has a
-provenance chip next to it, the first screen opens on a reconciliation bar whose sum is computed live, the
+provenance chip next to it, the first screen takes one of four forms ending in a sum computed live, the
 status words are a fixed vocabulary, simulated actions say so, and the footer says what is not verified.
 
 > **Paths.** Commands in this skill start with `<skill-dir>`: this skill's own folder, the one that contains this SKILL.md. Replace it with that folder's absolute path before you run the command.
@@ -28,16 +28,16 @@ status words are a fixed vocabulary, simulated actions say so, and the footer sa
 
 ## Procedure
 
+Digits written into headings and sentences are checked like every other number: compute and trace them, or use words.
+
 1. **Start from the starter page**, not from a blank file: copy `<skill-dir>/assets/starter.html` and
    `<skill-dir>/assets/design-tokens.css` into the same folder. The starter already works: seeded
-   synthetic rows, a reconciliation bar computed from them, a sortable and filterable table, a row inspector,
+   synthetic rows, four first-screen forms computed from them, a sortable and filterable table, a row inspector,
    a theme picker and the honest footer. The page only consumes semantic tokens (`--surface`, `--anchor`,
    `--danger` …); raw values live in the token file and nowhere else.
-2. **Map the sentence onto the starter's three parts**: what one row is (its fields, statuses and source),
-   what the first screen has to add up (the reconciliation bar's segments and total), and what a person
-   decides for a row (the inspector's actions). Replace the data generator and the labels; keep the structure.
+2. **Say what one row is, then choose the first screen’s form.** Write one line: ‘One row is a … ; it carries … .’ Answer the four questions in `references/forms.md` in order and stop at the first yes: two records compared row by row → `gaps`; three or more stages in order → `steps`; rows waiting for someone’s decision → `waiting`; otherwise `split`. Set `data-form` on the plate, fill that form’s SHAPE block, replace the data generator and the labels, and write the `form` entry in the manifest. The four drawings are in the starter: do not write a fifth, and do not bend one form to draw another’s data. Then decide what a person does to a row (the details panel’s actions). Read only your form’s section of `forms.md` after the choosing rule. Run `python3 <skill-dir>/scripts/ui_check.py --wire-form index.html` to fill its fixed live source ids; leave the shared runtime unchanged. Never build two forms to compare.
 3. **Keep the seven invariants** (`references/invariants.md`): top bar on the anchor band, mark built by
-   rule, the signature plate with the reconciliation bar, a provenance chip beside every derived value, the
+   rule, the signature plate: one of the four forms, always ending in the adds-up line, a provenance chip beside every derived value, the
    status vocabulary, the honesty block, one token file with the appearance contract.
 4. **Spend boldness in one place.** The deep anchor colour carries the top bar, the signature plate, the
    footer and the one primary button; one point colour stays on a small share of the page; everything else
@@ -53,20 +53,21 @@ status words are a fixed vocabulary, simulated actions say so, and the footer sa
    palette and scheme (or `?theme=` / `?scheme=` in the URL) and sets `data-theme` / `data-scheme` before the
    first paint. The defaults write no attribute, so the page as served has neither. The picker lives in a
    Settings card; one `theme-color` meta follows the chosen surface.
-8. **Check before you show it**: `python3 <skill-dir>/scripts/ui_check.py index.html` runs fifteen
+8. **Check before you show it**: `python3 <skill-dir>/scripts/ui_check.py index.html` runs all sixteen UI
    rules (one primary button, no hard-coded colours outside the token block, sortable tables, no
    `transition: all` and a reduced-motion block, focus never removed silently, honesty words, demo marker,
-   chip and reconciliation bar present, only font and GitHub hosts, meta tags, `minmax(0,1fr)`, no
-   real-looking contacts, the appearance contract, icons drawn as SVG rather than typed as characters, every marked number opening its source). Then the browser list in `references/acceptance.md`
+   chip and first-screen sum strip present, only font and GitHub hosts, meta tags, `minmax(0,1fr)`, no
+   real-looking contacts, the appearance contract, icons drawn as SVG rather than typed as characters, every marked number opening its source, the form declared and wired (C16)) **and all shared `numsrc.py` checks**. Both results print; one non-zero exit refuses either checker's errors. Keep the starter's independent `nk-build-guard` first in the head, its static cross in `sum-eq`, and `nkBuild.complete()` after the drawing calls. A load error must show “Page did not build:” and the error in that line; a tick waits for drawings and sums to finish.
+   **Render next:** `python3 <skill-dir>/scripts/render_check.py index.html` uses installed Chrome/Chromium offline with a temporary, empty profile (never your saved profile), then reads the rendered DOM. It prints **built with the tick**, **built with the cross: [why]**, **script error: [text]**, or **no browser found, not rendered**. A blocked or failed browser start prints **not rendered: [reason]**. If it answers **not rendered**, report exactly that; do not start a browser with its own protections switched off to look at the page. A page from an earlier starter without the build guard reports **built before this check existed, not judged** (exit 3); rebuild from the current starter before claiming a checked build. Repair any cross or script error and repeat both commands. File checks alone never establish rendering. Then the browser list in `references/acceptance.md`
    (first screen at 1280×800, 375 px wide with real data volume, keyboard path, every palette in light and
    dark, contrast).
 9. **Ship with the page**: a 1280-wide screenshot in the README, the demo link, the one-line positioning
-   sentence with its guard clause ("… — every row stays traceable").
+   sentence with its guard clause ("… — every row stays traceable"). In the final report quote the render command's result in the words above, including any error/reason. If no browser ran, say **not rendered**; never call that page **verified** or claim a screenshot. A tick confirms the build and sums ran; layout, sources and interaction still need the browser list.
 
 ## Clickable number sources
 
-In the starter, every number in the reconciliation bar can be clicked: a panel shows the rows it counts or sums, how it
-was computed and what was not checked. The words of each entry live in the page's `nk-sources` manifest; `traceStrip()`
+In the starter, every number in the plate can be clicked: a panel shows the rows it counts or sums, how it
+was computed and what was not checked. The words of each entry live in the page's `nk-sources` manifest; the form’s `trace()`
 brings the value and the rows up to date after every decision. When you replace the data generator, keep each number's
 `data-nk-src` and rewrite its entry; a chip that shows a derived value can carry one too. C15 refuses a page without the
 layer or with an entry that does not say where from, how and what was not checked.
@@ -79,7 +80,7 @@ where from, how and what was not checked, and the runtime is the shipped one, by
 
 ## Boundaries
 
-- The checker reads the file; it cannot see layout, contrast on a rendered page, or a screenshot.
+- The combined file checker reads the file; C16 cannot see whether the declared form is actually drawn. The render command distinguishes a finished tick, a cross, script errors and no rendering; it does not check layout or interactions. Acceptance row 16 counts rendered marks, re-adds the identity and checks every runtime source id.
   `references/acceptance.md` lists the checks that need a browser and how to do them.
 - The token file is a starting palette: change the brand names, and if you change colours keep the contrast
   pairs (every text colour in the file was solved against the hardest surface of its theme).
@@ -90,6 +91,7 @@ where from, how and what was not checked, and the runtime is the shipped one, by
 - At phone width the starter's table scrolls sideways inside its own box. At 375 px the first two columns show,
   the third is cut, and the amount, the status and the Open button need a swipe; the page itself does not scroll
   sideways.
+- On phones: split’s legend wraps; gaps puts names and signed numbers over full-width bars; waiting has one band per line with decided groups under a rule; steps stacks its boxes with downward chevrons. A merged waiting block pans inside its group while the page stays within the viewport. No browser check was run for this upgrade: keyboard order, screen readers, touch, widths and full volume require acceptance checks.
 - The clickable numbers are small touch targets. A click lands on a box about 25 px wide and 21 px tall around a
   single digit, below the 44 px usually asked of a touch target. They were clicked by script in headless Chrome;
   nobody has tried them with a finger.

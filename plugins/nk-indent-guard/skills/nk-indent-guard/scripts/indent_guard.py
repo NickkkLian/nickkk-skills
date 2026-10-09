@@ -10,6 +10,11 @@ unit (2 → 1, 4 → 2, spaces → tabs, pretty → single line) means the file 
 validator is green, the counts are right, the content is right, and the diff went from 4 lines to 400 —
 "what did this commit actually change" is gone for good. New files (no baseline) are listed, not judged.
 Exit: 0 unchanged · 1 re-indented files found · 2 selftest failed / not a git repo.
+
+As a commit hook: git hands a hook the index of the commit in progress through GIT_INDEX_FILE. The self-test, which
+runs at every start and builds a throwaway repository, takes that variable (and the others that point git at a
+repository) out of its own environment first. Until 0.1.2 it did not: started from a pre-commit hook it wrote its
+sample files into the index being committed, and `git commit -a` then stopped with "invalid object".
 """
 import os, re, subprocess, sys, tempfile
 
@@ -62,7 +67,38 @@ def show(u):
     return "none" if u is None else ("tab" if u == "\t" else f"{len(u)} space{'' if len(u) == 1 else 's'}")
 
 
+# the variables through which git tells a hook which repository and which index a commit in progress uses
+REPO_VARS = ("GIT_INDEX_FILE", "GIT_DIR", "GIT_WORK_TREE", "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+             "GIT_COMMON_DIR", "GIT_PREFIX", "GIT_NAMESPACE")
+
+
 def selftest():
+    """The cases below, run the way a commit hook is run: with GIT_INDEX_FILE pointing at an index that is not theirs.
+    They must leave it alone."""
+    with tempfile.TemporaryDirectory() as d:
+        not_ours = os.path.join(d, "index-of-a-commit-in-progress")
+        before = os.environ.get("GIT_INDEX_FILE"); os.environ["GIT_INDEX_FILE"] = not_ours
+        try:
+            ok, lines = cases()
+        finally:
+            if before is None:
+                os.environ.pop("GIT_INDEX_FILE", None)
+            else:
+                os.environ["GIT_INDEX_FILE"] = before
+        kept = os.environ.get("GIT_INDEX_FILE") == before and not os.path.exists(not_ours)
+        lines.append(f"  {'✔' if kept else '✘'} started from a commit hook, the self-test does not write to the index of the commit in progress")
+    return ok and kept, lines
+
+
+def cases():
+    saved = {k: os.environ.pop(k) for k in REPO_VARS if k in os.environ}
+    try:
+        return samples()
+    finally:
+        os.environ.update(saved)
+
+
+def samples():
     ok, lines = True, []
 
     def chk(c, label):

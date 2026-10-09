@@ -1,7 +1,7 @@
 {
   "name": "nk-rewrite-coverage",
-  "version": "0.1.2",
-  "description": "After rewriting a long document \u2014 a spec, a research report, a handbook \u2014 list what the old version had that the new one no longer mentions, and account for every item with a three-state verdict before the rewrite is accepted.",
+  "version": "0.2.2",
+  "description": "Check what a document rewrite lost.",
   "author": {
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "nk-rewrite-coverage",
     "shortDescription": "Rewrites that lose nothing",
-    "longDescription": "After rewriting a long document \u2014 a spec, a research report, a handbook \u2014 list what the old version had that the new one no longer mentions, and account for every item with a three-state verdict before the rewrite is accepted. Use when an agent rewrote instead of edited, after a context compaction, when a \"clean-up\" made a file shorter, or when a reviewer suspects detail was lost. scripts/rewrite_coverage.py extracts headings, bold terms and table cells from the old text and reports the unaccounted ones; a percentage is never the criterion, the ledger is. Not a diff tool.",
+    "longDescription": "Check what a document rewrite lost. Use when an agent tidied, shortened or restructured a document, resumed after compaction, or a reviewer suspects missing detail. Count numbers, links, Markdown code, quoted strings and capitalised Latin names as kept, fewer or lost; retain heading, bold-term and table-cell checks. Produce one offline HTML page with marked old locations and the new text, plus optional JSON. Does not judge reasoning or semantic accuracy.",
     "developerName": "Nick Lian",
     "category": "Developer Tools",
     "capabilities": []

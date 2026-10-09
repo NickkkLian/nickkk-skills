@@ -1,11 +1,11 @@
 ---
 name: nk-deck
-description: "Turn one sentence — a topic and who it is for — into a ten-slide single-file HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page. Use when a decision, a proposal or a status needs to be read in two minutes or printed, when a slide deck has to work offline and from the keyboard, or when a PowerPoint would be more ceremony than the content deserves. scripts/make_deck.py writes the file from a JSON outline, scripts/deck_check.py checks twelve rules on it (labels for titles, a sixth point, a number with no source, a print layout that leaks, a source that cannot be opened), and scripts/print_check.py prints it in Chrome and counts the pages. Not a design tool: one layout, one token file, no images."
+description: "Turn one sentence — a topic and who it is for — into a ten-slide HTML deck whose titles carry the argument on their own, five points at most per slide, a source under every number, and a printout that is the same deck page for page. Use when a decision, a proposal or a status needs to be read in two minutes or printed, when a slide deck has to work offline and from the keyboard, or when a PowerPoint would be more ceremony than the content deserves. scripts/make_deck.py writes the file from a JSON outline, scripts/deck_check.py checks twelve rules on it (labels for titles, a sixth point, a number with no source, a print layout that leaks, a source that cannot be opened), and scripts/print_check.py prints it in Chrome and counts the pages. Not a design tool: one layout, one token file, no images."
 license: MIT
 compatibility: the deck and make_deck.py / deck_check.py are standard library only; print_check.py needs Google Chrome or Chromium to print.
 metadata:
   provenance: own practice (2026-09) — two portfolio decks that had to print cleanly, and a design system built for pages that say where their numbers come from; see Provenance
-  version: 0.1.7
+  version: 0.1.8
 ---
 # Deck: ten slides, titles that argue
 
