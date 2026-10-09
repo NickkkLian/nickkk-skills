@@ -18,7 +18,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "nk-rewrite-coverage",
-    "shortDescription": "Rewrites that lose nothing",
+    "shortDescription": "Lists what a rewrite lost",
     "longDescription": "Check what a document rewrite lost. Use when an agent tidied, shortened or restructured a document, resumed after compaction, or a reviewer suspects missing detail. Count numbers, links, Markdown code, quoted strings and capitalised Latin names as kept, fewer or lost; retain heading, bold-term and table-cell checks. Produce one offline HTML page with marked old locations and the new text, plus optional JSON. Does not judge reasoning or semantic accuracy.",
     "developerName": "Nick Lian",
     "category": "Developer Tools",
