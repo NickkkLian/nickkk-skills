@@ -32,10 +32,12 @@ example is `references/example-desk/` (three posts about an invented tool).
 2. **Write one folder per post**, named `YYYY-MM-DD-name`: the day the user plans to post it, then a short name in
    lower-case letters, digits and hyphens (`2026-11-03-launch`). The date orders the cards. It schedules nothing.
 3. **Write `post.md`.** The root post first, then each reply, separated by a line that holds only `=====`. Put links
-   in a reply: by default the build refuses a root that carries one. A file name such as `notes.md` or `main.py` is
-   a link on X (`.md` and `.py` are real top-level domains), so reword it in the root; in a reply the build prints a
-   notice for it and goes on. If the user wants a link in the root post, build with `--allow-root-link` or set
-   `"allowRootLink": true` in `desk.json`. Do not switch that on unless the user asked for it.
+   in a reply: by default the build refuses a root that carries one. A file name such as `main.py` or `install.sh` is
+   a link on X (`.py` and `.sh` are real top-level domains), so reword it in the root; in a reply the build prints a
+   notice for it and goes on. A name ending in `.md` (`README.md`) and a name with an underscore before its ending
+   (`my_script.py`) stay plain text on X and need no rewording: see "File names on X" below. If the user wants a
+   link in the root post, build with `--allow-root-link` or set `"allowRootLink": true` in `desk.json`. Do not switch
+   that on unless the user asked for it.
 4. **Add at most one picture** to the folder (`.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, up to 5 MB), and `alt.txt`
    with one or two sentences that describe it. The page shows the picture so the user can save it; a link cannot
    attach it.
@@ -69,11 +71,32 @@ example is `references/example-desk/` (three posts about an invented tool).
 | A01 | a built page that refers to anything outside itself: the build reads its own output back before writing |
 
 One notice, which refuses nothing and leaves the exit code alone: a bare file name in a reply that X will turn into
-a link (`notes.md`, `main.py`). The line starts with `·`. Tell the user about it, and reword the name if a live link
+a link (`main.py`, `lib.rs`). The line starts with `·`. Tell the user about it, and reword the name if a live link
 is not what they mean.
 
 `python3 <skill-dir>/scripts/build_desk.py --selftest` plants each of these mistakes and expects the refusal.
 Each guarded behaviour was also switched off on purpose, one at a time, and the self-test went red for it.
+
+## File names on X
+
+The script counts a file name the way X's site was seen to treat it on 2026-10-10, when 13 names were pasted as one
+line into X's web composer and nothing was posted:
+
+- **Links, counted as 23:** `main.py`, `install.sh`, `lib.rs`, `main.tf`, `script.pl`, `Main.java`, `backup.zip`. Each
+  ends in a real top-level domain.
+- **Plain text, counted letter by letter:** `index.js`, `package.json`, `main.go` (the ending is not a top-level
+  domain); `my_script.py` (an underscore before the ending); `README.md` and every other bare name ending in `.md`.
+
+The `.md` row is what X's site does, not what X has published. X's open-source twitter-text library still lists
+`.md` as a top-level domain, and the author has seen no statement from X about a change. In 247 public posts read on
+2026-10-08, a bare `.md` name was a link in the 4 posts that had one up to 2026-02-20, and plain text in the 13
+posts that had one from 2026-04-06 on (in one of the 13, a Japanese post, the names run into the text around them).
+Not seen either way: an address written with `https://` that ends in `.md`, a bare `.md` name followed by a path, and
+the number X's composer counted (its counter shows no figure). For the first two the script keeps the library's
+answer, a link.
+
+When a post depends on this, say so, and tell the user how to check again in a minute: paste the names into X's
+composer, look at which ones turn blue, and close it without posting.
 
 ## What the page is
 
@@ -90,7 +113,9 @@ Each guarded behaviour was also switched off on purpose, one at a time, and the 
 ## Boundaries
 
 - It does not post, schedule, attach the picture, or check that a post went out. The user does each of these.
-- The count follows X's published rule, with one known gap: an emoji sequence (a flag, a family, a skin tone) is
+- File names follow what X's site was seen to do on 2026-10-10 (see "File names on X"). X can change that again;
+  the check above takes a minute.
+- The count otherwise follows X's published rule, with one known gap: an emoji sequence (a flag, a family, a skin tone) is
   counted per code point here and as 2 on X, so the number shown can be higher than X's, never lower.
 - The reply link was tried by the author on a Mac browser. The X phone app has not been tried: if X opens a new post
   instead of a reply, the page tells the user to open the post, press Reply and paste the copied text.
@@ -104,5 +129,6 @@ The author's own page for publishing launch posts by hand (2026): the drafts wer
 root post, a reply with the link and one picture. This skill is that page with the personal parts taken out and the
 folder format written down. The counting rule (280 weighted characters,
 23 per link, the list of 1,419 top-level domains that make a bare name a link) was read from X's open-source
-twitter-text library. The web intent and its `text` and `in_reply_to` parameters are from X's developer
+twitter-text library. One exception to that library comes from looking at X itself: a bare name ending in `.md`
+is counted as plain text (X's composer, 2026-10-10; see "File names on X"). The web intent and its `text` and `in_reply_to` parameters are from X's developer
 documentation. The example posts and the picture in `references/example-desk/` are invented.

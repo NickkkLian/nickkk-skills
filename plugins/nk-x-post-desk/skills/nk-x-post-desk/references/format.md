@@ -52,7 +52,7 @@ By default the build refuses a root post that carries a link (P02): many people 
 message says which kind it found:
 
 - `the root post carries a link ('https://example.org/x')` for an address written with `http://` or `https://`;
-- `X turns 'CLAUDE.md' into a link` for a bare name that ends in a real top-level domain, which is a link on X
+- `X turns 'main.py' into a link` for a bare name that ends in a real top-level domain, which is a link on X
   whether or not you meant one (see the next section).
 
 To let the root carry a link, either run the build or the check with `--allow-root-link`, or put
@@ -60,10 +60,13 @@ To let the root carry a link, either run the build or the check with `--allow-ro
 
 A reply may always carry links. One thing is pointed out there, and in a root where links are allowed: a bare file
 name that X will turn into a link. The build prints a line that starts with `·`, for example
-`· 2026-11-03-launch/post.md reply 1: X turns 'notes.md' into a link (.md is a real top-level domain) and counts it as 23.`
+`· 2026-11-03-launch/post.md reply 1: X turns 'main.py' into a link (.py is a real top-level domain) and counts it as 23.`
 This is a notice, not a problem: the page is built and the exit code stays 0. It is given for a name with no
-`http(s)://` and no path that ends in one of: `md py sh rs pl pm ps cc mm ml mk tf zip mov java` (file endings that
-are also real top-level domains). Other bare names that X links, such as `example.com`, are taken as meant.
+`http(s)://` and no path that ends in one of: `py sh rs pl pm ps cc mm ml mk tf zip mov java` (file endings that
+are also real top-level domains; `.py .sh .rs .tf .pl .java .zip` were seen as links in X's composer on 2026-10-10,
+the others are on the list of X's library). Other bare names that X links, such as `example.com`, are taken as
+meant. A name ending in `.md` and a name with an underscore before its ending are not links on X (next section), so
+they get no notice and are not refused in a root post.
 
 ## How a part is counted
 
@@ -71,8 +74,11 @@ The limit is 280, counted the way X counts:
 
 - every link counts 23, whatever its length;
 - a link is an `http(s)://` address **or a bare name that ends in a real top-level domain**: `example.com/page`,
-  but also `CLAUDE.md`, `main.py` and `run.sh` (`.md`, `.py` and `.sh` are country domains). `report.html`,
+  but also `main.py`, `install.sh` and `lib.rs` (`.py`, `.sh` and `.rs` are country domains). `report.html`,
   `x.txt` and `node.js` are not links;
+- two kinds of bare name stay plain text although their ending is a top-level domain: a name with an underscore in
+  the label before the ending (`my_script.py`), and a name ending in `.md` (`README.md`, `notes.md`). See "File
+  names: what was seen on X" below;
 - a character counts 1 in Latin, Greek, Cyrillic and other scripts up to U+10FF, and for curly quotes and dashes;
   it counts 2 everywhere else: Chinese, Japanese and Korean text, full-width punctuation, arrows, `…`, emoji;
 - text is normalised to NFC first, so `e` followed by a combining accent counts 1.
@@ -81,6 +87,38 @@ Known gap: X counts a whole emoji sequence (a flag, a family, a skin-tone varian
 sequence counts, so the number can be higher than X's. It is never lower.
 
 `python3 scripts/build_desk.py --count "some text"` prints one text's count (`-` reads it from standard input).
+
+### File names: what was seen on X
+
+On 2026-10-10 this line was pasted into X's web composer and not posted:
+
+```text
+CLAUDE.md README.md main.py install.sh lib.rs main.tf script.pl Main.java backup.zip index.js package.json main.go my_script.py
+```
+
+| Shown as | Names | Counted here as |
+|---|---|---|
+| links | `main.py` `install.sh` `lib.rs` `main.tf` `script.pl` `Main.java` `backup.zip` | 23 each |
+| plain text | `CLAUDE.md` `README.md` `index.js` `package.json` `main.go` `my_script.py` | their letters |
+
+The script gives the same answer for all 13, and its self-test holds this table. What each plain row rests on:
+
+- `index.js`, `package.json`, `main.go`: the ending is not a top-level domain.
+- `my_script.py`: X's open-source twitter-text library allows no underscore in the label before the ending, and does
+  not link a bare name right after `_`. The composer agreed.
+- the two `.md` names: here X's site and its library differ. The library still lists `.md` as a top-level domain, so
+  by the library these would be links. In 247 public posts read on 2026-10-08, a bare `.md` name was a link in the
+  4 posts that had one up to 2026-02-20, and plain text in the 13 posts that had one from 2026-04-06 on (in one of
+  the 13, a Japanese post, the names run into the text around them). The author has seen no statement from X about
+  the change, and it can change again.
+
+Not seen either way, and counted as the library counts them: an address written with `http(s)://` that ends in `.md`
+(a link), a bare `.md` name followed by a path such as `example.md/page` (a link), and a bare name with an underscore
+in an earlier label such as `my_site.example.com` (the link is `site.example.com`). The number in X's composer was
+not seen either: its counter is a ring without a figure. That a link counts 23 is X's published rule.
+
+To check again in a minute: paste a line of file names into X's composer, look at which ones turn blue, and close it
+without posting.
 
 ## The picture
 

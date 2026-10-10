@@ -27,7 +27,13 @@ What is checked (any problem stops the build, and then nothing is written):
     F07 desk.json with a wrong key or value          P01 a part over 280 as X counts it
     P02 a link in the root post (unless allowed)     P03 a control character in a part
 
-One notice, which stops nothing: a bare file name in a reply that X will turn into a link (notes.md, main.py).
+One notice, which stops nothing: a bare file name in a reply that X will turn into a link (main.py, lib.rs).
+
+File names: X links a bare name that ends in a top-level domain (main.py, install.sh, lib.rs) and counts it as 23.
+Two kinds stay plain text and are counted letter by letter: a bare name ending in .md (README.md), and a name with an
+underscore before the ending (my_script.py). The .md part is what X's site does, seen in its composer on 2026-10-10;
+X's public counting library still lists .md as a domain. What was seen, what was not, and how to check again in a
+minute are written above x_urls() in this file.
 
 The page: one file, pictures embedded, no request to any other host (a Content-Security-Policy in the page forbids
 them, and the build reads its own output back and refuses to write a page that refers to anything outside itself
@@ -59,11 +65,28 @@ OTHER_PICTURES = {".svg", ".heic", ".heif", ".bmp", ".tif", ".tiff", ".avif", ".
 # ── How X counts a post ──────────────────────────────────────────────────────────────────────────────────────────────
 # Read from X's own counting library, github.com/twitter/twitter-text (config/v3.json and js/src/regexp/*):
 #   - the limit is 280 "weighted" characters, after Unicode NFC normalisation;
-#   - every link counts 23, whatever its length. A link is an http(s) URL, or a bare domain: any name ending in a real
-#     top-level domain, with or without a path. So `CLAUDE.md`, `main.py` and `run.sh` are links too (.md, .py and .sh
-#     are country domains); `x.txt`, `report.html` and `node.js` are not;
+#   - every link counts 23, whatever its length. A link is an http(s) URL, or a bare domain: a name ending in a
+#     top-level domain on the library's list, with or without a path. So `main.py`, `install.sh` and `lib.rs` are links
+#     too (.py, .sh and .rs are country domains); `x.txt`, `report.html` and `node.js` are not;
+#   - the label right before the top-level domain holds no underscore, and a bare name is not a link right after
+#     - _ . or /. So `my_script.py` is plain text. Where an earlier label of a bare name holds an underscore, the link
+#     starts after the last one: in `my_site.example.com` the link is `site.example.com`;
 #   - a character counts 1 inside U+0000-10FF, U+2000-200D, U+2010-201F, U+2032-2037, and 2 everywhere else: Chinese,
 #     Japanese and Korean text, full-width punctuation, arrows, the ellipsis character, check marks, emoji.
+#
+# Where X's site was seen to differ from that library (the author has seen no statement from X; it can change again):
+#   - a bare name ending in .md (README.md, notes.md) is plain text on X, although .md is still on the library's list.
+#     Seen on 2026-10-10 in X's web composer: 13 names were pasted as one line and nothing was posted. The two .md
+#     names stayed plain text, as did index.js, package.json, main.go and my_script.py; main.py, install.sh, lib.rs,
+#     main.tf, script.pl, Main.java and backup.zip turned into links (the table COMPOSER_2026_10_10 below). Also, in
+#     247 public posts read on 2026-10-08, a bare .md name was a link in all 4 posts that had one up to 2026-02-20, and
+#     plain text in all 13 posts that had one from 2026-04-06 on (13 authors; in one of them, a Japanese post, the
+#     names run into the text around them). X_PLAIN_BARE holds this exception;
+#   - not seen either way: an address written with http(s):// that ends in .md, a bare .md name followed by a path
+#     (example.md/page), and an underscore in an earlier label (my_site.example.com). These are counted as the
+#     library counts them. The composer's own number was not seen either: its counter is a ring without a figure;
+#   - to check again in a minute: paste a line of file names into X's composer, look at which ones turn blue, and
+#     close it without posting.
 # X_TLDS is the ASCII part of that library's two domain lists. Not copied: its non-ASCII domains, and its emoji table
 # (X counts a whole emoji sequence as 2; here each code point of it counts, so an emoji sequence can come out higher
 # than on X, never lower).
@@ -130,6 +153,8 @@ yandex ye yodobashi yoga yokohama you youtube yt yun za zappos zara zero zip zip
 _X_CAND = re.compile(r"(https?://)?((?:[A-Za-z0-9](?:[A-Za-z0-9_-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,})(?![A-Za-z0-9@+-])"
                      r"((?::[0-9]+)?(?:[/?][A-Za-z0-9!*';:=+,.$/%#\[\]\-\u2013_~@|&()?]*)?)")
 _X_NARROW = ((0x0000, 0x10FF), (0x2000, 0x200D), (0x2010, 0x201F), (0x2032, 0x2037))
+# Top-level domains on the library's list that X's site leaves as plain text in a bare name with no path (see above).
+X_PLAIN_BARE = frozenset({"md"})
 
 
 def x_urls(text):
@@ -146,23 +171,32 @@ def x_urls(text):
             pos = m.start() + 1
             continue
         labels = domain.split(".")
-        k = next((k for k in range(len(labels), 1, -1) if labels[k - 1].lower() in X_TLDS), 0)
-        if not k:                                   # no real top-level domain in it: plain text, also after http://
+        # the last label that is a real top-level domain, with no underscore in the label before it
+        k = next((k for k in range(len(labels), 1, -1) if labels[k - 1].lower() in X_TLDS and "_" not in labels[k - 2]), 0)
+        if not k:                                   # no such label: plain text, also after http:// (my_script.py, v1.2.3)
             pos = m.end()
             continue
+        start = m.start()
         if k == len(labels):
             while tail and not re.match(r"[A-Za-z0-9+\-=_#/]", tail[-1]):     # a path cannot end in . , ; : ! ? ) ...
                 tail = tail[:-1]
-            end = m.start() + len(proto) + len(domain) + len(tail)
+            end = start + len(proto) + len(domain) + len(tail)
         else:                                       # "example.com.zzz": the link is "example.com"
-            end = m.start() + len(proto) + len(".".join(labels[:k]))
-        out.append((m.start(), end))
+            tail = ""
+            end = start + len(proto) + len(".".join(labels[:k]))
+        if not proto:
+            if labels[k - 1].lower() in X_PLAIN_BARE and "/" not in tail and "?" not in tail:
+                pos = end                           # README.md: plain text on X (seen 2026-10-10), a link by the library
+                continue
+            start += ".".join(labels[:k]).rfind("_") + 1      # my_site.example.com: the link is site.example.com
+        out.append((start, end))
         pos = end
 
 
 # File endings that are also real top-level domains. A bare name that ends in one is a file name to the writer and a
-# link to X: CLAUDE.md, main.py, run.sh, lib.rs.
-FILE_ENDINGS = frozenset("md py sh rs pl pm ps cc mm ml mk tf zip mov java".split())
+# link to X: main.py, run.sh, lib.rs. Seen as links in X's composer on 2026-10-10: .py .sh .rs .tf .pl .java .zip; the
+# others are here because the library lists them. .md is not here: X leaves a bare .md name as plain text (see above).
+FILE_ENDINGS = frozenset("py sh rs pl pm ps cc mm ml mk tf zip mov java".split())
 
 
 def file_like(link):
@@ -679,13 +713,14 @@ def build(folder, out_path=None, check_only=False, out=sys.stdout, _render=None,
 
 
 # ── Self-test ────────────────────────────────────────────────────────────────────────────────────────────────────────
-# (text, X's count). The rule and this table were first checked against X's own library on 2026-10-01.
+# (text, X's count). The rule and this table were first checked against X's own library on 2026-10-01; the CLAUDE.md
+# row was changed on 2026-10-10 (it said 33, the library's answer) to what X's site does.
 X_LEN_CASES = [
     ("hello", 5),
     ("a https://example.org/some/very/long/path/that/is/longer/than/twenty-three b", 27),   # 2 + 23 + 2
     ("see example.org.", 28),                              # a bare domain: 4 + 23, and the full stop after it
     ("example.com/someone/some-repo", 23),
-    ("CLAUDE.md is a file", 33),                           # .md is a country domain: a link on X
+    ("CLAUDE.md is a file", 19),                           # a bare .md name: plain text on X (seen 2026-10-10)
     ("main.py", 23), ("x.txt and report.html", 21), ("node.js", 7), ("v1.2.3", 6), ("e.g. this", 9),
     ("write me@example.com", 20),                          # after @ it is not a link
     ("http://localhost/abc", 20),                          # no real top-level domain: plain text
@@ -697,6 +732,29 @@ X_LEN_CASES = [
     ("\u201cquoted\u201d \u2014 dash", 15),                 # curly quotes and the em dash count 1
     ("\U0001f600", 2),
     ("https://example.org/a\u4f60\u597d", 27),              # a path stops at the first CJK character
+]
+# Seen in X's web composer on 2026-10-10: these 13 names, pasted as one line in this order, nothing posted.
+# (name, True if X showed it as a link). The composer's number was not visible; the counts checked are this script's.
+COMPOSER_2026_10_10 = [
+    ("CLAUDE.md", False), ("README.md", False), ("main.py", True), ("install.sh", True), ("lib.rs", True),
+    ("main.tf", True), ("script.pl", True), ("Main.java", True), ("backup.zip", True), ("index.js", False),
+    ("package.json", False), ("main.go", False), ("my_script.py", False),
+]
+# (text, the count, the pieces counted as links). A bare name ending in .md.
+MD_CASES = [
+    ("CLAUDE.md", 9, []), ("README.md", 9, []), ("read CLAUDE.md, then notes.md.", 30, []), ("notes.md:12", 11, []),
+    ("https://example.org/notes.md", 23, ["https://example.org/notes.md"]),      # a .md file on another site: a typed link
+    ("example.org/readme.md", 23, ["example.org/readme.md"]),
+    ("https://notes.md", 23, ["https://notes.md"]),        # not seen on X: counted as the library counts it
+    ("notes.md/page", 23, ["notes.md/page"]),              # not seen on X: counted as the library counts it
+]
+# (text, the count, the pieces counted as links). An underscore in a name. The first three were plain text on X
+# (my_script.py in the composer on 2026-10-10, the other two in public posts); the rest follow the library, not seen on X.
+UNDERSCORE_CASES = [
+    ("my_script.py", 12, []), ("__init__.py", 11, []), ("test_notebook.py", 16, []), ("run my_script.py now", 20, []),
+    ("https://my_site.com", 19, []),
+    ("my_site.example.com", 26, ["site.example.com"]),     # 3 + 23
+    ("https://my_site.example.com/x", 23, ["https://my_site.example.com/x"]),
 ]
 STATUS_CASES = [
     ("https://x.com/someone/status/1234567890123456789", "1234567890123456789"),
@@ -776,7 +834,7 @@ def selftest():
     check(tid(), "141 wide characters count 282 and are refused (P01)", codes(wide) == ["P01"], f"got {codes(wide)}")
     planted = [
         ("a link in the root post", {"2026-11-03-a": {"post.md": "read it at https://example.org/x\n=====\nreply"}}, None, ["P02"]),
-        ("a file name that X treats as a link, in the root post", {"2026-11-03-a": {"post.md": "see notes.md for it\n=====\nreply"}}, None, ["P02"]),
+        ("a file name that X treats as a link, in the root post", {"2026-11-03-a": {"post.md": "see main.py for it\n=====\nreply"}}, None, ["P02"]),
         ("a folder that is not named YYYY-MM-DD-name", {"launch-post": {"post.md": "root"}, "2026-11-03-a": {"post.md": "root"}}, None, ["F02"]),
         ("a date that does not exist", {"2026-02-30-a": {"post.md": "root"}, "2026-11-03-a": {"post.md": "root"}}, None, ["F02"]),
         ("a post folder with no post.md", {"2026-11-03-a": {"notes.txt": "root"}}, None, ["F03"]),
@@ -867,7 +925,7 @@ def selftest():
     check(tid(), "the bundled example passes the check, builds, and builds to the same bytes twice", _demo_twice(tmp, quiet))
 
     # T35.. the root-link refusal can be switched off, says which kind of link it found, and a file name in a reply gets a notice
-    both = {"2026-11-03-a": {"post.md": "read it at https://example.org/x and CLAUDE.md\n=====\nreply"}}
+    both = {"2026-11-03-a": {"post.md": "read it at https://example.org/x and main.py\n=====\nreply"}}
     r_def = _desk(tmp, "rl-default", both)
     r_key = _desk(tmp, "rl-key", both, {"allowRootLink": True})
     r_off = _desk(tmp, "rl-off", both, {"allowRootLink": False})
@@ -880,25 +938,54 @@ def selftest():
           and codes(r_off) == ["P02"] and codes(r_bad) == ["F07", "P02"],
           f"true → {codes(r_key)}, false → {codes(r_off)}, \"yes\" → {codes(r_bad)}")
     p02 = lambda text: [m for c, _, m in read_desk(_desk(tmp, f"msg{len(os.listdir(tmp))}", {"2026-11-03-a": {"post.md": text}}))[1] if c == "P02"]
-    m_typed, m_bare, m_both = p02("read https://example.org/x"), p02("read CLAUDE.md first"), p02("read https://example.org/x and CLAUDE.md")
+    m_typed, m_bare, m_both = p02("read https://example.org/x"), p02("read main.py first"), p02("read https://example.org/x and main.py")
     opt_out = lambda m: "--allow-root-link" in m and '"allowRootLink": true' in m
     check(tid(), "P02 calls a typed link a link and a file name something X turns into a link: two messages, each naming the way to allow it",
           len(m_typed) == 1 and m_typed[0].startswith("the root post carries a link ('https://example.org/x')") and "X turns" not in m_typed[0]
-          and len(m_bare) == 1 and m_bare[0].startswith("X turns 'CLAUDE.md' into a link") and "carries a link" not in m_bare[0]
+          and len(m_bare) == 1 and m_bare[0].startswith("X turns 'main.py' into a link") and "carries a link" not in m_bare[0]
           and len(m_both) == 2 and all(opt_out(m) for m in m_typed + m_bare + m_both), f"{m_typed!r:.120} | {m_bare!r:.120} | {len(m_both)} messages")
-    noticed = _desk(tmp, "noticed", {"2026-11-03-a": {"post.md": "the root\n=====\nsee notes.md and main.py, also https://example.org/notes.md, "
-                                                                 "example.org/readme.md, example.org and report.html"}})
+    noticed = _desk(tmp, "noticed", {"2026-11-03-a": {"post.md": "the root\n=====\nsee lib.rs and main.py, also https://example.org/notes.md, "
+                                                                 "example.org/readme.md, example.org, report.html, "
+                                                                 "CLAUDE.md and my_script.py"}})
     _, n_problems, n_notes = read_desk(noticed)
-    _, a_problems, a_notes = read_desk(_desk(tmp, "noticed-root", {"2026-11-03-a": {"post.md": "read CLAUDE.md first"}}), allow_root_link=True)
-    check(tid(), "a file name in a reply that X will link (notes.md, main.py) gets a notice, not a refusal; a typed link, a link with a path, "
-                 "a domain and report.html get none",
-          n_problems == [] and len(n_notes) == 2 and all("post.md reply 1: X turns" in n for n in n_notes) and "'notes.md'" in n_notes[0]
+    _, a_problems, a_notes = read_desk(_desk(tmp, "noticed-root", {"2026-11-03-a": {"post.md": "read main.py first"}}), allow_root_link=True)
+    check(tid(), "a file name in a reply that X will link (lib.rs, main.py) gets a notice, not a refusal; a typed link, a link with a path, "
+                 "a domain, report.html, CLAUDE.md and my_script.py get none",
+          n_problems == [] and len(n_notes) == 2 and all("post.md reply 1: X turns" in n for n in n_notes) and "'lib.rs'" in n_notes[0]
           and "'main.py'" in n_notes[1] and build(noticed, check_only=True, out=quiet) == 0 and FILE_ENDINGS <= X_TLDS
-          and a_problems == [] and len(a_notes) == 1 and "post.md root: X turns 'CLAUDE.md'" in a_notes[0] and read_desk(r_def)[2] == [],
+          and a_problems == [] and len(a_notes) == 1 and "post.md root: X turns 'main.py'" in a_notes[0] and read_desk(r_def)[2] == [],
           f"problems {[c for c, _, _ in n_problems]}, notices {n_notes!r:.200}, allowed root {a_notes!r:.120}")
     check(tid(), "the command line: --check refuses the root link (exit 1), --check --allow-root-link passes (0), an unknown flag is a usage error (2)",
           main([r_def, "--check"], out=quiet) == 1 and main([r_def, "--check", "--allow-root-link"], out=quiet) == 0
           and main([r_def, "--allow-root"], out=quiet) == 2 and main([r_def, "--check", "--out", "x.html"], out=quiet) == 2)
+
+    # T40.. file names as X's site treats them (0.1.1): the 13 names seen in the composer, the .md rule, the underscore rule
+    links = lambda t: [t[a:b] for a, b in x_urls(t)]
+    line = " ".join(n for n, _ in COMPOSER_2026_10_10)
+    seven = [n for n, linked in COMPOSER_2026_10_10 if linked]
+    wrong = [(n, linked, links(n), x_len(n)) for n, linked in COMPOSER_2026_10_10
+             if links(n) != ([n] if linked else []) or x_len(n) != (23 if linked else len(n))]
+    check(tid(), f"the 13 names seen in X's composer on 2026-10-10: {len(COMPOSER_2026_10_10) - len(wrong)}/13 match (7 links counted 23, "
+                 "6 plain), and the line as pasted counts 230 with the same 7 links",
+          not wrong and len(COMPOSER_2026_10_10) == 13 and len(seven) == 7 and links(line) == seven and x_len(line) == 230,
+          "; ".join(f"{n!r}: X showed {'a link' if linked else 'plain text'}, here links {got} count {c}" for n, linked, got, c in wrong[:4])
+          + f" | line: {x_len(line)}, links {links(line)}")
+    wrong = [(t, want, got, x_len(t), links(t)) for t, want, got in MD_CASES if x_len(t) != want or links(t) != got]
+    md_root = _desk(tmp, "md-root", {"2026-11-03-a": {"post.md": "read CLAUDE.md first\n=====\nthen README.md"}})
+    _, md_problems, md_notes = read_desk(md_root)
+    _, mda_problems, mda_notes = read_desk(md_root, allow_root_link=True)
+    check(tid(), f"a bare name ending in .md is plain text: {len(MD_CASES) - len(wrong)}/{len(MD_CASES)} sample texts match, and CLAUDE.md is not refused in a "
+                 "root post and gets no notice; a typed address that ends in .md is still a link",
+          not wrong and md_problems == [] and md_notes == [] and mda_problems == [] and mda_notes == [] and "md" in X_TLDS,
+          "; ".join(f"{t!r} counted {c} with links {l}, expected {want} with {got}" for t, want, got, c, l in wrong[:3])
+          + f" | root: {[c for c, _, _ in md_problems]} {md_notes!r:.120}")
+    wrong = [(t, want, got, x_len(t), links(t)) for t, want, got in UNDERSCORE_CASES if x_len(t) != want or links(t) != got]
+    us_root = _desk(tmp, "us-root", {"2026-11-03-a": {"post.md": "run my_script.py first\n=====\nthen test_notebook.py"}})
+    check(tid(), f"a name with an underscore before its ending is plain text: {len(UNDERSCORE_CASES) - len(wrong)}/{len(UNDERSCORE_CASES)} sample texts match, "
+                 "and my_script.py is not refused in a root post and gets no notice",
+          not wrong and read_desk(us_root)[1:] == ([], []),
+          "; ".join(f"{t!r} counted {c} with links {l}, expected {want} with {got}" for t, want, got, c, l in wrong[:3])
+          + f" | root: {read_desk(us_root)[1:]!r:.160}")
     quiet.close()
     shutil.rmtree(tmp, ignore_errors=True)
     passed = sum(results)
