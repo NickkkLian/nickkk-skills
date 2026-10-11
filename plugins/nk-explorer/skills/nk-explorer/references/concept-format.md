@@ -12,12 +12,12 @@ winning.
 
 | Field | Type | Rule |
 |---|---|---|
-| `title` | text | What the page explains, up to 90 characters. It becomes the page's title and its `<title>` (E01, E14). |
-| `question` | text | The question the page answers, in a sentence or two. It sits under the title and in the page's description. |
-| `result` | object | The quantity the formula gives: `name`, `label`, optional `unit` and `unit_one`. |
+| `title` | text | What the page explains, up to 90 characters. It becomes a context label and the document's `<title>` (E01, E14). |
+| `question` | text | A short question in the person's words. It becomes the main heading and the page's description. |
+| `result` | object | The quantity the formula gives: `name`, `label`, optional `unit`, `unit_one`, `decimals` and `unavailable`. |
 | `formula` | text | One formula in the page's language (below), using only the controls' names (E02). |
 | `controls` | list | One to six sliders (E01). |
-| `chart` | object | `x`: the name of the control the curve runs along (E05); `title`: the chart's heading. |
+| `chart` | object | `x`: the control the curve runs along (E05); `title`: its heading; optional `comparison` with `from` and `to`. |
 | `notes` | list of text | One or more sentences saying what the formula leaves out (E01). They go in the footer. |
 | `source` | text | Where the formula comes from, in a phrase. It goes in the footer. |
 | `practice` | list | One to eight questions, each `compute` or `reach` (E01). |
@@ -30,6 +30,14 @@ winning.
 | `label` | What it is, in words: "Amount after n years". |
 | `unit` | Optional. `£`, `$`, `€` and `¥` go in front of a number; `%` sticks to it; anything else follows after a space. |
 | `unit_one` | Optional. The unit's form for exactly 1 or -1: `"unit": "years", "unit_one": "year"`. |
+| `decimals` | Optional whole number 0–8. Fixed decimal places for the headline and result-axis ticks (ticks use the ordinary formatter if rounding would duplicate adjacent labels). Defaults to 2 for `£ $ € ¥`, otherwise the ordinary six-significant-digit formatter. At magnitude 10^21 or above, the ordinary formatter is used. Does not change the formula or grading. |
+| `unavailable` | Optional sentence explaining invalid settings for this concept and how to fix them, for example "At zero speed, you cannot finish a positive distance. Choose a speed above zero." Otherwise the page explains the arithmetic error. |
+
+Copy units from the request, including currency and physical units. A percentage result must be computed on a
+0–100 scale; a `%` suffix does not multiply by 100. When no unit is implied, omit it (axes say "unitless").
+Currency headlines show cents; slider readouts and substituted formula values retain their exact six-significant-digit
+formatting. Fixed decimal rounding applies to the computed binary value, half away from zero. Keep a compute
+question's tolerance compatible with the rounding you ask a person to use: grading still compares the full result.
 
 ## Each control
 
@@ -62,7 +70,8 @@ never a lookup: there is no assignment, no text, no property access and no way t
 Some values have no result: division by zero, the square root of a negative number, `ln` or `log10` of a number
 that is not positive, a negative number to a fractional power, zero to a negative power, and any step of the working
 that is not a finite number — `1/exp(1000)` has no value even though its end would be 0, in the page and in the
-checker alike. The page shows "no value" and says why; the chart leaves a gap there.
+checker alike. The headline says "Choose another setting" and a plain sentence explains why and what to change;
+the chart leaves a gap at sampled undefined settings.
 
 The line with numbers writes each number of the formula exactly as you typed it (`1.000137` stays `1.000137`) and a
 negative value in brackets (`1 × (-3)^2 + 2 × (-3)`), so doing the sum on that line gives the result.
@@ -75,6 +84,22 @@ numbers, and the result, so a formula can be tried before it goes into a concept
 The curve runs the `x` control from its `min` to its `max` at 201 points and keeps every other control where it is
 set; the dot marks the current value. It needs at least two points with a value at the starting values (E05). A
 formula with `floor`, `ceil` or `round` in it jumps, and is drawn as steps (flat, then straight up or down).
+
+`x` also selects the principal slider shown beside the curve above 760px viewport width; at narrower widths the
+curve follows the controls. Other sliders expand inside the controls panel; formula working expands below.
+Choose the control that best answers the person's "what if", and open on an ordinary, meaningful grid position.
+Optional `comparison` is an object with two numeric keys, `from` and `to`: distinct positions on this slider's grid
+with finite results at the opening settings (E05). The page shows both answers, holding the other controls at their
+current settings. Choose a useful comparison or a requested threshold. It does not calculate an optimum or steepest
+point. Without it, a pair is selected once from the opening position and a position about one fifth of the range
+away. Subsequent undefined endpoints are disclosed. For example, `"comparison": {"from": 100, "to": 200}`
+on a sales slider shows the earnings at those two sales counts without suggesting a linear model is nonlinear.
+The vertical scale follows the finite sampled values, without forcing zero into the range. If that range is over
+eight interquartile spreads wide, the retained interval covers both the quartiles plus/minus three spreads and
+plus/minus eight times the median's magnitude. Values beyond it are omitted from the drawing and scale; low values
+on a bounded plateau are retained. A note gives the omitted count and visible bounds; an off-range current answer stays in the headline,
+with its dot omitted and explained. This is a display heuristic, not a domain boundary. It may omit valid extremes
+and miss narrow features between samples. Undefined samples and omitted samples both break the path.
 
 ## Practice questions
 

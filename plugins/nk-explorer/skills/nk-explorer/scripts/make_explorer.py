@@ -98,7 +98,7 @@ def render(concept, template=None, tokens=None, formula_js=None):
     return seal(page)
 
 
-VERSION = "0.1.2"   # written into the sources manifest as the generator
+VERSION = "0.1.6"   # written into the sources manifest as the generator
 
 
 def sources(concept):
@@ -144,7 +144,7 @@ def build(src, out):
     names = ", ".join(c["name"] for c in concept["controls"])
     print(f"built {out}: {concept['result']['name']} = {concept['formula']}  ·  controls {names}  ·  "
           f"{len(concept['practice'])} practice question(s)  ·  {len(page.encode('utf-8'))} bytes")
-    print(f"next: python3 {os.path.join(HERE, 'explorer_check.py')} {out}  and  python3 {os.path.join(HERE, 'probe_check.py')} {out}")
+    print(f"next: python3 {os.path.relpath(os.path.join(HERE, 'explorer_check.py'))} {out}  and  python3 {os.path.relpath(os.path.join(HERE, 'probe_check.py'))} {out}")
     return 0
 
 

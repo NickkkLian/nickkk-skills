@@ -34,6 +34,7 @@ objects.
 E01, E02 and E04 are gates: when one fails the later rules are not run, because they would only repeat it.
 """
 import json, math, os, re, sys
+from decimal import Decimal, localcontext, ROUND_HALF_UP
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -49,10 +50,12 @@ BLOCK = re.compile(r'<script type="application/json" id="concept">(.*?)</script>
 TOP = {"title": ("str", True), "question": ("str", True), "result": ("dict", True), "formula": ("str", True),
        "controls": ("list", True), "chart": ("dict", True), "notes": ("list", True), "source": ("str", True),
        "practice": ("list", True)}
-RESULT = {"name": ("str", True), "label": ("str", True), "unit": ("str", False), "unit_one": ("str", False)}
+RESULT = {"name": ("str", True), "label": ("str", True), "unit": ("str", False), "unit_one": ("str", False),
+          "decimals": ("num", False), "unavailable": ("str", False)}
 CONTROL = {"name": ("str", True), "label": ("str", True), "unit": ("str", False), "unit_one": ("str", False), "min": ("num", True),
            "max": ("num", True), "step": ("num", True), "value": ("num", True)}
-CHART = {"x": ("str", True), "title": ("str", True)}
+CHART = {"x": ("str", True), "title": ("str", True), "comparison": ("dict", False)}
+COMPARISON = {"from": ("num", True), "to": ("num", True)}
 COMPUTE = {"type": ("str", True), "prompt": ("str", True), "set": ("dict", True), "tolerance": ("num", True)}
 REACH = {"type": ("str", True), "prompt": ("str", True), "fixed": ("dict", True), "goal": ("str", True),
          "target": ("num", True), "tolerance": ("num", False), "lowest": ("str", False), "highest": ("str", False)}
@@ -97,10 +100,39 @@ def value_or_none(tree, values):
         return None
 
 
-def shown(tree, values):
-    """the result line as the page shows it: the number, or 'no value'"""
+def result_text(x, u):
+    """Headline precision is independent of exact slider/formula readouts."""
+    unit = (u.get("unit_one") if abs(x) == 1 and u.get("unit_one") else u.get("unit")) or ""
+    d = u.get("decimals", 2 if unit in PREFIX_UNITS else None)
+    if d is None or abs(x) >= 1e21:
+        return with_unit(x, u)
+    with localcontext() as ctx:
+        ctx.prec = 400
+        text = format(Decimal.from_float(abs(float(x))).quantize(Decimal(1).scaleb(-int(d)), rounding=ROUND_HALF_UP), f'.{int(d)}f')
+    sign = "-" if x < 0 and float(text) != 0 else ""
+    if unit in PREFIX_UNITS:
+        return sign + unit + text
+    return sign + text + ("%" if unit == "%" else " " + unit if unit else "")
+
+
+def error_text(reason, u):
+    if u.get("unavailable"):
+        return u["unavailable"]
+    messages = {
+        "division by zero": "This setting divides by zero. Choose values that make the divisor nonzero.",
+        "the square root of a negative number": "This setting asks for the square root of a negative number. Choose values that make it zero or positive.",
+        "ln of a number that is not positive": "A logarithm needs a positive input. Choose values that make its input greater than zero.",
+        "log10 of a number that is not positive": "A logarithm needs a positive input. Choose values that make its input greater than zero.",
+        "a negative number to a fractional power": "This setting raises a negative number to a fractional power. Choose a nonnegative base.",
+        "zero to a negative power": "Zero cannot be raised to a negative power here. Choose a nonzero base."
+    }
+    return messages.get(str(reason), "This setting exceeds the formula's numerical range. Try less extreme values.")
+
+
+def shown(tree, values, quantity=None):
+    """The formatted headline, or the invalid-setting text."""
     r = value_or_none(tree, values)
-    return "no value" if r is None else F.fmt(r)
+    return "Choose another setting" if r is None else result_text(r, quantity or {})
 
 
 def control(concept, name):
@@ -347,7 +379,12 @@ def structure(c):
     if len(c["title"]) > 90:
         out.append(f"the title is {len(c['title'])} characters; keep it to 90")
     _typed("result", c["result"], RESULT, out)
+    d = c["result"].get("decimals") if isinstance(c["result"], dict) else None
+    if d is not None and (isinstance(d, bool) or not isinstance(d, (int, float)) or not math.isfinite(d) or d != int(d) or not 0 <= d <= 8):
+        out.append("result.decimals should be a whole number from 0 to 8")
     _typed("chart", c["chart"], CHART, out)
+    if isinstance(c["chart"], dict) and "comparison" in c["chart"]:
+        _typed("chart.comparison", c["chart"]["comparison"], COMPARISON, out)
     if not 1 <= len(c["controls"]) <= MAX_CONTROLS:
         out.append(f"there are {len(c['controls'])} controls; a page has 1 to {MAX_CONTROLS}")
     for i, ctl in enumerate(c["controls"]):
@@ -439,7 +476,7 @@ def problems(c):
         for k in range(steps(ctl) + 1):
             v = dict(start)
             v[n] = grid(ctl, k)
-            seen.add(shown(tree, v))
+            seen.add(shown(tree, v, c["result"]))
             if len(seen) > 1:
                 break
         if len(seen) < 2:
@@ -452,6 +489,13 @@ def problems(c):
         pts = sum(1 for x in chart_xs(xc) if value_or_none(tree, dict(start, **{xc["name"]: x})) is not None)
         if pts < 2:
             found.append(("E05", f"along {xc['name']} the formula has a value at {pts} of the chart's points; there is no curve to draw"))
+        comparison = c["chart"].get("comparison")
+        if comparison:
+            a, b = comparison["from"], comparison["to"]
+            if a == b or not all(on_grid(xc, x) for x in (a, b)):
+                found.append(("E05", "chart.comparison must name two distinct positions on the chart slider's grid"))
+            elif start_ok and any(value_or_none(tree, dict(start, **{xc["name"]: x})) is None for x in (a, b)):
+                found.append(("E05", "chart.comparison endpoints must have finite answers at the starting values"))
     # E06 compute questions
     for i, t in enumerate(c["practice"]):
         if t["type"] != "compute":
@@ -568,11 +612,33 @@ def selftest():
         "a currency sign goes in front (after a minus), % sticks to the number, no unit is just the number")
     say([with_unit(7.5, {"unit": "£"}), with_unit(-0.5, {"unit": "$"}), with_unit(2318.548, {"unit": "£"}), with_unit(0.125, {"unit": "€"})] == ["£7.50", "-$0.50", "£2318.55", "€0.125"],
         "money with one decimal gets a second; two or more decimals are left as they are")
+    say([result_text(36, {"unit": "$"}), result_text(-37.5, {"unit": "£"}), result_text(.125, {"unit": "€"})] == ["$36.00", "-£37.50", "€0.13"],
+        "currency headlines carry two fixed decimals without changing slider readouts")
+    say(result_text(4000, {"unit": "J"}) == "4000 J" and result_text(89.26258176, {"unit": "%"}) == "89.2626%" and result_text(3, {}) == "3",
+        "physical units, percent and dimensionless headline defaults")
+    say(result_text(1, {"unit": "minutes", "unit_one": "minute", "decimals": 2}) == "1.00 minute" and result_text(3.5, {"unit": "%", "decimals": 0}) == "4%",
+        "explicit precision and singular units are respected")
+    say(result_text(1.005, {"unit": "$"}) == "$1.00" and result_text(-.004, {"unit": "$"}) == "$0.00" and result_text(1e22, {"unit": "$"}) == "$1e22",
+        "fixed decimals round the computed binary value, remove negative rounded zero and handle huge magnitudes")
+    say("divides by zero" in error_text("division by zero", {}) and error_text("division by zero", {"unavailable": "Choose a positive speed."}) == "Choose a positive speed.",
+        "domain errors have a helpful default and a concept-specific override")
     t = {"goal": "within", "target": 0.5, "tolerance": 0.02}
     say(meets(t, 0.52) and meets(t, 0.48) and not meets(t, 0.53) and meets({"goal": "at most", "target": 9}, 9) and not meets({"goal": "at least", "target": 9}, 8.99),
         "goals: within is inclusive at both ends, at most and at least include the target")
     c, why = loads(open(os.path.join(here, "..", "assets", "concepts", "compound-interest.json"), encoding="utf-8").read())
     tree = F.parse(c["formula"])
+    malformed=[]
+    for d in (-1, 9, .5, True, "2"):
+        bad=json.loads(json.dumps(c));bad["result"]["decimals"]=d
+        malformed.append(any(code == "E01" for code, _ in problems(bad)))
+    say(all(malformed), "invalid headline precisions are refused by the concept schema")
+    compared=json.loads(json.dumps(c));compared["chart"]["comparison"]={"from":10,"to":20}
+    say(not problems(compared), "a finite comparison between two chart slider positions is accepted")
+    refused=[]
+    for pair in ({"from":10,"to":10}, {"from":10,"to":10.5}, {"from":10,"to":41}, {"from":10}, {"from":True,"to":20}, {"from":10,"to":20,"typo":1}):
+        bad=json.loads(json.dumps(c));bad["chart"]["comparison"]=pair
+        refused.append(bool(problems(bad)))
+    say(all(refused), "duplicate, off-grid, out-of-range and malformed comparison endpoints are refused")
     reach = c["practice"][1]
     hit, miss = reach_search(c, tree, reach)
     say(hit == {"P": 1000, "r": 7, "n": 11} and miss == {"P": 1000, "r": 7, "n": 0}, f"the reach walk finds the first pass at n = 11 and the first fail at n = 0 (got {hit}, {miss})")

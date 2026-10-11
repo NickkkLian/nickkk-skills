@@ -7,7 +7,7 @@
 explorer_check.py reads the page as a file. This opens it. With ?probe=1 the page moves every control through its
 real slider, types answers into its practice questions and presses their Check buttons, and writes what it saw
 into <pre id="explorer-probe">. This script reads that and recomputes it with formula.py and concept.py:
-  P1  wiring: every move of every control changes the formula line and the chart and marks the number that moved,
+  P1  wiring: every recorded move changes the formula line and the curve, dot, labels or chart note, and marks the number that moved,
       and each control changes the result on at least one of its moves
   P2  the numbers: at every state the page recorded, the formula written with names and with values, the result
       (or the reason it has none) and each control's readout are exactly what the Python twin writes
@@ -151,10 +151,10 @@ def judge(concept, rep):
             bad.append(f"state {i}: the line with values says {s['with']!r}, Python writes {F.write(tree, v)!r}")
         try:
             r = F.evaluate(tree, v)
-            if s["out"] != F.fmt(r) or s["err"]:
-                bad.append(f"state {i}: the result says {s['out']!r} {s['err']!r}, Python gets {F.fmt(r)!r}")
+            if s["out"] != K.result_text(r, concept["result"]) or s["err"]:
+                bad.append(f"state {i}: the result says {s['out']!r} {s['err']!r}, Python gets {K.result_text(r, concept['result'])!r}")
         except F.FormulaError as e:
-            if s["out"] != "no value" or s["err"] != f"Here the formula has no value: {e}.":
+            if s["out"] != "Choose another setting" or s["err"] != K.error_text(e, concept["result"]):
                 bad.append(f"state {i}: the result says {s['out']!r} {s['err']!r}, Python finds no value ({e})")
     if len(states) != want_n:
         bad.append(f"the probe recorded {len(states)} states, not the {want_n} it should")
@@ -307,15 +307,15 @@ BROKEN = [
     ("a slider that is not wired", "P1", [('input.addEventListener("input", function () {', 'if (c !== C.controls[0]) input.addEventListener("input", function () {')]),
     ("a probe that skips a control", "P1", [("report.controls.push({ name: c.name, tries: seen });", "if (c !== C.controls[C.controls.length - 1]) report.controls.push({ name: c.name, tries: seen });")]),
     ("the wrong number marked", "P1", [('(p[1] === lastChanged ? " changed" : "")', '(p[1] !== lastChanged ? " changed" : "")')]),
-    ("a chart that never redraws", "P1", [("    drawChart();\n  }\n", "  }\n")]),
-    ("a result that never updates", "P1", [('$("m-out").textContent = fmt(lastResult);', '$("m-out").textContent = fmt(result(start));')]),
-    ("a result rounded its own way", "P2", [('$("m-out").textContent = fmt(lastResult);', '$("m-out").textContent = lastResult.toFixed(2);')]),
+    ("a chart that never redraws", "P1", [("    drawChart();\n    compareSettings();", "    compareSettings();")]),
+    ("a result that never updates", "P1", [('$("m-out").textContent = resultText(lastResult);', '$("m-out").textContent = resultText(result(start));')]),
+    ("a result rounded its own way", "P2", [('$("m-out").textContent = resultText(lastResult);', '$("m-out").textContent = lastResult.toFixed(2);')]),
     ("a formula line typed by hand", "P2", [('$("m-sym").textContent = Formula.write(tree);', '$("m-sym").textContent = C.formula;')]),
     ("a line with values written its own way", "P2", [("var s = document.createElement(\"span\"); s.textContent = p[0];", "var s = document.createElement(\"span\"); s.textContent = p[0].replace(\"^\", \"**\");")]),
     ("a readout that drops the unit", "P2", [('$("c-" + c.name + "-v").textContent = withUnit(values[c.name], c);', '$("c-" + c.name + "-v").textContent = fmt(values[c.name]);')]),
     ("a value that drifts from its slider", "P2", [("values[c.name] = Number(input.value); lastChanged = c.name;", "values[c.name] = Number(input.value) * 1.0000001; lastChanged = c.name;")]),
     ("a probe that skips a state", "P2", [("reset(); C.controls.forEach(function (c) { move(c.name, c.max); }); record();", "")]),
-    ("a missing value explained its own way", "P2", [('"Here the formula has no value: " + e.message + "."', '"No value."')], _no_value_at_min),
+    ("a missing value explained its own way", "P2", [('$("m-err").textContent = errorText(e);', '$("m-err").textContent = "No value.";')], _no_value_at_min),
     ("a formula that goes wrong only at the question's values", "P3", [("return Math.pow(a, b);", "return b === 5 ? Math.pow(a, b) * 1.001 : Math.pow(a, b);")]),
     ("a grader that refuses exactly the page's own answer", "P3", [("if (!isFinite(a)) return { ok: false, text: \"Type a number.\" };", "if (!isFinite(a) || answer === fmt(want)) return { ok: false, text: \"Type a number.\" };")]),
     ("a grader that refuses an answer given to four decimal places", "P3", [("if (!isFinite(a)) return { ok: false, text: \"Type a number.\" };", "if (!isFinite(a) || /\\.\\d{4}$/.test(answer)) return { ok: false, text: \"Type a number.\" };")]),

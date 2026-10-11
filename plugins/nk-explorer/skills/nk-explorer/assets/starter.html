@@ -29,10 +29,27 @@
   .kicker { font: 600 var(--text-xs)/1 var(--font-mono); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--text-3); margin: 0 0 var(--space-2); }
   h1 { font-family: var(--font-display); font-size: var(--text-3xl); line-height: var(--leading-tight); margin: 0 0 var(--space-2); }
   .question { color: var(--text-2); max-width: 60ch; margin: 0 0 var(--space-6); }
+  .context-title { color: var(--text-3); margin: 0 0 var(--space-3); }
+  .answer { margin: var(--space-4) 0; }
+  .answer-label { color: var(--text-2); margin: 0; }
+  #m-out { font: var(--weight-medium) clamp(2rem, 6vw, 3.5rem)/var(--leading-tight) var(--font-display); overflow-wrap: anywhere; }
+  #m-err { color: var(--danger); margin: var(--space-2) 0 0; max-width: 65ch; }
+  #m-err:empty { display: none; }
+  .explore { display: grid; grid-template-columns: minmax(220px, .65fr) minmax(0, 1.35fr); gap: var(--space-4); align-items: start; }
+  .explore .control { margin: 0; }
+  .comparison { margin: var(--space-4) 0 0; color: var(--text-2); font-size: var(--text-sm); }
+  .comparison h3 { margin: 0 0 var(--space-2); font: var(--weight-medium) var(--text-sm)/var(--leading-normal) var(--font-sans); }
+  .comparison p { margin: 0; max-width: 36ch; }
+  .other-settings { margin-top: var(--space-3); }
+  .other-settings > summary { cursor: pointer; color: var(--text-2); padding: var(--space-2) 0; }
+  .other-settings #controls { padding-top: var(--space-3); }
+  .secondary { margin-top: var(--space-4); }
+  .secondary > summary { cursor: pointer; color: var(--text-2); padding: var(--space-2) 0; }
+  .secondary .work { margin-top: var(--space-2); }
   h2 { font-family: var(--font-display); font-size: var(--text-lg); margin: 0 0 var(--space-3); }
-  .work { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); }
+  .work { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
   .panel { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4); min-width: 0; }
-  .panel.chart { grid-column: 1 / -1; }
+  .panel.chart { grid-column: auto; }
   .control { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px var(--space-2); margin-bottom: var(--space-3); }
   .control label { font-weight: var(--weight-medium); }
   .control output { font: var(--text-sm)/1.4 var(--font-mono); color: var(--text-2); }
@@ -77,7 +94,7 @@
   #probe-summary, #explorer-probe { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter) var(--space-4); font: var(--text-xs)/1.5 var(--font-mono); color: var(--text-2); }
   #probe-summary ul { margin: 0; padding-left: 1.2em; }
   #explorer-probe { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text-3); padding-bottom: var(--space-8); }
-  @media (max-width: 760px) { .work { grid-template-columns: minmax(0, 1fr); } h1 { font-size: var(--text-2xl); } }
+  @media (max-width: 760px) { .work, .explore { grid-template-columns: minmax(0, 1fr); } h1 { font-size: var(--text-2xl); } }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -89,30 +106,45 @@
 </header>
 <main>
   <section class="intro">
-    <p class="kicker">Concept</p>
+    <p class="kicker" id="context-title"></p>
     <h1 id="title"></h1>
-    <p class="question" id="question"></p>
+    <div class="answer" aria-live="polite">
+      <p class="answer-label" id="answer-label"></p>
+      <b id="m-out" data-nk-src="result"></b>
+      <p id="m-err" role="status"></p>
+    </div>
   </section>
-  <div class="work">
-    <section class="panel" aria-labelledby="h-controls">
-      <h2 id="h-controls">Move a control</h2>
-      <div id="controls"></div>
+  <div class="explore">
+    <section class="panel" aria-labelledby="h-focus">
+      <h2 id="h-focus">Try a different setting</h2>
+      <div id="focus-controls"></div>
+      <details class="other-settings">
+        <summary id="h-controls">Other settings</summary>
+        <div id="controls"></div>
+      </details>
+      <div class="comparison">
+        <h3>Compare two settings</h3>
+        <p id="comparison" aria-live="polite"></p>
+      </div>
     </section>
+    <section class="panel chart" aria-labelledby="h-chart">
+      <h2 id="h-chart"></h2>
+      <svg id="chart" role="img" aria-labelledby="h-chart chart-how"></svg>
+      <p class="how" id="chart-how"></p>
+    </section>
+  </div>
+  <details class="secondary">
+    <summary>How the answer is calculated</summary>
+    <div class="work">
     <section class="panel mirror" aria-labelledby="h-mirror">
       <h2 id="h-mirror">The formula it changes</h2>
       <p class="line sym"><span id="m-res"></span> = <span id="m-sym"></span></p>
       <p class="line with">= <span id="m-with"></span></p>
-      <p class="line out" aria-live="polite">= <b id="m-out" data-nk-src="result"></b></p>
-      <p class="err" id="m-err" role="status"></p>
       <dl class="where" id="m-where"></dl>
-      <p class="how">The marked number is the one you just moved. All three lines are written from the formula the result is computed with.</p>
+      <p class="how">The marked number is the one you just moved. The formula, the substituted numbers and the headline answer share the same calculation.</p>
     </section>
-    <section class="panel chart" aria-labelledby="h-chart">
-      <h2 id="h-chart"></h2>
-      <svg id="chart" role="img" aria-labelledby="h-chart"></svg>
-      <p class="how" id="chart-how"></p>
-    </section>
-  </div>
+    </div>
+  </details>
   <section class="practice" aria-labelledby="h-practice">
     <h2 id="h-practice">Practice</h2>
     <p class="hint">Graded on the result, not on how you got there: any working that lands within the tolerance counts.</p>
@@ -449,6 +481,26 @@ var Formula = (function () {
     }
     return fmt(x) + (unit === "%" ? "%" : " " + unit);
   }
+  function resultText(x) {
+    var u = C.result, unit = Math.abs(x) === 1 && u.unit_one ? u.unit_one : u.unit || "";
+    var currency = ["£", "$", "€", "¥"].indexOf(unit) >= 0;
+    var d = has(u, "decimals") ? u.decimals : currency ? 2 : null;
+    if (d === null || Math.abs(x) >= 1e21) return withUnit(x, u);
+    var text = Math.abs(x).toFixed(d), sign = x < 0 && Number(text) !== 0 ? "-" : "";
+    return currency ? sign + unit + text : sign + text + (unit === "%" ? "%" : unit ? " " + unit : "");
+  }
+  function errorText(e) {
+    if (C.result.unavailable) return C.result.unavailable;
+    var messages = {
+      "division by zero": "This setting divides by zero. Choose values that make the divisor nonzero.",
+      "the square root of a negative number": "This setting asks for the square root of a negative number. Choose values that make it zero or positive.",
+      "ln of a number that is not positive": "A logarithm needs a positive input. Choose values that make its input greater than zero.",
+      "log10 of a number that is not positive": "A logarithm needs a positive input. Choose values that make its input greater than zero.",
+      "a negative number to a fractional power": "This setting raises a negative number to a fractional power. Choose a nonnegative base.",
+      "zero to a negative power": "Zero cannot be raised to a negative power here. Choose a nonzero base."
+    };
+    return messages[e.message] || "This setting exceeds the formula's numerical range. Try less extreme values.";
+  }
   /* a control's k-th position, rounded to 12 significant digits so that 0.1 steps land on 0.3 and not on
      0.30000000000000004 — concept.py's grid() is the same */
   function grid(c, k) { return Number((c.min + k * c.step).toPrecision(12)); }
@@ -461,12 +513,13 @@ var Formula = (function () {
   /* ---- words from the concept block ---- */
   var xc = control(C.chart.x);
   document.title = C.title;
-  $("title").textContent = C.title;
-  $("question").textContent = C.question;
+  $("context-title").textContent = C.title;
+  $("title").textContent = C.question;
+  $("answer-label").textContent = C.result.label;
   $("m-res").textContent = C.result.name;
   $("h-chart").textContent = C.chart.title;
-  $("chart-how").textContent = "The curve runs " + xc.label + " (" + xc.name + ") from " + withUnit(xc.min, xc) + " to " +
-    withUnit(xc.max, xc) + " and keeps every other control where it is now. The dot is where " + xc.name + " is now.";
+  var chartDescription = "The curve runs " + xc.label + " (" + xc.name + ") from " + withUnit(xc.min, xc) + " to " +
+    withUnit(xc.max, xc) + " and keeps every other control where it is now. The dot marks the current setting when its value is plotted.";
   $("notes").textContent = C.notes.join(" ");
   $("source").textContent = C.source;
   function whereRow(name, label, unit) {
@@ -482,7 +535,7 @@ var Formula = (function () {
     values[c.name] = start[c.name] = c.value;
     var row = document.createElement("div"); row.className = "control";
     var id = "c-" + c.name;
-    var label = document.createElement("label"); label.htmlFor = id; label.textContent = c.label + " (" + c.name + ")";
+    var label = document.createElement("label"); label.htmlFor = id; label.textContent = c.label + (c.unit ? " (" + c.unit + ")" : "");
     var out = document.createElement("output"); out.id = id + "-v"; out.htmlFor = id; out.setAttribute("data-nk-src", "control." + c.name);
     var input = document.createElement("input");
     input.type = "range"; input.id = id; input.min = c.min; input.max = c.max; input.step = c.step; input.value = c.value;
@@ -492,7 +545,7 @@ var Formula = (function () {
     var hi = document.createElement("span"); hi.textContent = withUnit(c.max, c);
     range.appendChild(lo); range.appendChild(hi);
     row.appendChild(label); row.appendChild(out); row.appendChild(input); row.appendChild(range);
-    $("controls").appendChild(row);
+    $(c.name === xc.name ? "focus-controls" : "controls").appendChild(row);
     inputs[c.name] = input;
   });
 
@@ -507,13 +560,32 @@ var Formula = (function () {
       w.appendChild(s);
     });
     lastResult = null;
-    try { lastResult = result(values); $("m-out").textContent = fmt(lastResult); $("m-err").textContent = ""; }
+    try { lastResult = result(values); $("m-out").textContent = resultText(lastResult); $("m-err").textContent = ""; }
     catch (e) {
       if (!(e instanceof Formula.FormulaError)) throw e;
-      $("m-out").textContent = "no value"; $("m-err").textContent = "Here the formula has no value: " + e.message + ".";
+      $("m-out").textContent = "Choose another setting"; $("m-err").textContent = errorText(e);
     }
     sources();
     drawChart();
+    compareSettings();
+  }
+
+  // Compare evaluated slider positions, without guessing a threshold or an optimum.
+  // Keep the pair fixed while the other controls move, so the comparison is a slice too.
+  var comparisonPair;
+  function compareSettings() {
+    if (!comparisonPair) {
+      var k = Math.round((xc.value - xc.min) / xc.step), jump = Math.max(1, Math.round(stepsOf(xc) / 5));
+      var other = k + jump <= stepsOf(xc) ? k + jump : Math.max(0, k - jump);
+      comparisonPair = C.chart.comparison ? [C.chart.comparison.from, C.chart.comparison.to] : [xc.value, grid(xc, other)];
+    }
+    var texts = comparisonPair.map(function (x) {
+      var v = copy(values); v[xc.name] = x;
+      var r = tryResult(v);
+      return "At " + withUnit(x, xc) + ", " + (r === null ? "the formula is undefined for these settings" : resultText(r)) + ".";
+    });
+    $("comparison").textContent = texts.join(" ");
+    $("comparison").setAttribute("data-positions", JSON.stringify(comparisonPair));
   }
 
   /* ---- where each number comes from (nk-sources): click the result or a readout. make_explorer.py writes each
@@ -549,15 +621,31 @@ var Formula = (function () {
       v[xc.name] = xc.min + (xc.max - xc.min) * i / (n - 1);
       pts.push([v[xc.name], tryResult(v)]);
     }
-    var ys = pts.filter(function (p) { return p[1] !== null; }).map(function (p) { return p[1]; }).concat([0]);
-    var lo = Math.min.apply(null, ys), hi = Math.max.apply(null, ys);
-    if (hi === lo) hi = lo + 1;
-    var yt = niceTicks(lo, hi, 4), y0 = yt[0], y1 = yt[yt.length - 1], labels = yt.map(fmt);
-    var L = 14 + 7.4 * Math.max.apply(null, labels.map(function (s) { return s.length; })), R = 14, T = 10, B = 44;
+    var ys = pts.filter(function (p) { return p[1] !== null; }).map(function (p) { return p[1]; }).sort(function (a, b) { return a - b; });
+    var kept = ys, cutLo = -Infinity, cutHi = Infinity;
+    // A sparse extreme tail must not set the scale of the ordinary part of the curve.
+    // This is a display choice only: never alter the result or the practice grader.
+    if (ys.length >= 8) {
+      var q1 = ys[Math.floor((ys.length - 1) * .25)], q3 = ys[Math.floor((ys.length - 1) * .75)], spread = q3 - q1;
+      if (spread > 0 && ys[ys.length - 1] - ys[0] > 8 * spread) {
+        var ordinaryMagnitude = Math.abs(ys[Math.floor((ys.length - 1) / 2)]);
+        cutLo = Math.min(q1 - 3 * spread, -8 * ordinaryMagnitude);
+        cutHi = Math.max(q3 + 3 * spread, 8 * ordinaryMagnitude);
+        kept = ys.filter(function (y) { return y >= cutLo && y <= cutHi; });
+      }
+    }
+    var lo = kept.length ? kept[0] : 0, hi = kept.length ? kept[kept.length - 1] : 1;
+    if (hi === lo) { var pad = Math.max(Math.abs(lo) * .05, 1e-12); lo -= pad; hi += pad; }
+    var yt = niceTicks(lo, hi, 4), y0 = yt[0], y1 = yt[yt.length - 1], labels = yt.map(resultText);
+    // Headline rounding must not make distinct axis ticks look identical.
+    if (labels.some(function (s, i) { return i > 0 && s === labels[i - 1]; })) labels = yt.map(function (y) { return withUnit(y, C.result); });
+    var L = Math.min(W * .4, 14 + 7.4 * Math.max.apply(null, labels.map(function (s) { return s.length; }))), R = 14, T = 32, B = 50;
     function sx(x) { return L + (W - L - R) * (x - xc.min) / (xc.max - xc.min); }
     function sy(y) { return T + (H - T - B) * (1 - (y - y0) / (y1 - y0)); }
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("data-y-min", y0); svg.setAttribute("data-y-max", y1);
     while (svg.firstChild) svg.removeChild(svg.firstChild);
+    svg.appendChild(el("text", { "class": "cap", x: L, y: 16, "text-anchor": "start" }, C.result.label + " (" + (C.result.unit || "unitless") + ")"));
     yt.forEach(function (y, i) {
       svg.appendChild(el("line", { "class": y === 0 ? "axis" : "grid", x1: L, x2: W - R, y1: sy(y), y2: sy(y) }));
       svg.appendChild(el("text", { x: L - 8, y: sy(y) + 4, "text-anchor": "end" }, labels[i]));
@@ -570,18 +658,25 @@ var Formula = (function () {
       var anchor = Math.abs(x - xc.max) < 1e-9 ? "end" : Math.abs(x - xc.min) < 1e-9 ? "start" : "middle";
       svg.appendChild(el("text", { x: sx(x), y: H - B + 18, "text-anchor": anchor }, fmt(x)));
     });
-    svg.appendChild(el("text", { "class": "cap", x: (L + W - R) / 2, y: H - 8, "text-anchor": "middle" }, xc.label + " (" + xc.name + ")"));
+    svg.appendChild(el("text", { "class": "cap", x: (L + W - R) / 2, y: H - 8, "text-anchor": "middle" }, xc.label + " (" + (xc.unit || "unitless") + ")"));
     /* a formula with floor, ceil or round jumps: drawn as steps (flat, then straight up or down), not as slopes between
        the samples either side of a jump */
     var d = "", pen = false;
     pts.forEach(function (p) {
-      if (p[1] === null) { pen = false; return; }
+      if (p[1] === null || p[1] < cutLo || p[1] > cutHi) { pen = false; return; }
       var X = sx(p[0]).toFixed(2), Y = sy(p[1]).toFixed(2);
       d += !pen ? " M" + X + " " + Y : stepped ? " H" + X + " V" + Y : " L" + X + " " + Y;
       pen = true;
     });
     svg.appendChild(el("path", { "class": "curve", d: d.trim(), id: "curve" }));
-    if (lastResult !== null) svg.appendChild(el("circle", { "class": "here", id: "here", r: 6, cx: sx(values[xc.name]).toFixed(2), cy: sy(lastResult).toFixed(2) }));
+    var inView = lastResult !== null && lastResult >= cutLo && lastResult <= cutHi && lastResult >= y0 && lastResult <= y1;
+    if (inView) svg.appendChild(el("circle", { "class": "here", id: "here", r: 6, cx: sx(values[xc.name]).toFixed(2), cy: sy(lastResult).toFixed(2) }));
+    var note = chartDescription;
+    var missing = pts.filter(function (p) { return p[1] === null; });
+    if (missing.length) note += " " + missing.length + " sampled setting(s) are undefined, beginning at " + withUnit(missing[0][0], xc) + "; the curve leaves gaps there.";
+    if (kept.length < ys.length) note += " " + (ys.length - kept.length) + " extreme sampled value(s) are omitted to keep the rest readable; gaps mark those regions. The visible vertical axis spans " + resultText(y0) + " to " + resultText(y1) + ".";
+    if (lastResult !== null && !inView) note += " Current answer: " + resultText(lastResult) + ", in an omitted region of the curve; its dot is omitted.";
+    $("chart-how").textContent = note;
   }
   window.addEventListener("resize", drawChart);
 
@@ -600,7 +695,7 @@ var Formula = (function () {
     var want = result(t.set), a = number(answer);
     if (!isFinite(a)) return { ok: false, text: "Type a number." };
     return Math.abs(a - want) <= t.tolerance + 1e-9 * Math.max(1, Math.abs(want))
-      ? { ok: true, text: "Right: the formula gives " + fmt(want) + "." }
+      ? { ok: true, text: "Right: the formula gives " + resultText(want) + "." }
       : { ok: false, text: "Not yet. Put the question's values on the controls and read the last line of the formula." };
   }
   /* a goal counts as met within a billionth of the target, so that a value the formula should hit exactly is not
@@ -610,7 +705,7 @@ var Formula = (function () {
     var slack = 1e-9 * Math.max(1, Math.abs(t.target));
     return t.goal === "at least" ? r >= t.target - slack : t.goal === "at most" ? r <= t.target + slack : Math.abs(r - t.target) <= t.tolerance + slack;
   }
-  function goalText(t) { return t.goal === "within" ? "within " + fmt(t.tolerance) + " of " + fmt(t.target) : t.goal + " " + fmt(t.target); }
+  function goalText(t) { return t.goal === "within" ? "within " + resultText(t.tolerance) + " of " + resultText(t.target) : t.goal + " " + resultText(t.target); }
   function reachState(t) { var v = copy(values); Object.keys(t.fixed).forEach(function (k) { v[k] = t.fixed[k]; }); return v; }
   /* the state is graded, not the way it was reached; "lowest"/"highest" also asks that no position of that control
      further toward that end passes, the other controls as they are — every one of them, not only the next, since a
@@ -619,8 +714,10 @@ var Formula = (function () {
   function gradeReach(t, v) {
     v = v || reachState(t);
     var r = tryResult(v);
-    if (r === null) return { ok: false, text: "Here the formula has no value." };
-    if (!meets(t, r)) return { ok: false, text: "Not yet: " + fmt(r) + " is not " + goalText(t) + "." };
+    if (r === null) {
+      try { result(v); } catch (e) { return { ok: false, text: errorText(e) }; }
+    }
+    if (!meets(t, r)) return { ok: false, text: "Not yet: " + resultText(r) + " is not " + goalText(t) + "." };
     var side = t.lowest ? "lowest" : t.highest ? "highest" : null;
     if (side) {
       var c = control(t[side]), dir = side === "lowest" ? -1 : 1;
@@ -630,7 +727,7 @@ var Formula = (function () {
         if (r2 !== null && meets(t, r2)) return { ok: false, text: "That reaches it, but so does " + c.name + " = " + fmt(u[c.name]) + " (" + fmt(r2) + "): the question asks for the " + side + " " + c.name + "." };
       }
     }
-    return { ok: true, text: "Yes: " + fmt(r) + " is " + goalText(t) + "." };
+    return { ok: true, text: "Yes: " + resultText(r) + " is " + goalText(t) + "." };
   }
   function lock(fixed) {
     C.controls.forEach(function (c) { inputs[c.name].disabled = !!fixed && has(fixed, c.name); });
@@ -702,7 +799,7 @@ var Formula = (function () {
          the result (the starting amount) leaves the curve's shape where it was and moves the labels */
       return { values: copy(values), shown: shown, sym: $("m-sym").textContent, with: $("m-with").textContent,
                out: $("m-out").textContent, err: $("m-err").textContent, curve: $("curve") ? $("curve").getAttribute("d") : "",
-               here: here ? here.getAttribute("cx") + "," + here.getAttribute("cy") : "", labels: $("chart").textContent };
+               here: here ? here.getAttribute("cx") + "," + here.getAttribute("cy") : "", labels: $("chart").textContent + $("chart-how").textContent };
     };
     var reset = function () { lock(null); C.controls.forEach(function (c) { move(c.name, start[c.name]); }); lastChanged = null; };
     var report = { formula: C.formula, controls: [], states: [], practice: [] };

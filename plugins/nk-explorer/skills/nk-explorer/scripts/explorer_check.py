@@ -395,7 +395,7 @@ SAMPLES = [
     ("E09 an image from an outside address", _page(("<main>", '<main><img src="https://example.com/pixel.png" alt="">')), {"E09"}),
     ("E09 an outside address in the styles", _page(("  .task p {", '  .task { background-image: url("https://example.com/bg.png"); }\n  .task p {')), {"E09"}),
     ("E09 a fetch", _page(('  var C = JSON.parse(', '  fetch("/log?page=1");\n  var C = JSON.parse(')), {"E09"}),
-    ("E10 markup written into the page", _page(('$("title").textContent = C.title;', '$("title").innerHTML = C.title;')), {"E10"}),
+    ("E10 markup written into the page", _page(('$("title").textContent = C.question;', '$("title").innerHTML = C.question;')), {"E10"}),
     ("E10 eval", _page(('  var C = JSON.parse(', '  eval("1");\n  var C = JSON.parse(')), {"E10"}),
     ("E10 eval called indirectly", _page(('  var C = JSON.parse(', '  (0, eval)("1");\n  var C = JSON.parse(')), {"E10"}),
     ("E10 eval reached through a dot", _page(('  var C = JSON.parse(', '  window.eval("1");\n  var C = JSON.parse(')), {"E10"}),
