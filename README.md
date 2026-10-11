@@ -62,7 +62,7 @@ Stop a destructive command, a leaked secret or a whole-file reformat before it l
 </table>
 
 - [nk-git-guardrail-hook](https://github.com/NickkkLian/nk-git-guardrail-hook): A PreToolUse hook for Claude Code that stops before seven risky git and shell commands — force push, git add -A in a shared checkout, making a repo public, pushing while behind the remote, a push that records a mass deletion, a recursive rm on the home folder or the filesystem root, a download run straight in a shell.
-- [nk-publish-gate](https://github.com/NickkkLian/nk-publish-gate): A privacy gate to run before anything goes public (a repo, a release zip, a demo folder, a PDF): it finds what is private but is not a secret, such as a home-directory path inside an xlsx, a username in a .pyc or a personal address in the commit history.
+- [nk-publish-gate](https://github.com/NickkkLian/nk-publish-gate): A local privacy check before a directory or selected Git history goes public: finds recognized patterns such as home-directory paths inside xlsx files, usernames in Python bytecode and personal addresses.
 - [nk-indent-guard](https://github.com/NickkkLian/nk-indent-guard): Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.
 
 ## Keep agents on track between sessions

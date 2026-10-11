@@ -1,7 +1,7 @@
 {
   "name": "nk-publish-gate",
-  "version": "0.1.7",
-  "description": "A privacy gate to run before anything goes public (a repo, a release zip, a demo folder, a PDF): it finds what is private but is not a secret, such as a home-directory path inside an xlsx, a username in a .pyc or a personal address in the commit history.",
+  "version": "0.1.8",
+  "description": "A local privacy check before a directory or selected Git history goes public: finds recognized patterns such as home-directory paths inside xlsx files, usernames in Python bytecode and personal addresses.",
   "author": {
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "nk-publish-gate",
     "shortDescription": "Privacy check before a push",
-    "longDescription": "A privacy gate to run before anything goes public (a repo, a release zip, a demo folder, a PDF): it finds what is private but is not a secret, such as a home-directory path inside an xlsx, a username in a .pyc or a personal address in the commit history. Use when you are about to push to a public repository, make a private repo public, attach files to a post, or hand a bundle to someone outside. Scans every file regardless of extension, opens archives three levels deep (member names included), inflates PDF streams, scans binaries as bytes, and with --git-range scans every commit's author, message and blobs, because publishing a repo publishes its whole history. Your own identifiers come from a config kept outside every repo. For secrets it is a backstop: run a secret scanner such as gitleaks as well. Not a replacement for reading the screenshots yourself.",
+    "longDescription": "A local privacy check before a directory or selected Git history goes public: finds recognized patterns such as home-directory paths inside xlsx files, usernames in Python bytecode and personal addresses. Use when preparing to push to a public repository, make a private repo public or share a bundle. Scans directory files regardless of extension, excluding .git; opens supported archives up to three levels and selected PDF streams, and applies byte patterns to binaries. --git-range additionally checks selected commits' authors, committers, messages and added/modified blobs. Loaded allow-file comments are also scanned, including outside the directory. Personal identifiers come from a private config. GREEN means no unapproved RED match in scanned material, not complete inspection or publication clearance. Use a credential scanner as well and inspect images yourself.",
     "developerName": "Nick Lian",
     "category": "Developer Tools",
     "capabilities": []
