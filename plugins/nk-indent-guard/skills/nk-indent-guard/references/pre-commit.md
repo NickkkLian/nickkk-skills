@@ -9,20 +9,26 @@ If the repository already uses [pre-commit](https://pre-commit.com), add this to
 ```yaml
 repos:
   - repo: https://github.com/NickkkLian/nk-indent-guard
-    rev: <a commit id of that repository>
+    rev: v0.1.4
     hooks:
       - id: indent-guard
 ```
 
-`rev` has to be a tag or a commit id. That repository has no tags, so use the id of its newest commit:
-`git ls-remote https://github.com/NickkkLian/nk-indent-guard HEAD` prints it. The hook is the script itself
-(`language: script` in `.pre-commit-hooks.yaml` at the repository root): it needs `python3` (3.9 or newer) and git on
-the machine, and the framework installs nothing for it. It is given the staged `.json`, `.yaml` and `.yml` files.
+`rev` takes a version tag, as in the block above, or a commit id.
+`git ls-remote https://github.com/NickkkLian/nk-indent-guard` lists that repository's tags and the id of its newest
+commit. The hook is the script itself (`language: script` in `.pre-commit-hooks.yaml` at the repository root): it
+needs `python3` (3.9 or newer) and git on the machine, and the framework installs nothing for it. It is given the
+staged `.json`, `.yaml` and `.yml` files.
 
-How far this was checked (2026-10-09): the manifest was read against the framework's documentation and its manifest
+How far this was checked. On 2026-10-09 the manifest was read against the framework's documentation and its manifest
 schema, and the script was started by a hand-written git hook the way that documentation describes for this hook
-type (the file itself, from the repository root, with the staged data files as arguments). It was not run under the
-pre-commit framework itself, and not on Windows.
+type (the file itself, from the repository root, with the staged data files as arguments). On 2026-10-10 it was run
+under pre-commit 4.6.2 on macOS 15.7 (Apple silicon, git 2.39.3, Python 3.13), with the framework cloning that
+repository at its 0.1.3 commit from a local copy: `git commit` passed a one-line edit, was refused for a re-indented
+JSON file and again under `git commit -a` for a re-indented JSON and YAML file, and `pre-commit run --all-files`
+failed while the re-indented file was there and passed once it was put back. The script and `.pre-commit-hooks.yaml`
+are unchanged in 0.1.4. It was not run from the GitHub address, on Linux or on Windows, or under another pre-commit
+version.
 
 ## As a plain git hook (per clone)
 
