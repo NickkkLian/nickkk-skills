@@ -4,7 +4,7 @@ description: Build a playable jubensha (剧本杀, the Chinese murder-mystery pa
 license: MIT
 metadata:
   provenance: written for this skill (2026-09) from the author's notes on mystery and party-game design (private, not included); the trick taxonomy is abstract and reproduces no published script or novel; example game written for this skill and verified by the detective loop
-  version: 0.1.0
+  version: 0.1.1
 ---
 
 # Jubensha builder
@@ -67,7 +67,7 @@ behind the stages is in [references/method.md](references/method.md).
 7. **Check.** `python3 <skill-dir>/scripts/chain_check.py game.json`. Fix every error; read warnings as
    questions. Exit 0 clean, 1 errors, 2 unreadable file.
 8. **Render.** `python3 <skill-dir>/scripts/booklets.py game.json --out booklets/` writes `index.html`, one
-   `<id>.html` per player, `clues.html` and `host.html`: single files, no outside requests, printable on A4.
+   `<id>.html` per player, `clues.html` and `host.html`: each self-contained, with no outside requests, printable on A4.
 9. **Play it blind.** Run the detective loop below until the grade is SOLVED. Then have people play it; a person
    saying "we were lost" overrides a clean grade.
 

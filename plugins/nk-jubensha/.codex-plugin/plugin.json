@@ -1,6 +1,6 @@
 {
   "name": "nk-jubensha",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Build a playable jubensha (\u5267\u672c\u6740, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook).",
   "author": {
     "name": "Nick Lian",

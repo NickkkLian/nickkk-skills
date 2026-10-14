@@ -61,7 +61,7 @@
         "repo": "NickkkLian/nk-indent-guard"
       },
       "description": "Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "license": "MIT",
       "category": "productivity",
       "tags": [
@@ -299,7 +299,7 @@
         "repo": "NickkkLian/nk-jubensha"
       },
       "description": "Build a playable jubensha (\u5267\u672c\u6740, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook).",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "MIT",
       "category": "writing",
       "tags": [

@@ -9,7 +9,7 @@ If the repository already uses [pre-commit](https://pre-commit.com), add this to
 ```yaml
 repos:
   - repo: https://github.com/NickkkLian/nk-indent-guard
-    rev: v0.1.4
+    rev: v0.1.5
     hooks:
       - id: indent-guard
 ```
@@ -27,8 +27,11 @@ under pre-commit 4.6.2 on macOS 15.7 (Apple silicon, git 2.39.3, Python 3.13), w
 repository at its 0.1.3 commit from a local copy: `git commit` passed a one-line edit, was refused for a re-indented
 JSON file and again under `git commit -a` for a re-indented JSON and YAML file, and `pre-commit run --all-files`
 failed while the re-indented file was there and passed once it was put back. The script and `.pre-commit-hooks.yaml`
-are unchanged in 0.1.4. It was not run from the GitHub address, on Linux or on Windows, or under another pre-commit
-version.
+are unchanged in 0.1.4 and 0.1.5. Later on 2026-10-10, after 0.1.4 was released, it was run again the same way with
+the framework cloning `https://github.com/NickkkLian/nk-indent-guard` at tag `v0.1.4` (the config block as the
+0.1.4 README printed it): `git commit` passed a one-line edit, skipped a commit that touched no data file and was refused for a
+re-indented JSON file, and `pre-commit run --all-files` failed while that file was there and passed once it was put
+back. It was not run on Linux or on Windows, or under another pre-commit version.
 
 ## As a plain git hook (per clone)
 
