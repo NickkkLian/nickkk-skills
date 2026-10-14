@@ -5,7 +5,7 @@ license: MIT
 metadata:
   compatibility: "standard library only, no packages and no build step; the page it writes has no dependencies, evaluates its formula without eval, and carries a Content-Security-Policy intended to restrict resources to its own inline scripts and styles. The browser self-test checks an edited page with mismatched script hashes; broader policy enforcement was not separately audited. probe_check.py needs Google Chrome or Chromium; without one, the page is designed to show a manual report with ?probe=1 in a modern browser; that fallback and other browsers were not checked."
   provenance: own practice (2026-09) — the "show the query behind every click, grade on the result" idea from Query Mirror, a SQL teaching tool of mine, carried over to formulas; see Provenance
-  version: 0.1.6
+  version: 0.1.7
 ---
 # Concept explorer
 
@@ -77,6 +77,10 @@ report the browser check as unrun, and independently check extracted page logic 
    significant digits. Optional `result.decimals` (0–8) sets fixed decimal places, including trailing zeros; use it
    when the request calls for a particular precision. Optional `result.unavailable` supplies a plain sentence
    explaining invalid settings in this concept and what to change. Otherwise the page explains the arithmetic error.
+   Set `chart.locale` to the request's language and region for axis numbers and currency placement (for example
+   `en-GB` or `de-DE`). Axes group thousands and show only decimals needed by tick spacing; headline and answer
+   parsing rules stay as above. If the locale is unspecified, the axis defaults by result currency (`£`: en-GB,
+   `$`: en-US, `€`: de-DE, `¥`: ja-JP; otherwise en-US); disclose an illustrative choice for ambiguous currencies.
 3. **Choose ranges a person would try.** A rate from 0 to 15%, not from 0 to 100; a loan from one year to 35. The
    starting values are what the page opens on, so make them an ordinary case, not an extreme one. Write `question`
    as a short question in the person's words; it becomes the main heading. Choose `chart.x` as the one slider most
@@ -133,6 +137,10 @@ report the browser check as unrun, and independently check extracted page logic 
 8. **Open it and move everything** — `references/acceptance.md` is the walk-through: what a person checks that no
    script can, such as whether the ranges make sense and whether the notes say what the formula really leaves out.
 
+With Node available, `node <skill-dir>/scripts/chart_check.js --selftest` executes the template's formula
+and chart functions against axis and scale regressions using a minimal SVG document. It reads files and prints
+results only. This optional check needs no packages and does not replace Chrome or human layout inspection.
+
 ## Clickable number sources
 
 Click the result or a control's readout and a panel shows where it comes from: for the result, the formula with the
@@ -184,8 +192,8 @@ warn about unused control entries because those readouts are inserted by the app
   this version's scope.
 - **The chart moves one control and holds the rest where they are.** It is a slice, not a map of everything.
   It samples 201 points. Undefined samples break the curve. When the finite range exceeds eight times its
-  interquartile spread, the retained interval covers both the quartiles plus/minus three spreads and plus/minus
-  eight times the median's magnitude. Samples beyond that interval are omitted from the plotted curve and scale,
+  positive interquartile spread, the retained interval spans the quartiles minus/plus three spreads, extended to
+  include zero. Samples beyond that interval are omitted from the plotted curve and scale,
   with a note giving the count and visible range. This preserves low values on bounded plateaus.
   The answer is still computed normally; a dot outside
   the range is omitted and explicitly described. This heuristic can also omit valid extreme values. It cannot find

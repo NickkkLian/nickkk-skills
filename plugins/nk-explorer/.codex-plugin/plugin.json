@@ -1,6 +1,6 @@
 {
   "name": "nk-explorer",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Turn one formula into a self-contained offline HTML explorer with the person's question, a headline answer with its unit, one principal slider and a curve, expandable formula working and other settings, and practice graded on the result.",
   "author": {
     "name": "Nick Lian",

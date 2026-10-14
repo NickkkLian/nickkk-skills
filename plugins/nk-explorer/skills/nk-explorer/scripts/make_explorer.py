@@ -98,7 +98,7 @@ def render(concept, template=None, tokens=None, formula_js=None):
     return seal(page)
 
 
-VERSION = "0.1.6"   # written into the sources manifest as the generator
+VERSION = "0.1.7"   # written into the sources manifest as the generator
 
 
 def sources(concept):

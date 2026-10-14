@@ -54,7 +54,7 @@ RESULT = {"name": ("str", True), "label": ("str", True), "unit": ("str", False),
           "decimals": ("num", False), "unavailable": ("str", False)}
 CONTROL = {"name": ("str", True), "label": ("str", True), "unit": ("str", False), "unit_one": ("str", False), "min": ("num", True),
            "max": ("num", True), "step": ("num", True), "value": ("num", True)}
-CHART = {"x": ("str", True), "title": ("str", True), "comparison": ("dict", False)}
+CHART = {"x": ("str", True), "title": ("str", True), "comparison": ("dict", False), "locale": ("str", False)}
 COMPARISON = {"from": ("num", True), "to": ("num", True)}
 COMPUTE = {"type": ("str", True), "prompt": ("str", True), "set": ("dict", True), "tolerance": ("num", True)}
 REACH = {"type": ("str", True), "prompt": ("str", True), "fixed": ("dict", True), "goal": ("str", True),
@@ -383,6 +383,10 @@ def structure(c):
     if d is not None and (isinstance(d, bool) or not isinstance(d, (int, float)) or not math.isfinite(d) or d != int(d) or not 0 <= d <= 8):
         out.append("result.decimals should be a whole number from 0 to 8")
     _typed("chart", c["chart"], CHART, out)
+    if isinstance(c["chart"], dict) and "locale" in c["chart"]:
+        locale = c["chart"]["locale"]
+        if not isinstance(locale, str) or not re.fullmatch(r"[A-Za-z]{2,3}(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|[0-9]{3}))?", locale):
+            out.append("chart.locale should be a language tag with optional script and region, such as en-GB, de-DE or zh-Hant-TW")
     if isinstance(c["chart"], dict) and "comparison" in c["chart"]:
         _typed("chart.comparison", c["chart"]["comparison"], COMPARISON, out)
     if not 1 <= len(c["controls"]) <= MAX_CONTROLS:
@@ -601,6 +605,15 @@ def selftest():
 
     def say(cond, text):
         ok.append(bool(cond)); print(f"  {'PASS' if cond else 'FAIL'}  {text}")
+
+    with open(os.path.join(here, '..', 'assets', 'concepts', 'compound-interest.json'), encoding='utf-8') as f:
+        sample = json.load(f)
+    locales = ('en', 'en-GB', 'de-DE', 'fr-FR', 'zh-Hant-TW', 'es-419')
+    say(all(not structure(dict(sample, chart=dict(sample['chart'], locale=locale))) for locale in locales),
+        "chart locales accept language, script and region tags")
+    bad_locales = ('', 'en_GB', 'en--GB', 'x', 'en-GB-u-nu-latn', 123, None)
+    say(all(structure(dict(sample, chart=dict(sample['chart'], locale=locale))) for locale in bad_locales),
+        "empty, malformed and unsupported chart locale forms are refused with E01")
 
     tenth = {"min": 0, "max": 1, "step": 0.1}
     say(grid(tenth, 3) == 0.3 and 0 + 3 * 0.1 != 0.3, "a slider's third tenth is 0.3, not 0.30000000000000004")

@@ -489,6 +489,21 @@ var Formula = (function () {
     var text = Math.abs(x).toFixed(d), sign = x < 0 && Number(text) !== 0 ? "-" : "";
     return currency ? sign + unit + text : sign + text + (unit === "%" ? "%" : unit ? " " + unit : "");
   }
+  // Axis precision follows tick spacing, independently of headline/practice precision.
+  // An authored locale wins; currency defaults keep older concepts readable.
+  function axisText(x, u, step) {
+    var unit = u ? (Math.abs(x) === 1 && u.unit_one ? u.unit_one : u.unit || "") : "";
+    var locale = C.chart.locale || ({"£": "en-GB", "$": "en-US", "€": "de-DE", "¥": "ja-JP"}[C.result.unit]) || "en-US";
+    var digits = Math.min(20, Math.max(0, -Math.floor(Math.log10(Math.abs(step)) + 1e-9)));
+    var options = {minimumFractionDigits: 0, maximumFractionDigits: digits};
+    if (Math.abs(x) >= 1e15 || (x !== 0 && Math.abs(x) < 1e-6)) {
+      options = {notation: "scientific", maximumSignificantDigits: 15};
+    }
+    var currency = {"£": "GBP", "$": "USD", "€": "EUR", "¥": "JPY"}[unit];
+    if (currency) { options.style = "currency"; options.currency = currency; options.currencyDisplay = "narrowSymbol"; }
+    var text = new Intl.NumberFormat(locale, options).format(x === 0 ? 0 : x);
+    return currency || !unit ? text : text + (unit === "%" ? "%" : " " + unit);
+  }
   function errorText(e) {
     if (C.result.unavailable) return C.result.unavailable;
     var messages = {
@@ -628,17 +643,17 @@ var Formula = (function () {
     if (ys.length >= 8) {
       var q1 = ys[Math.floor((ys.length - 1) * .25)], q3 = ys[Math.floor((ys.length - 1) * .75)], spread = q3 - q1;
       if (spread > 0 && ys[ys.length - 1] - ys[0] > 8 * spread) {
-        var ordinaryMagnitude = Math.abs(ys[Math.floor((ys.length - 1) / 2)]);
-        cutLo = Math.min(q1 - 3 * spread, -8 * ordinaryMagnitude);
-        cutHi = Math.max(q3 + 3 * spread, 8 * ordinaryMagnitude);
+        // Three-IQR fences expose the ordinary curve; include zero in the retained
+        // interval so bounded low plateaus survive. Zero is not forced onto the axis.
+        cutLo = Math.min(q1 - 3 * spread, 0);
+        cutHi = Math.max(q3 + 3 * spread, 0);
         kept = ys.filter(function (y) { return y >= cutLo && y <= cutHi; });
       }
     }
     var lo = kept.length ? kept[0] : 0, hi = kept.length ? kept[kept.length - 1] : 1;
     if (hi === lo) { var pad = Math.max(Math.abs(lo) * .05, 1e-12); lo -= pad; hi += pad; }
-    var yt = niceTicks(lo, hi, 4), y0 = yt[0], y1 = yt[yt.length - 1], labels = yt.map(resultText);
-    // Headline rounding must not make distinct axis ticks look identical.
-    if (labels.some(function (s, i) { return i > 0 && s === labels[i - 1]; })) labels = yt.map(function (y) { return withUnit(y, C.result); });
+    var yt = niceTicks(lo, hi, 4), y0 = yt[0], y1 = yt[yt.length - 1];
+    var labels = yt.map(function (y) { return axisText(y, C.result, yt[1] - yt[0]); });
     var L = Math.min(W * .4, 14 + 7.4 * Math.max.apply(null, labels.map(function (s) { return s.length; }))), R = 14, T = 32, B = 50;
     function sx(x) { return L + (W - L - R) * (x - xc.min) / (xc.max - xc.min); }
     function sy(y) { return T + (H - T - B) * (1 - (y - y0) / (y1 - y0)); }
@@ -654,9 +669,11 @@ var Formula = (function () {
     [xc.min, xc.max].forEach(function (e) {
       if (xt.every(function (x) { return Math.abs(x - e) > (xc.max - xc.min) / 10; })) xt.push(e);
     });
+    xt.sort(function (a, b) { return a - b; });
+    var xstep = xt.length > 1 ? Math.min.apply(null, xt.slice(1).map(function (x, i) { return x - xt[i]; })) : xc.step;
     xt.forEach(function (x) {
       var anchor = Math.abs(x - xc.max) < 1e-9 ? "end" : Math.abs(x - xc.min) < 1e-9 ? "start" : "middle";
-      svg.appendChild(el("text", { x: sx(x), y: H - B + 18, "text-anchor": anchor }, fmt(x)));
+      svg.appendChild(el("text", { x: sx(x), y: H - B + 18, "text-anchor": anchor }, axisText(x, null, xstep)));
     });
     svg.appendChild(el("text", { "class": "cap", x: (L + W - R) / 2, y: H - 8, "text-anchor": "middle" }, xc.label + " (" + (xc.unit || "unitless") + ")"));
     /* a formula with floor, ceil or round jumps: drawn as steps (flat, then straight up or down), not as slopes between
@@ -674,7 +691,7 @@ var Formula = (function () {
     var note = chartDescription;
     var missing = pts.filter(function (p) { return p[1] === null; });
     if (missing.length) note += " " + missing.length + " sampled setting(s) are undefined, beginning at " + withUnit(missing[0][0], xc) + "; the curve leaves gaps there.";
-    if (kept.length < ys.length) note += " " + (ys.length - kept.length) + " extreme sampled value(s) are omitted to keep the rest readable; gaps mark those regions. The visible vertical axis spans " + resultText(y0) + " to " + resultText(y1) + ".";
+    if (kept.length < ys.length) note += " " + (ys.length - kept.length) + " extreme sampled value(s) are omitted to keep the rest readable; gaps mark those regions. The visible vertical axis spans " + labels[0] + " to " + labels[labels.length - 1] + ".";
     if (lastResult !== null && !inView) note += " Current answer: " + resultText(lastResult) + ", in an omitted region of the curve; its dot is omitted.";
     $("chart-how").textContent = note;
   }

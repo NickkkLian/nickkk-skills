@@ -39,6 +39,7 @@
   ],
   "chart": {
     "x": "y",
+    "locale": "en-GB",
     "title": "The monthly payment for each length of loan"
   },
   "notes": [

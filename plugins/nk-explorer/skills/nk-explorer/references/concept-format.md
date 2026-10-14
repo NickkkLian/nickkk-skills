@@ -17,7 +17,7 @@ winning.
 | `result` | object | The quantity the formula gives: `name`, `label`, optional `unit`, `unit_one`, `decimals` and `unavailable`. |
 | `formula` | text | One formula in the page's language (below), using only the controls' names (E02). |
 | `controls` | list | One to six sliders (E01). |
-| `chart` | object | `x`: the control the curve runs along (E05); `title`: its heading; optional `comparison` with `from` and `to`. |
+| `chart` | object | `x`: the control the curve runs along (E05); `title`: its heading; optional `comparison` with `from` and `to`, and `locale` for axis labels. |
 | `notes` | list of text | One or more sentences saying what the formula leaves out (E01). They go in the footer. |
 | `source` | text | Where the formula comes from, in a phrase. It goes in the footer. |
 | `practice` | list | One to eight questions, each `compute` or `reach` (E01). |
@@ -30,7 +30,7 @@ winning.
 | `label` | What it is, in words: "Amount after n years". |
 | `unit` | Optional. `£`, `$`, `€` and `¥` go in front of a number; `%` sticks to it; anything else follows after a space. |
 | `unit_one` | Optional. The unit's form for exactly 1 or -1: `"unit": "years", "unit_one": "year"`. |
-| `decimals` | Optional whole number 0–8. Fixed decimal places for the headline and result-axis ticks (ticks use the ordinary formatter if rounding would duplicate adjacent labels). Defaults to 2 for `£ $ € ¥`, otherwise the ordinary six-significant-digit formatter. At magnitude 10^21 or above, the ordinary formatter is used. Does not change the formula or grading. |
+| `decimals` | Optional whole number 0–8. Fixed decimal places for the headline. Defaults to 2 for `£ $ € ¥`, otherwise the ordinary six-significant-digit formatter. At magnitude 10^21 or above, the ordinary formatter is used. Axis precision follows tick spacing separately. Does not change the formula or grading. |
 | `unavailable` | Optional sentence explaining invalid settings for this concept and how to fix them, for example "At zero speed, you cannot finish a positive distance. Choose a speed above zero." Otherwise the page explains the arithmetic error. |
 
 Copy units from the request, including currency and physical units. A percentage result must be computed on a
@@ -94,9 +94,19 @@ current settings. Choose a useful comparison or a requested threshold. It does n
 point. Without it, a pair is selected once from the opening position and a position about one fifth of the range
 away. Subsequent undefined endpoints are disclosed. For example, `"comparison": {"from": 100, "to": 200}`
 on a sales slider shows the earnings at those two sales counts without suggesting a linear model is nonlinear.
-The vertical scale follows the finite sampled values, without forcing zero into the range. If that range is over
-eight interquartile spreads wide, the retained interval covers both the quartiles plus/minus three spreads and
-plus/minus eight times the median's magnitude. Values beyond it are omitted from the drawing and scale; low values
+Optional `locale` sets the axes' number and currency style using the browser's `Intl.NumberFormat`: a language
+tag with optional script and region (`en-GB`, `de-DE`, `fr-FR`, `zh-Hant-TW`, `es-419`). Extensions and variants
+are not accepted (E01). Use the request's locale; if a currency's locale is unspecified, say the chosen style is
+illustrative. Older concepts default by result currency: `£` to `en-GB`, `$` to `en-US`, `€` to `de-DE`, `¥` to
+`ja-JP`; other results default to `en-US`. Currency symbols come from `result.unit`, not the locale. Axes use
+grouping and no trailing fractional zeros; fractions appear only when tick spacing needs them. Very large or
+small values use scientific notation. The headline, readouts, formula and answer parser retain their rules above;
+`locale` does not enable decimal-comma practice answers. `scripts/chart_check.js` checks these drawing functions
+in Node without a browser; it does not establish visual layout.
+
+The vertical scale follows the finite sampled values, without forcing zero into the axis range. If that range is over
+eight interquartile spreads wide and the spread is positive, the retained interval spans the quartiles minus/plus
+three spreads, extended to include zero. Values beyond it are omitted from the drawing and scale; low values
 on a bounded plateau are retained. A note gives the omitted count and visible bounds; an off-range current answer stays in the headline,
 with its dot omitted and explained. This is a display heuristic, not a domain boundary. It may omit valid extremes
 and miss narrow features between samples. Undefined samples and omitted samples both break the path.

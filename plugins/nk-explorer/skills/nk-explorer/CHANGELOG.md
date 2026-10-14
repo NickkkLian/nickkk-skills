@@ -1,5 +1,21 @@
 # Changes
 
+## 0.1.7 — 2026-10-13
+
+Ship `output/loan.html` so the README's example link resolves. The opening now gives a request to type, the existing
+page picture, graded practice, offline use and the recorded Python re-check with the loan's real numbers. The
+longer explanation and historical evidence remain below; the picture and Chrome records are labelled 0.1.6.
+
+The page template formats axes with locale-aware grouping and precision based on tick spacing, independently
+of headline decimals. Optional `chart.locale` selects the number/currency style and is schema-checked. The loan
+declares `en-GB`. Sparse extremes use three-interquartile-spread fences extended to include zero, exposing the
+ordinary loan curve while preserving low plateaus. Omitted samples and off-range dots remain disclosed; formula
+results and grading are unchanged.
+
+Offline checks pass: concept 32/32, explorer_check 105/105, formula 44/44, make_explorer 12/12, numsrc 50/50,
+and Node chart regressions 14/14 (6/14 on the old template, including failing currency-label and scale cases).
+All three example concepts build with 0 file findings. Chrome and human layout checks were not rerun.
+
 ## 0.1.6 — 2026-10-11
 
 A first-time user's run found correct answers presented without useful units, a running-time curve flattened by
