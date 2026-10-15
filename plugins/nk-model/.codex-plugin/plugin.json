@@ -1,6 +1,6 @@
 {
   "name": "nk-model",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Use when a business needs annual three-statement Excel models for one sales line, or subscriptions with uniform monthly churn and constant monthly additions.",
   "author": {
     "name": "Nick Lian",
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "nk-model",
     "shortDescription": "A three-statement workbook",
-    "longDescription": "Use when a business needs annual three-statement Excel models for one sales line, or subscriptions with uniform monthly churn and constant monthly additions. Assess and classify every requirement before translating assumptions; agents must refuse unsupported needs, while code checks declared features and limited wording patterns. Package selects Summary with profit, cash, funding warnings and charts; opening in Excel itself is untested. Standard-library Python, live formulas, stored values and an offline preview.",
+    "longDescription": "Use when a business needs annual three-statement Excel models for one sales line, or subscriptions with uniform monthly churn and constant monthly additions. Assess and classify every requirement before translating assumptions; agents must refuse unsupported needs, while code checks declared features and limited wording patterns. Package selects Summary with profit, cash, funding warnings and charts. Standard-library Python, live formulas, stored values and an offline preview.",
     "developerName": "Nick Lian",
     "category": "Productivity",
     "capabilities": []
