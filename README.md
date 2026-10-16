@@ -177,7 +177,7 @@ Other agents: see [docs/other-agents.md](docs/other-agents.md).
 
 | Agent | Tested | What was checked |
 |---|---|---|
-| Claude Code (CLI 2.1.173, macOS) | 21 of 22 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 20 of 22 skills: marketplace add, install, list. |
+| Claude Code (CLI 2.1.173, macOS) | 21 of 22 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 21 of 22 skills: marketplace add, install, list. |
 | OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.0, 1 on 0.159.2, 1 on 0.162.0-alpha.2) | 21 of 22 | 21 of 22 skills: a plain request that never names the skill triggered it and it ran its bundled script. 17 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer, nk-jubensha (see its README for why). Not run yet: nk-two-brain. |
 | Cursor, Gemini CLI | no | Not tested. Their documentation says both read `~/.agents/skills`, the folder route 4 clones into; Gemini CLI asks before it activates a skill. |
 
