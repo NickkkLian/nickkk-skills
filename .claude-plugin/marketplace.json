@@ -340,6 +340,23 @@
         "twitter",
         "posting"
       ]
+    },
+    {
+      "name": "nk-clean-list",
+      "source": {
+        "source": "github",
+        "repo": "NickkkLian/nk-clean-list"
+      },
+      "description": "Reconcile messy CSV or XLSX contact exports into a clean workbook, an offline HTML report, and a row-by-row JSON audit.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "contacts",
+        "deduplication",
+        "csv",
+        "xlsx"
+      ]
     }
   ]
 }

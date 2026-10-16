@@ -6,7 +6,7 @@ Agent skills for Claude Code. Each one hands back something you can open and che
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-data-story"><img src="gallery/results/nk-data-story.png" alt="nk-data-story: a one-page report: the headline is the conclusion, each number is followed by its rows, window and filter" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-data-story">nk-data-story</a></b><br>A spreadsheet in, one page out: the headline is the conclusion, and every number shows the rows it was computed on.</td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-two-brain"><img src="gallery/results/nk-two-brain.png" alt="nk-two-brain: two judge runs on the same build: run 1 gives 4 supported and 2 insufficient, run 2 gives 6 supported" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-two-brain">nk-two-brain</a></b><br>Codex builds, your own checks re-run, and a run that did no building judges every claim. Here the same judge ran twice on one build.</td></tr>
 </table>
 
-The other 19 are below, by what you want to do: more things to make, checks that turn an agent's "done" into evidence,
+The other 20 are below, by what you want to do: more things to make, checks that turn an agent's "done" into evidence,
 guards for git and for publishing, and rules for memory and handoffs. Every skill is its own repository; this one is the
 directory and the plugin marketplace.
 
@@ -15,7 +15,7 @@ directory and the plugin marketplace.
 <!-- gallery:by-category -->
 ## Contents
 
-- [Work with numbers](#work-with-numbers): nk-data-story, nk-model, nk-design, nk-explorer
+- [Work with numbers](#work-with-numbers): nk-data-story, nk-model, nk-design, nk-explorer, nk-clean-list
 - [Check an agent's work](#check-an-agents-work): nk-two-brain, nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage
 - [Guard a repository](#guard-a-repository): nk-git-guardrail-hook, nk-publish-gate, nk-indent-guard
 - [Keep agents on track between sessions](#keep-agents-on-track-between-sessions): nk-memory-with-conditions, nk-rules-that-land, nk-handoff-package
@@ -24,17 +24,19 @@ directory and the plugin marketplace.
 
 ## Work with numbers
 
-A one-page report, a financial model, a data tool and a formula you can move; every number on them shows where it came from.
+A one-page report, a financial model, a data tool, a formula you can move and a contact list cleaned row by row; every number on them shows where it came from.
 
 <table>
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-data-story"><img src="gallery/nk-data-story.gif" alt="nk-data-story demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-data-story">nk-data-story</a></b> · creation<br>A messy export in: one page whose headline is the conclusion and where every figure carries its n, window and filter.<br><code>git clone https://github.com/NickkkLian/nk-data-story ~/.claude/skills/nk-data-story</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-model"><img src="gallery/nk-model.gif" alt="nk-model demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-model">nk-model</a></b> · creation<br>A few assumptions in: a three-statement financial model in one .xlsx, every number a formula, written only if it balances to the penny.<br><code>git clone https://github.com/NickkkLian/nk-model ~/.claude/skills/nk-model</code></td></tr>
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-design"><img src="gallery/nk-design.gif" alt="nk-design demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-design">nk-design</a></b> · creation<br>One sentence in: a working data tool whose first screen takes one of four forms, adds up from its own rows and shows a source on every row.<br><code>git clone https://github.com/NickkkLian/nk-design ~/.claude/skills/nk-design</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-explorer"><img src="gallery/nk-explorer.gif" alt="nk-explorer demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-explorer">nk-explorer</a></b> · creation<br>One formula in: a page where every slider shows the sum it changes, with practice questions graded on the result.<br><code>git clone https://github.com/NickkkLian/nk-explorer ~/.claude/skills/nk-explorer</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-clean-list"><img src="gallery/nk-clean-list.gif" alt="nk-clean-list demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-clean-list">nk-clean-list</a></b> · creation<br>Messy contact exports in: one clean workbook, a report page and a row-by-row audit. Every source row is accounted for; look-alikes stay separate for you to decide.<br><code>git clone https://github.com/NickkkLian/nk-clean-list ~/.claude/skills/nk-clean-list</code></td></tr>
 </table>
 
 - [nk-data-story](https://github.com/NickkkLian/nk-data-story): Turn a CSV or Excel file into a one-page data report whose headline is the conclusion and where every figure states its denominator, window and filter.
 - [nk-model](https://github.com/NickkkLian/nk-model): Turn a description of a small business and a few assumptions into a three-statement financial model in one .xlsx whose statements tie to each other; the builder writes nothing unless the balance sheet balances.
 - [nk-design](https://github.com/NickkkLian/nk-design): Build a one-page data tool from one sentence, with every number traceable to its rows.
 - [nk-explorer](https://github.com/NickkkLian/nk-explorer): Turn a concept that can be written as one formula into one self-contained HTML page: every slider shows the formula it changes, and the page grades its own practice questions.
+- [nk-clean-list](https://github.com/NickkkLian/nk-clean-list): Reconcile messy CSV or XLSX contact exports into a clean workbook, an offline HTML report, and a row-by-row JSON audit.
 
 ## Check an agent's work
 
@@ -175,8 +177,8 @@ Other agents: see [docs/other-agents.md](docs/other-agents.md).
 
 | Agent | Tested | What was checked |
 |---|---|---|
-| Claude Code (CLI 2.1.173, macOS) | 20 of 21 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 20 of 21 skills: marketplace add, install, list. |
-| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.0, 1 on 0.159.2) | 20 of 21 | 20 of 21 skills: a plain request that never names the skill triggered it and it ran its bundled script. 16 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer, nk-jubensha (see its README for why). Not run yet: nk-two-brain. |
+| Claude Code (CLI 2.1.173, macOS) | 21 of 22 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 20 of 22 skills: marketplace add, install, list. |
+| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.0, 1 on 0.159.2, 1 on 0.162.0-alpha.2) | 21 of 22 | 21 of 22 skills: a plain request that never names the skill triggered it and it ran its bundled script. 17 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer, nk-jubensha (see its README for why). Not run yet: nk-two-brain. |
 | Cursor, Gemini CLI | no | Not tested. Their documentation says both read `~/.agents/skills`, the folder route 4 clones into; Gemini CLI asks before it activates a skill. |
 
 Each skill's README has its own row with what that run did.

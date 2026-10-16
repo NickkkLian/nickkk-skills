@@ -1,0 +1,28 @@
+{
+  "name": "nk-clean-list",
+  "version": "0.1.0",
+  "description": "Reconcile messy CSV or XLSX contact exports into a clean workbook, an offline HTML report, and a row-by-row JSON audit.",
+  "author": {
+    "name": "Nick Lian",
+    "url": "https://github.com/NickkkLian"
+  },
+  "homepage": "https://github.com/NickkkLian/nk-clean-list",
+  "repository": "https://github.com/NickkkLian/nk-clean-list",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "contacts",
+    "deduplication",
+    "csv",
+    "xlsx"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Clean List",
+    "shortDescription": "Merge messy contact exports",
+    "longDescription": "Reconcile messy CSV or XLSX contact exports into a clean workbook, an offline HTML report, and a row-by-row JSON audit. Use when someone needs duplicates merged conservatively and an account of what changed without losing source rows.",
+    "developerName": "Nick Lian",
+    "category": "Productivity",
+    "capabilities": []
+  }
+}
