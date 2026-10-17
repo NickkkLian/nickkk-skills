@@ -4,7 +4,7 @@
     "name": "Nick Lian",
     "url": "https://github.com/NickkkLian"
   },
-  "description": "Agent skills. Some make something you can open and check (a one-page data report, a financial model, a data tool, a slide deck); the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails, memory and handoff discipline.",
+  "description": "Agent skills. Some make something you can open and check (a one-page data report, a financial model, a data tool, a slide deck); the others stop an AI coding agent's \"done, tested, safe\" from being taken on faith: evidence bundles, breakable checks, guardrails and handoff discipline.",
   "plugins": [
     {
       "name": "nk-evidence-audit",
@@ -39,22 +39,6 @@
       ]
     },
     {
-      "name": "nk-publish-gate",
-      "source": {
-        "source": "github",
-        "repo": "NickkkLian/nk-publish-gate"
-      },
-      "description": "A local privacy check before a directory or selected Git history goes public: finds recognized patterns such as home-directory paths inside xlsx files, usernames in Python bytecode and personal addresses.",
-      "version": "0.1.8",
-      "license": "MIT",
-      "category": "productivity",
-      "tags": [
-        "privacy",
-        "secrets",
-        "publish"
-      ]
-    },
-    {
       "name": "nk-indent-guard",
       "source": {
         "source": "github",
@@ -84,37 +68,6 @@
         "selftest",
         "mutation",
         "testing"
-      ]
-    },
-    {
-      "name": "nk-memory-with-conditions",
-      "source": {
-        "source": "github",
-        "repo": "NickkkLian/nk-memory-with-conditions"
-      },
-      "description": "Write agent memories that say when they hold, and keep the memory directory honest.",
-      "version": "0.1.4",
-      "license": "MIT",
-      "category": "productivity",
-      "tags": [
-        "memory",
-        "sentinel"
-      ]
-    },
-    {
-      "name": "nk-rules-that-land",
-      "source": {
-        "source": "github",
-        "repo": "NickkkLian/nk-rules-that-land"
-      },
-      "description": "Write rules for an AI agent that actually change what it does.",
-      "version": "0.1.4",
-      "license": "MIT",
-      "category": "productivity",
-      "tags": [
-        "rules",
-        "claude-md",
-        "enforcement"
       ]
     },
     {

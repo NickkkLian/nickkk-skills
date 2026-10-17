@@ -17,18 +17,6 @@
       "category": "Developer Tools"
     },
     {
-      "name": "nk-publish-gate",
-      "source": {
-        "source": "local",
-        "path": "./plugins/nk-publish-gate"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Developer Tools"
-    },
-    {
       "name": "nk-indent-guard",
       "source": {
         "source": "local",
@@ -45,30 +33,6 @@
       "source": {
         "source": "local",
         "path": "./plugins/nk-breakable-selftest"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Developer Tools"
-    },
-    {
-      "name": "nk-memory-with-conditions",
-      "source": {
-        "source": "local",
-        "path": "./plugins/nk-memory-with-conditions"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Developer Tools"
-    },
-    {
-      "name": "nk-rules-that-land",
-      "source": {
-        "source": "local",
-        "path": "./plugins/nk-rules-that-land"
       },
       "policy": {
         "installation": "AVAILABLE",

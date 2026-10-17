@@ -6,8 +6,8 @@ Agent skills for Claude Code. Each one hands back something you can open and che
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-data-story"><img src="gallery/results/nk-data-story.png" alt="nk-data-story: a one-page report: the headline is the conclusion, each number is followed by its rows, window and filter" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-data-story">nk-data-story</a></b><br>A spreadsheet in, one page out: the headline is the conclusion, and every number shows the rows it was computed on.</td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-two-brain"><img src="gallery/results/nk-two-brain.png" alt="nk-two-brain: two judge runs on the same build: run 1 gives 4 supported and 2 insufficient, run 2 gives 6 supported" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-two-brain">nk-two-brain</a></b><br>Codex builds, your own checks re-run, and a run that did no building judges every claim. Here the same judge ran twice on one build.</td></tr>
 </table>
 
-The other 20 are below, by what you want to do: more things to make, checks that turn an agent's "done" into evidence,
-guards for git and for publishing, and rules for memory and handoffs. Every skill is its own repository; this one is the
+The other 17 are below, by what you want to do: more things to make, checks that turn an agent's "done" into evidence,
+guards for git, and handoffs between agents. Every skill is its own repository; this one is the
 directory and the plugin marketplace.
 
 ![nickkk-skills](gallery/social/nickkk-skills.png)
@@ -17,8 +17,8 @@ directory and the plugin marketplace.
 
 - [Work with numbers](#work-with-numbers): nk-data-story, nk-model, nk-design, nk-explorer, nk-clean-list
 - [Check an agent's work](#check-an-agents-work): nk-two-brain, nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage
-- [Guard a repository](#guard-a-repository): nk-git-guardrail-hook, nk-publish-gate, nk-indent-guard
-- [Keep agents on track between sessions](#keep-agents-on-track-between-sessions): nk-memory-with-conditions, nk-rules-that-land, nk-handoff-package
+- [Guard a repository](#guard-a-repository): nk-git-guardrail-hook, nk-indent-guard
+- [Keep agents on track between sessions](#keep-agents-on-track-between-sessions): nk-handoff-package
 - [Write and present](#write-and-present): nk-deck, nk-landing, nk-post-kit, nk-x-post-desk, nk-novel, nk-jubensha
 - [Install](#install-example-nk-evidence-audit) · [Compatibility](#compatibility) · [Tools](#tools) · [Verify](#verify) · [How these were built](#how-these-were-built) · [Limits](#limits)
 
@@ -56,28 +56,23 @@ When an agent says done, tested or unchanged, these turn the claim into evidence
 
 ## Guard a repository
 
-Stop a destructive command, a leaked secret or a whole-file reformat before it lands.
+Stop a destructive command or a whole-file reformat before it lands.
 
 <table>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-git-guardrail-hook"><img src="gallery/nk-git-guardrail-hook.gif" alt="nk-git-guardrail-hook demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-git-guardrail-hook">nk-git-guardrail-hook</a></b> · discipline<br>Stops before force push, mass delete, repo-gone-public and curl|sh; five of its seven prompts name the incident behind the rule.<br><code>git clone https://github.com/NickkkLian/nk-git-guardrail-hook ~/.claude/skills/nk-git-guardrail-hook</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-publish-gate"><img src="gallery/nk-publish-gate.gif" alt="nk-publish-gate demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-publish-gate">nk-publish-gate</a></b> · discipline<br>Finds what is private but not a secret before you push: a home path inside an xlsx, a username in a .pyc, a personal address in your commit history.<br><code>git clone https://github.com/NickkkLian/nk-publish-gate ~/.claude/skills/nk-publish-gate</code></td></tr>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-indent-guard"><img src="gallery/nk-indent-guard.gif" alt="nk-indent-guard demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-indent-guard">nk-indent-guard</a></b> · discipline<br>A one-line JSON edit that re-indented the whole file no longer reaches the commit.<br><code>git clone https://github.com/NickkkLian/nk-indent-guard ~/.claude/skills/nk-indent-guard</code></td></tr>
+<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-git-guardrail-hook"><img src="gallery/nk-git-guardrail-hook.gif" alt="nk-git-guardrail-hook demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-git-guardrail-hook">nk-git-guardrail-hook</a></b> · discipline<br>Stops before force push, mass delete, repo-gone-public and curl|sh; five of its seven prompts name the incident behind the rule.<br><code>git clone https://github.com/NickkkLian/nk-git-guardrail-hook ~/.claude/skills/nk-git-guardrail-hook</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-indent-guard"><img src="gallery/nk-indent-guard.gif" alt="nk-indent-guard demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-indent-guard">nk-indent-guard</a></b> · discipline<br>A one-line JSON edit that re-indented the whole file no longer reaches the commit.<br><code>git clone https://github.com/NickkkLian/nk-indent-guard ~/.claude/skills/nk-indent-guard</code></td></tr>
 </table>
 
 - [nk-git-guardrail-hook](https://github.com/NickkkLian/nk-git-guardrail-hook): A PreToolUse hook for Claude Code that stops before seven risky git and shell commands — force push, git add -A in a shared checkout, making a repo public, pushing while behind the remote, a push that records a mass deletion, a recursive rm on the home folder or the filesystem root, a download run straight in a shell.
-- [nk-publish-gate](https://github.com/NickkkLian/nk-publish-gate): A local privacy check before a directory or selected Git history goes public: finds recognized patterns such as home-directory paths inside xlsx files, usernames in Python bytecode and personal addresses.
 - [nk-indent-guard](https://github.com/NickkkLian/nk-indent-guard): Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.
 
 ## Keep agents on track between sessions
 
-Memories, rules and handoffs that the next session, or the next agent, can rely on.
+Handoffs that the next session, or the next agent, can rely on.
 
 <table>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-memory-with-conditions"><img src="gallery/nk-memory-with-conditions.gif" alt="nk-memory-with-conditions demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-memory-with-conditions">nk-memory-with-conditions</a></b> · discipline<br>Agent memories that say when they hold, plus a sentinel for index drift and silent truncation.<br><code>git clone https://github.com/NickkkLian/nk-memory-with-conditions ~/.claude/skills/nk-memory-with-conditions</code></td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-rules-that-land"><img src="gallery/nk-rules-that-land.gif" alt="nk-rules-that-land demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-rules-that-land">nk-rules-that-land</a></b> · discipline<br>Tells you which rules in your CLAUDE.md would actually stop an agent and which are wishes.<br><code>git clone https://github.com/NickkkLian/nk-rules-that-land ~/.claude/skills/nk-rules-that-land</code></td></tr>
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-handoff-package"><img src="gallery/nk-handoff-package.gif" alt="nk-handoff-package demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-handoff-package">nk-handoff-package</a></b> · discipline<br>Hand work to an agent with no context and get it back checkable, down to the trust root.<br><code>git clone https://github.com/NickkkLian/nk-handoff-package ~/.claude/skills/nk-handoff-package</code></td></tr>
 </table>
 
-- [nk-memory-with-conditions](https://github.com/NickkkLian/nk-memory-with-conditions): Write agent memories that say when they hold, and keep the memory directory honest.
-- [nk-rules-that-land](https://github.com/NickkkLian/nk-rules-that-land): Write rules for an AI agent that actually change what it does.
 - [nk-handoff-package](https://github.com/NickkkLian/nk-handoff-package): Hand a line of work to an executor that has no context — another agent, a contractor, a future session — so that the work comes back checkable.
 
 ## Write and present
@@ -177,8 +172,8 @@ Other agents: see [docs/other-agents.md](docs/other-agents.md).
 
 | Agent | Tested | What was checked |
 |---|---|---|
-| Claude Code (CLI 2.1.173, macOS) | 21 of 22 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 21 of 22 skills: marketplace add, install, list. |
-| OpenAI Codex CLI (13 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.0, 1 on 0.159.2, 1 on 0.162.0-alpha.2) | 21 of 22 | 21 of 22 skills: a plain request that never names the skill triggered it and it ran its bundled script. 17 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer, nk-jubensha (see its README for why). Not run yet: nk-two-brain. |
+| Claude Code (CLI 2.1.173, macOS) | 18 of 19 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 18 of 19 skills: marketplace add, install, list. |
+| OpenAI Codex CLI (10 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.0, 1 on 0.159.2, 1 on 0.162.0-alpha.2) | 18 of 19 | 18 of 19 skills: a plain request that never names the skill triggered it and it ran its bundled script. 14 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer, nk-jubensha (see its README for why). Not run yet: nk-two-brain. |
 | Cursor, Gemini CLI | no | Not tested. Their documentation says both read `~/.agents/skills`, the folder route 4 clones into; Gemini CLI asks before it activates a skill. |
 
 Each skill's README has its own row with what that run did.
@@ -212,7 +207,7 @@ python3 tools/skill_lint.py --selftest
 - Before publishing, checks were broken on purpose in a sandbox copy, and each break had to turn its own sample
   red without a crash; each skill's Verify section says which scripts that covered.
 - Detectors fail loud; the guardrail hook fails open.
-- Every repository went through the nk-publish-gate skill (tree and full history) before its first push.
+- Every repository went through a privacy check (tree and full history) before its first push.
 
 ## Limits
 
