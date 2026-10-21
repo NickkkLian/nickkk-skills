@@ -246,22 +246,6 @@
       ]
     },
     {
-      "name": "nk-jubensha",
-      "source": {
-        "source": "github",
-        "repo": "NickkkLian/nk-jubensha"
-      },
-      "description": "Build a playable jubensha (\u5267\u672c\u6740, the Chinese murder-mystery party game) from a premise - a cast, a trick chosen from an abstract taxonomy, a clue chain in which every deduction stands on a clue some player actually receives, and printable HTML booklets (one per player, clue cards, a host handbook).",
-      "version": "0.1.1",
-      "license": "MIT",
-      "category": "writing",
-      "tags": [
-        "jubensha",
-        "murder-mystery",
-        "party-game"
-      ]
-    },
-    {
       "name": "nk-two-brain",
       "source": {
         "source": "github",
