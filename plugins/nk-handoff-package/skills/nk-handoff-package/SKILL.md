@@ -4,7 +4,7 @@ description: Hand a line of work to an executor that has no context — another 
 license: MIT
 metadata:
   provenance: own practice (2026-09); no external source
-  version: 0.1.2
+  version: 0.1.6
 ---
 # Handoff package
 
@@ -13,7 +13,7 @@ making the result checkable by someone who was not there.** Five delegations in 
 lesson: a brief says "don't push to the remote"; the executor, meaning well, syncs anyway; the receipt
 says "all tests pass"; nobody can tell whether the checker that said so was the one you shipped.
 
-> **Paths.** Commands in this skill start with `<skill-dir>`: this skill's own folder, the one that contains this SKILL.md. Replace it with that folder's absolute path before you run the command.
+> **Paths.** Commands in this skill start with `${…SKILL_DIR}`: this skill's own folder, the one that contains this SKILL.md. Claude Code fills it in. If your agent shows the placeholder as written (Codex, Cursor, Gemini CLI and others), replace it with that folder's absolute path before you run the command. Left as it is, it expands to nothing and the path breaks.
 
 ## The shape
 
@@ -24,7 +24,7 @@ says "all tests pass"; nobody can tell whether the checker that said so was the 
   reference/                read-only inputs, sealed by MANIFEST.sha256
   output/
     handback_check.py       generic gates, one ruler for both sides (three exit states: 0 pass / 1 FAIL / 2 crashed)
-                            (a copy of <skill-dir>/scripts/handback_check.py, placed by handoff_init.py)
+                            (a copy of ${CLAUDE_SKILL_DIR}/scripts/handback_check.py, placed by handoff_init.py)
     project_gates.py        project-specific gates, checks(pkg, out) -> (location, description, is_fail)
     RECEIPT.md              what I did · how I verified · Unsure · Boundary crossings
     evidence/               one file per claim, first line "$ <re-run command>", then raw output
@@ -37,7 +37,7 @@ says "all tests pass"; nobody can tell whether the checker that said so was the 
 
 ## Procedure — handing out
 
-1. `python3 <skill-dir>/scripts/handoff_init.py <workspace> <task> [--form full|round|asset]`
+1. `python3 ${CLAUDE_SKILL_DIR}/scripts/handoff_init.py <workspace> <task> [--form full|round|asset]`
    Refuses to touch a non-empty package. Then fill every `<<< FILL` slot in START.md and TASK.md.
 2. Put the inputs in `reference/` and seal: `handoff_init.py <workspace> <task> --seal`.
 3. Write `output/project_gates.py` for anything project-specific (thresholds, required files, forbidden
@@ -51,7 +51,7 @@ says "all tests pass"; nobody can tell whether the checker that said so was the 
 
 ## Procedure — receiving
 
-1. `python3 <skill-dir>/scripts/handoff_verify.py <package> --trust-root <file> [--source DIR]`
+1. `python3 ${CLAUDE_SKILL_DIR}/scripts/handoff_verify.py <package> --trust-root <file> [--source DIR]`
    runs the steps the package declared: trust root first (was the checker replaced?), then the hand-back
    check on a copy (raw output kept; crash ≠ FAIL ≠ pass), then drift (was the read-only layer altered;
    with `--source`, is it stale against the true source — staleness and tampering are different questions).
@@ -93,3 +93,7 @@ says "all tests pass"; nobody can tell whether the checker that said so was the 
 Own practice, 2026-09: five delegations of whole projects to an outside agent, two of them cross-reviewed
 for eight rounds each; a trust root added after three in-package ways of turning red into green were
 measured; a stop rule added after an eleven-round audit loop. No external source.
+
+## Portable acceptor entry point
+
+For a project using handoff/ and anchor.txt, run `python3 ${CLAUDE_SKILL_DIR}/scripts/make_verifier.py <project>` on the project folder. Keep verify.py, acceptor-tools/ and anchor.txt outside the executor-writeable handoff/ directory. Return those acceptor files together; the runner is bundled and resolved relative to verify.py, so moving the delivery does not depend on a lab path.

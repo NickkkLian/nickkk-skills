@@ -108,7 +108,7 @@
         "repo": "NickkkLian/nk-handoff-package"
       },
       "description": "Hand a line of work to an executor that has no context \u2014 another agent, a contractor, a future session \u2014 so that the work comes back checkable.",
-      "version": "0.1.2",
+      "version": "0.1.6",
       "license": "MIT",
       "category": "productivity",
       "tags": [
