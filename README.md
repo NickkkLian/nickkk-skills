@@ -6,7 +6,7 @@ Agent skills for Claude Code. Each one hands back something you can open and che
 <tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-data-story"><img src="gallery/results/nk-data-story.png" alt="nk-data-story: a one-page report: the headline is the conclusion, each number is followed by its rows, window and filter" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-data-story">nk-data-story</a></b><br>A spreadsheet in, one page out: the headline is the conclusion, and every number shows the rows it was computed on.</td><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-two-brain"><img src="gallery/results/nk-two-brain.png" alt="nk-two-brain: two judge runs on the same build: run 1 gives 4 supported and 2 insufficient, run 2 gives 6 supported" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-two-brain">nk-two-brain</a></b><br>Codex builds, your own checks re-run, and a run that did no building judges every claim. Here the same judge ran twice on one build.</td></tr>
 </table>
 
-The other 16 are below, by what you want to do: more things to make, checks that turn an agent's "done" into evidence,
+The other 15 are below, by what you want to do: more things to make, checks that turn an agent's "done" into evidence,
 guards for git, and handoffs between agents. Every skill is its own repository; this one is the
 directory and the plugin marketplace.
 
@@ -18,7 +18,6 @@ directory and the plugin marketplace.
 - [Work with numbers](#work-with-numbers): nk-data-story, nk-model, nk-design, nk-explorer, nk-clean-list
 - [Check an agent's work](#check-an-agents-work): nk-two-brain, nk-evidence-audit, nk-breakable-selftest, nk-regression-baseline, nk-rewrite-coverage
 - [Guard a repository](#guard-a-repository): nk-git-guardrail-hook, nk-indent-guard
-- [Keep agents on track between sessions](#keep-agents-on-track-between-sessions): nk-handoff-package
 - [Write and present](#write-and-present): nk-deck, nk-landing, nk-post-kit, nk-x-post-desk, nk-novel
 - [Install](#install-example-nk-evidence-audit) · [Compatibility](#compatibility) · [Tools](#tools) · [Verify](#verify) · [How these were built](#how-these-were-built) · [Limits](#limits)
 
@@ -64,16 +63,6 @@ Stop a destructive command or a whole-file reformat before it lands.
 
 - [nk-git-guardrail-hook](https://github.com/NickkkLian/nk-git-guardrail-hook): A PreToolUse hook for Claude Code that stops before seven risky git and shell commands — force push, git add -A in a shared checkout, making a repo public, pushing while behind the remote, a push that records a mass deletion, a recursive rm on the home folder or the filesystem root, a download run straight in a shell.
 - [nk-indent-guard](https://github.com/NickkkLian/nk-indent-guard): Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.
-
-## Keep agents on track between sessions
-
-Handoffs that the next session, or the next agent, can rely on.
-
-<table>
-<tr><td width="50%" valign="top"><a href="https://github.com/NickkkLian/nk-handoff-package"><img src="gallery/nk-handoff-package.gif" alt="nk-handoff-package demo" width="100%"></a><br><b><a href="https://github.com/NickkkLian/nk-handoff-package">nk-handoff-package</a></b> · discipline<br>Hand work to an agent with no context and get it back checkable, down to the trust root.<br><code>git clone https://github.com/NickkkLian/nk-handoff-package ~/.claude/skills/nk-handoff-package</code></td></tr>
-</table>
-
-- [nk-handoff-package](https://github.com/NickkkLian/nk-handoff-package): Hand a line of work to an executor that has no context — another agent, a contractor, a future session — so that the work comes back checkable.
 
 ## Write and present
 
@@ -171,8 +160,8 @@ Other agents: see [docs/other-agents.md](docs/other-agents.md).
 
 | Agent | Tested | What was checked |
 |---|---|---|
-| Claude Code (CLI 2.1.173, macOS) | 17 of 18 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 17 of 18 skills: marketplace add, install, list. |
-| OpenAI Codex CLI (10 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.2, 1 on 0.162.0-alpha.2) | 17 of 18 | 17 of 18 skills: a plain request that never names the skill triggered it and it ran its bundled script. 14 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer (see each README for why). Not run yet: nk-two-brain. |
+| Claude Code (CLI 2.1.173, macOS) | 16 of 17 | In a fresh project with an isolated Claude config, inside a macOS sandbox that blocked reading the tester's ~/.claude folder (settings, session history, memory), Desktop, Documents and Downloads, SSH keys and git identity, a plain request that never names the skill triggered it and it ran its bundled script. The route 2 plugin commands were also run from a shell with an isolated config for 16 of 17 skills: marketplace add, install, list. |
+| OpenAI Codex CLI (9 on 0.154.0-alpha.6.2, 5 on 0.155.0-alpha.9.2, 1 on 0.159.2, 1 on 0.162.0-alpha.2) | 16 of 17 | 16 of 17 skills: a plain request that never names the skill triggered it and it ran its bundled script. 13 are a plain yes. Partly: nk-git-guardrail-hook, nk-deck, nk-explorer (see each README for why). Not run yet: nk-two-brain. |
 | Cursor, Gemini CLI | no | Not tested. Their documentation says both read `~/.agents/skills`, the folder route 4 clones into; Gemini CLI asks before it activates a skill. |
 
 Each skill's README has its own row with what that run did.
