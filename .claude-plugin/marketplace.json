@@ -55,22 +55,6 @@
       ]
     },
     {
-      "name": "nk-breakable-selftest",
-      "source": {
-        "source": "github",
-        "repo": "NickkkLian/nk-breakable-selftest"
-      },
-      "description": "Make a checker, validator, linter, gate or test suite prove it can fail.",
-      "version": "0.1.5",
-      "license": "MIT",
-      "category": "productivity",
-      "tags": [
-        "selftest",
-        "mutation",
-        "testing"
-      ]
-    },
-    {
       "name": "nk-regression-baseline",
       "source": {
         "source": "github",
@@ -99,22 +83,6 @@
         "documents",
         "rewrite",
         "coverage"
-      ]
-    },
-    {
-      "name": "nk-novel",
-      "source": {
-        "source": "github",
-        "repo": "NickkkLian/nk-novel"
-      },
-      "description": "Turn one story idea into a staged novel plan that holds together, plus a one-page visual story bible.",
-      "version": "0.1.4",
-      "license": "MIT",
-      "category": "writing",
-      "tags": [
-        "writing",
-        "fiction",
-        "story"
       ]
     },
     {
@@ -163,22 +131,6 @@
         "launch",
         "social",
         "gif"
-      ]
-    },
-    {
-      "name": "nk-landing",
-      "source": {
-        "source": "github",
-        "repo": "NickkkLian/nk-landing"
-      },
-      "description": "Turn a written description of a small business \u2014 hours, services, price ranges, the questions customers actually ask \u2014 into one self-contained HTML page with a booking door, where every confirmation and every calendar write waits for a member of staff to approve that exact draft.",
-      "version": "0.1.5",
-      "license": "MIT",
-      "category": "design",
-      "tags": [
-        "landing-page",
-        "booking",
-        "small-business"
       ]
     },
     {
