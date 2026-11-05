@@ -85,4 +85,4 @@ h1 { font-size: clamp(32px,2.78vw,40px); max-width: 540px; }
 .skill-tabs .tab-scroll { min-width: 0; }
 .skill-tabs.is-overflow .tab-scroll { padding-right: 0; }
 .skill-tabs .tab-more { position: static; flex: 0 0 auto; }
-.skill-tabs.is-overflow::after { right: 56px; width: 32px; }
+.skill-tabs.is-overflow::after { display: none; }

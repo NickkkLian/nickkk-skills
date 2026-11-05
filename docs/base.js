@@ -152,6 +152,12 @@
       const overflowing = remaining > 2;
       wrapper.classList.toggle('is-overflow',overflowing);
       more.hidden = !overflowing;
+      const viewport = scroll.getBoundingClientRect();
+      scroll.querySelectorAll('.task-tabs button').forEach(button => {
+        const bounds = button.getBoundingClientRect();
+        const clipped = bounds.left < viewport.left - .5 || bounds.right > viewport.right + .5;
+        button.style.visibility = clipped ? 'hidden' : '';
+      });
     };
     more.addEventListener('click', () => scroll.scrollBy({left:160,behavior:reduced()?'instant':'smooth'}));
     scroll.addEventListener('scroll',update,{passive:true});
