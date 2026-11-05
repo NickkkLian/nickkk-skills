@@ -1,0 +1,88 @@
+header { display: flex; align-items: center; gap: 24px; padding: 20px 32px; }
+.brand { font-size: 24px; font-weight: 700; text-decoration: none; white-space: nowrap; letter-spacing: -.02em; }
+.search { display: flex; align-items: center; gap: 12px; flex: 1; padding: 0 16px; height: 48px; border-radius: 12px; background: var(--surface); box-shadow: 0 4px 20px var(--shadow-color); }
+.search input { height: 40px; flex: 1; width: 100%; background: transparent; box-shadow: none; font-size: 16px; padding: 0; }
+.search kbd { white-space: nowrap; color: var(--muted); font: 12px var(--body); padding: 4px 8px; background: var(--soft); }
+main { padding: 12px 32px 0; }
+.install-setup { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+h1 { font-size: clamp(32px,2.78vw,40px); max-width: 540px; }
+.install-setup > div > p { margin-top: 12px; color: var(--muted); }
+.setup-controls { min-width: 0; }
+.setup-controls > .combo { display: none; }
+.setup-controls > p { font-size: 12px; }
+.setup-command,.skill-command { display: flex; gap: 8px; align-items: center; background: var(--soft); border-radius: 8px; padding: 4px 4px 4px 12px; }
+.setup-command { margin-top: 8px; }
+.setup-command code,.skill-command code { font: 12px/1.5 var(--mono); overflow-wrap: anywhere; flex: 1; min-width: 0; }
+.setup-command button,.skill-command button { background: var(--surface); height: 36px; width: 36px; padding: 8px; border-radius: 6px; }
+#install-note { font-size: 12px; margin-top: 8px; color: var(--muted); }
+.featured { margin-top: 28px; }
+.featured > h2 { font-size: 16px; margin-bottom: 12px; }
+#featured-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.featured-card { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px; min-height: 156px; background: var(--surface); border-radius: 14px; box-shadow: 0 4px 24px var(--shadow-color); }
+.featured-card h3 { font-size: 16px; }
+.featured-card p { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.featured-card .skill-command { grid-column: 1 / -1; margin-top: 0; }
+.specimen { background: var(--soft); padding: 12px; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+.specimen strong { font-size: 24px; letter-spacing: -.02em; line-height: 1.2; }
+.specimen small { font-size: 12px; }
+.specimen-share { height: 12px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.specimen-share span { display: block; width: 3.5%; height: 100%; background: var(--accent); }
+.featured-glyph { width: 40px; height: 40px; color: var(--muted); }
+.featured-glyph svg { width: 100%; height: 100%; }
+.mini-chart { display: flex; height: 32px; align-items: end; gap: 4px; }
+.mini-chart span { width: 100%; border-radius: 4px 4px 0 0; background: var(--line); }
+.mini-chart span:first-child { background: var(--accent); }
+.all-skills { margin-top: 24px; }
+.catalogue-heading { display: flex; align-items: center; gap: 20px; justify-content: space-between; margin-bottom: 16px; }
+.task-tabs { display: flex; gap: 8px; width: max-content; }
+.task-tabs button { height: 36px; border-radius: 999px; font-size: 14px; background: transparent; padding: 0 12px; }
+.task-tabs button[aria-pressed=true] { background: var(--accent); color: var(--on-accent); }
+.task-tabs span { font-size: 12px; opacity: .8; }
+#result-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.catalogue { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.skill { display: flex; flex-direction: column; min-width: 0; padding: 20px; background: var(--surface); border-radius: 14px; }
+.skill-heading { display: flex; gap: 12px; align-items: center; }
+.skill-icon { flex-shrink: 0; width: 48px; height: 48px; border-radius: 12px; background: var(--soft); color: var(--muted); padding: 8px; }
+.skill-icon svg { width: 100%; height: 100%; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.skill h2 { font: 700 16px/1.3 var(--body); letter-spacing: -.01em; overflow-wrap: anywhere; }
+.skill h2 a { text-decoration: none; }
+.skill-category { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+.skill-purpose { font-size: 14px; margin: 16px 0; color: var(--muted); min-height: 44px; }
+.skill-command { margin-top: auto; }
+.skill details { font-size: 12px; margin-top: 12px; color: var(--muted); }
+.skill details p { margin-top: 8px; }
+.compatibility-warning { font-size: 12px; color: var(--warning); background: var(--warning-soft); padding: 12px; margin-top: auto; }
+.skill-links { display: flex; gap: 16px; font-size: 12px; margin-top: 12px; }
+.skill-links a { text-decoration: none; }
+.skill-category { display: inline-block; padding: 0 8px; border-radius: 2px; background: var(--soft); box-shadow: inset 2px 0 0 var(--muted); font: 400 12px/20px var(--mono); }
+.assistant { gap: 8px; padding: 0; background: transparent; }
+.assistant .segment-indicator { display: none; }
+.assistant button { border-radius: 6px; box-shadow: inset 0 0 0 1px var(--line); background: transparent; font-weight: 400; }
+.assistant button[aria-pressed=true] { color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+.skill-tabs { --scroll-surface: var(--base); }
+.skill-tabs .tab-more { border-radius: 0; font-family: var(--mono); }
+#featured-cards { display: grid; grid-template-columns: 1fr; }
+.featured-card { grid-template-columns: 1fr .9fr 1.3fr; align-items: center; gap: 24px; min-height: 164px; }
+.featured-card .skill-command { grid-column: auto; margin-top: 8px; }
+.featured-install { min-width: 0; }
+.featured-install > p { margin-top: 0; }
+.specimen strong { font-size: 32px; }
+#no-results { padding: 32px; background: var(--surface); }
+@media(min-width:1700px) { .catalogue { grid-template-columns: repeat(4,minmax(0,1fr)); } }
+@media(max-width:1100px) { .install-setup { gap: 24px; } #featured-cards { gap: 12px; } .featured-card { display: block; padding: 16px; } .specimen { margin-top: 12px; } .catalogue { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:700px) { header { padding: 12px 16px; gap: 12px; flex-wrap: wrap; } .brand { font-size: 16px; } .search { order: 3; flex-basis: 100%; height: 44px; } .theme-toggle { margin-left: auto; } main { padding: 8px 16px 0; } .install-setup { display: block; } .install-setup > div > p { font-size: 14px; margin-top: 8px; } .setup-controls { margin-top: 16px; } .setup-controls > p { font-size: 12px !important; } .featured { margin-top: 20px; } #featured-cards { display: flex; overflow: auto; padding-bottom: 8px; mask-image: linear-gradient(to right,var(--mask) 94%,transparent); } .featured-card { display: grid; flex: 0 0 300px; min-height: 156px; } .specimen { margin-top: 0; } .catalogue-heading { display: block; margin-bottom: 12px; } #result-count { margin-top: 12px; } .task-tabs { gap: 4px; } .task-tabs button { font-size: 12px; padding: 0 12px; } .catalogue { grid-template-columns: 1fr; gap: 12px; } .skill { padding: 16px; } .skill-purpose { min-height: 0; margin: 12px 0; } }
+@media(max-width:1100px) { .featured-card { display: grid; grid-template-columns: 1fr 1fr; } .featured-install { grid-column: 1 / -1; } }
+@media(max-width:700px) { #featured-cards { display: grid; grid-template-columns: 1fr; padding: 0; overflow: visible; mask-image: none; } .featured-card { width: 100%; min-height: 0; padding: 16px; gap: 16px; } }
+
+.repository-install { margin-top: 24px; padding: 16px; background: var(--surface); font-size: 14px; }
+.repository-install p { margin-top: 12px; max-width: 80ch; color: var(--muted); }
+.skill details code { display: block; margin-top: 8px; padding: 12px; background: var(--soft); font: 12px/1.5 var(--mono); overflow-wrap: anywhere; }
+.skill-demo { display: block; width: 100%; height: auto; margin-top: 12px; }
+.demo-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.demo-actions button,.demo-actions a { font-size: 12px; }
+/* Reserve room for More so the last visible filter label stays clear of it. */
+.skill-tabs { display: flex; align-items: center; gap: 8px; }
+.skill-tabs .tab-scroll { min-width: 0; }
+.skill-tabs.is-overflow .tab-scroll { padding-right: 0; }
+.skill-tabs .tab-more { position: static; flex: 0 0 auto; }
+.skill-tabs.is-overflow::after { right: 56px; width: 32px; }

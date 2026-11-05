@@ -10,7 +10,7 @@ The other 12 are below, by what you want to do: more things to make, checks that
 guards for git, and handoffs between agents. Every skill is its own repository; this one is the
 directory and the plugin marketplace.
 
-![nickkk-skills](gallery/social/nickkk-skills.png)
+![The searchable nickkk-skills catalogue with assistant-specific install commands](docs/screenshot-catalogue.png)
 
 <!-- gallery:by-category -->
 ## Contents

@@ -1,0 +1,2 @@
+:root { --display: "Bricolage Grotesque",sans-serif; --body: "Bricolage Grotesque",sans-serif; --mono: "Red Hat Mono",monospace; --radius: 8px; --surface-radius: 14px; --base: #f5f3ee; --surface: #ffffff; --soft: #ebe9e3; --text: #292c32; --muted: #60646d; --line: #d9dadc; --accent: #b8401f; --selection: #f5e5de; --shadow-color: #26272b20; }
+:root[data-theme=dark] { --base: #1c1d20; --surface: #27282c; --soft: #333438; --text: #f5f3ee; --muted: #c1c2c8; --line: #4b4d53; --accent: #ff9a7a; --selection: #47312c; --shadow-color: #08090c80; --on-accent: var(--base); }
