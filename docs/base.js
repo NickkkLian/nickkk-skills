@@ -147,19 +147,33 @@
   document.querySelectorAll('.tab-overflow').forEach(wrapper => {
     const scroll = wrapper.querySelector('.tab-scroll');
     const more = wrapper.querySelector('[data-scroll-target]');
+    const chips = [...scroll.querySelectorAll('.task-tabs button')];
+    let revealedChip;
     const update = () => {
       const remaining = scroll.scrollWidth-scroll.clientWidth-scroll.scrollLeft;
       const overflowing = remaining > 2;
       wrapper.classList.toggle('is-overflow',overflowing);
+      if (!overflowing && document.activeElement === more) {
+        (revealedChip || chips.at(-1)).focus({preventScroll: true});
+      }
       more.hidden = !overflowing;
       const viewport = scroll.getBoundingClientRect();
-      scroll.querySelectorAll('.task-tabs button').forEach(button => {
-        const bounds = button.getBoundingClientRect();
-        const clipped = bounds.left < viewport.left - .5 || bounds.right > viewport.right + .5;
-        button.style.visibility = clipped ? 'hidden' : '';
-      });
+      const complete = chips.map(chip => chip.getBoundingClientRect())
+        .filter(bounds => bounds.left >= viewport.left - .5 && bounds.right <= viewport.right + .5);
+      const left = Math.max(0, (complete[0]?.left ?? viewport.left) - viewport.left);
+      const right = Math.max(0, viewport.right - (complete.at(-1)?.right ?? viewport.right));
+      scroll.style.clipPath = `inset(0 ${right}px 0 ${left}px)`;
     };
-    more.addEventListener('click', () => scroll.scrollBy({left:160,behavior:reduced()?'instant':'smooth'}));
+    more.addEventListener('click', () => {
+      const edge = scroll.getBoundingClientRect().right;
+      revealedChip = chips.find(chip => chip.getBoundingClientRect().right > edge + .5) || chips.at(-1);
+      scroll.scrollTo({left: revealedChip.offsetLeft, behavior: reduced() ? 'instant' : 'smooth'});
+      update();
+    });
+    scroll.addEventListener('focusin', event => {
+      event.target.scrollIntoView({block: 'nearest', inline: 'nearest', behavior: 'instant'});
+      update();
+    });
     scroll.addEventListener('scroll',update,{passive:true});
     new ResizeObserver(update).observe(wrapper);
     document.fonts.ready.then(update);

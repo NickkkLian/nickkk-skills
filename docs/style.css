@@ -86,3 +86,4 @@ h1 { font-size: clamp(32px,2.78vw,40px); max-width: 540px; }
 .skill-tabs.is-overflow .tab-scroll { padding-right: 0; }
 .skill-tabs .tab-more { position: static; flex: 0 0 auto; }
 .skill-tabs.is-overflow::after { display: none; }
+.task-tabs button:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
