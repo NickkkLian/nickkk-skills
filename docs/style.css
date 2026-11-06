@@ -51,12 +51,12 @@ h1 { font-size: clamp(calc(32 * var(--suite-px, 1px)),2.78vw,calc(40 * var(--sui
 .command-status { font-size: calc(12 * var(--suite-px, 1px)); color: var(--muted); margin-top: calc(8 * var(--suite-px, 1px)); }
 .featured-evidence { grid-column: 1 / -1; font-size: calc(14 * var(--suite-px, 1px)); }
 .featured-evidence p { max-width: 80ch; }
-.featured-evidence img { display: block; width: min(100%, calc(760 * var(--suite-px, 1px))); height: auto; margin-top: calc(12 * var(--suite-px, 1px)); }
+.featured-evidence > a { display: block; max-height: 420px; overflow: auto; margin-top: calc(12 * var(--suite-px, 1px)); }
+.featured-evidence img { display: block; width: 100%; height: auto; }
 @media (min-width: 701px) {
   .catalogue.single-result { grid-template-columns: 1fr; }
-  .single-result .skill { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 calc(24 * var(--suite-px, 1px)); align-items: start; }
-  .single-result .skill > :not(details) { grid-column: 1; }
-  .single-result .skill > details { grid-column: 2; grid-row: 1 / span 6; margin-top: 0; }
+  .single-result .skill { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: calc(24 * var(--suite-px, 1px)); align-items: start; }
+  .single-result .skill > .skill-evidence { margin-top: 0; }
   .single-result .skill-purpose { min-height: 0; }
 }
 .skill-command { margin-top: auto; }
@@ -87,6 +87,8 @@ h1 { font-size: clamp(calc(32 * var(--suite-px, 1px)),2.78vw,calc(40 * var(--sui
 .repository-install { margin-top: calc(24 * var(--suite-px, 1px)); padding: calc(16 * var(--suite-px, 1px)); background: var(--surface); font-size: calc(14 * var(--suite-px, 1px)); }
 .repository-install p { margin-top: calc(12 * var(--suite-px, 1px)); max-width: 80ch; color: var(--muted); }
 .skill details code { display: block; margin-top: calc(8 * var(--suite-px, 1px)); padding: calc(12 * var(--suite-px, 1px)); background: var(--soft); font: calc(12 * var(--suite-px, 1px))/1.5 var(--mono); overflow-wrap: anywhere; }
+.clone-command button,.demo-actions button { border: 1px solid var(--line); border-radius: calc(6 * var(--suite-px, 1px)); background: var(--surface); padding: 0 calc(12 * var(--suite-px, 1px)); }
+.clone-command button { margin-top: calc(8 * var(--suite-px, 1px)); }
 .skill-demo { display: block; width: 100%; height: auto; margin-top: calc(12 * var(--suite-px, 1px)); }
 .demo-actions { display: flex; flex-wrap: wrap; gap: calc(8 * var(--suite-px, 1px)); margin-top: calc(8 * var(--suite-px, 1px)); }
 .demo-actions button,.demo-actions a { font-size: calc(12 * var(--suite-px, 1px)); }

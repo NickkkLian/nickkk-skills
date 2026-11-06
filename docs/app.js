@@ -25,9 +25,8 @@ function render(){
     const supported=route==='claude'||skill.name!=='nk-git-guardrail-hook';
     const article=document.createElement('article');
     article.className='skill';article.id=skill.name;
-    article.innerHTML=`<div class="skill-heading"><div class="skill-icon">${window.SKILL_ICONS[skill.name]}</div><div><h2><a href="${skill.source}">${skill.name}</a></h2><span class="skill-category">${labels[category]}</span></div></div><p class="skill-purpose"></p>${supported?'<div class="skill-command"><code></code><button class="icon-button" aria-label="Copy install command"></button></div>':'<p class="compatibility-warning">This hook requires Claude Code. Choose Claude Code for its install command.</p>'}<p class="command-status"></p><details><summary>Output and compatibility</summary><p class="skill-note"></p></details><div class="skill-links"><a href="${skill.source}">Documentation</a><a href="${skill.source}#compatibility">Test notes</a></div>`;
+    article.innerHTML=`<div class="skill-main"><div class="skill-heading"><div class="skill-icon">${window.SKILL_ICONS[skill.name]}</div><div><h2><a href="${skill.source}">${skill.name}</a></h2><span class="skill-category">${labels[category]}</span></div></div><p class="skill-purpose"></p>${supported?'<div class="skill-command"><code></code><button class="icon-button" aria-label="Copy install command"></button></div>':'<p class="compatibility-warning">This hook requires Claude Code. Choose Claude Code for its install command.</p>'}<p class="command-status"></p><div class="skill-links"><a href="${skill.source}">Documentation</a></div></div><details class="skill-evidence"><summary>Output and recorded demo</summary></details>`;
     article.querySelector('.skill-purpose').textContent=skill.description;
-    article.querySelector('.skill-note').textContent=route==='codex'?skill.codex:'Read the recorded checks and limits before using this skill.';
     const status=article.querySelector('.command-status');
     status.append(document.createTextNode(route==='codex'?skill.codex:'Claude Code: recorded checks. '));
     const notes=document.createElement('a'); notes.href=`${skill.source}#compatibility`; notes.textContent='Test notes'; status.append(' ',notes);
@@ -38,9 +37,11 @@ function render(){
       if(skill.name==='nk-data-story'){button.dataset.mainAction='';button.dataset.actionName='Copy nk-data-story install command';}
       button.addEventListener('click',()=>copy(installCommand(skill),button));
     }
-    const details = article.querySelector('details');
-    const clone = document.createElement('div');
+    const details = article.querySelector('.skill-evidence');
+    const clone = document.createElement('details');
     clone.className = 'clone-command';
+    const cloneSummary = document.createElement('summary');
+    cloneSummary.textContent = 'Or install by cloning';
     const cloneCode = document.createElement('code');
     const destination = route === 'claude' ? '~/.claude/skills/' : '~/.agents/skills/';
     cloneCode.textContent = `git clone ${skill.source}${route === 'codex' ? '.git' : ''} ${destination}${skill.name}`;
@@ -49,13 +50,13 @@ function render(){
       cloneCopy.type = 'button';
       cloneCopy.textContent = 'Copy clone command';
       cloneCopy.addEventListener('click', () => copy(cloneCode.textContent, cloneCopy));
-      clone.append(cloneCode, cloneCopy);
-      details.append(clone);
+      clone.append(cloneSummary, cloneCode, cloneCopy);
+      article.querySelector('.command-status').after(clone);
     }
     const preview = document.createElement('img');
     preview.className = 'skill-demo';
     preview.loading = 'lazy';
-    preview.src = `assets/demos/${skill.name}.png`;
+    preview.src = `assets/demos/${skill.name}-poster.png`;
     preview.alt = `${skill.name} recorded demonstration using synthetic data`;
     const actions = document.createElement('div');
     actions.className = 'demo-actions';
@@ -70,7 +71,7 @@ function render(){
         return;
       }
       playing = !playing;
-      preview.src = `assets/demos/${skill.name}.${playing ? 'gif' : 'png'}`;
+      preview.src = `assets/demos/${skill.name}${playing ? '.gif' : '-poster.png'}`;
       play.textContent = playing ? 'Stop demo' : 'Play demo';
     });
     const original = document.createElement('a');
