@@ -48,6 +48,17 @@ h1 { font-size: clamp(calc(32 * var(--suite-px, 1px)),2.78vw,calc(40 * var(--sui
 .skill h2 a { text-decoration: none; }
 .skill-category { display: block; color: var(--muted); font-size: calc(12 * var(--suite-px, 1px)); margin-top: calc(4 * var(--suite-px, 1px)); }
 .skill-purpose { font-size: calc(14 * var(--suite-px, 1px)); margin: calc(16 * var(--suite-px, 1px)) 0; color: var(--muted); min-height: calc(44 * var(--suite-px, 1px)); }
+.command-status { font-size: calc(12 * var(--suite-px, 1px)); color: var(--muted); margin-top: calc(8 * var(--suite-px, 1px)); }
+.featured-evidence { grid-column: 1 / -1; font-size: calc(14 * var(--suite-px, 1px)); }
+.featured-evidence p { max-width: 80ch; }
+.featured-evidence img { display: block; width: min(100%, calc(760 * var(--suite-px, 1px))); height: auto; margin-top: calc(12 * var(--suite-px, 1px)); }
+@media (min-width: 701px) {
+  .catalogue.single-result { grid-template-columns: 1fr; }
+  .single-result .skill { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 calc(24 * var(--suite-px, 1px)); align-items: start; }
+  .single-result .skill > :not(details) { grid-column: 1; }
+  .single-result .skill > details { grid-column: 2; grid-row: 1 / span 6; margin-top: 0; }
+  .single-result .skill-purpose { min-height: 0; }
+}
 .skill-command { margin-top: auto; }
 .skill details { font-size: calc(12 * var(--suite-px, 1px)); margin-top: calc(12 * var(--suite-px, 1px)); color: var(--muted); }
 .skill details p { margin-top: calc(8 * var(--suite-px, 1px)); }

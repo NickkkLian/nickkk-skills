@@ -8,25 +8,29 @@ const groups = {
 };
 const labels={numbers:'Numbers',checks:'Checks',guards:'Repository',writing:'Writing'};
 let group='all';
-const normalize=value=>value.toLowerCase().replace(/[-_’']/g,' ').replace(/\s+/g,' ').trim();
+const normalize=value=>value.toLowerCase().replace(/[-_’']/g,' ').replace(/\b(?:csv|excel|xlsx|workbooks?)\b/g,'spreadsheet').replace(/\bcontacts\b/g,'contact').replace(/\s+/g,' ').trim();
 function installCommand(skill){return $('#assistant').value==='claude'?`/plugin install ${skill.name}@nickkk-skills`:`codex plugin add ${skill.name}@nickkk-skills`;}
 function render(){
   const route=$('#assistant').value;
   const terms=normalize($('#search').value).split(' ').filter(Boolean);
   $('#marketplace-command').textContent=route==='claude'?'/plugin marketplace add NickkkLian/nickkk-skills':'codex plugin marketplace add NickkkLian/nickkk-skills';
   $('#install-note').textContent=route==='claude'?'Run in Claude Code, then start a new session.':'Run in your terminal, then start a new Codex session.';
-  const visible=skills.filter(skill=>(group==='all'||groups[group].includes(skill.name))&&terms.every(term=>normalize(`${skill.name} ${skill.description}`).includes(term)));
-  $('#result-count').textContent=`${visible.length} skills`;
+  const visible=skills.filter(skill=>(group==='all'||groups[group].includes(skill.name))&&terms.every(term=>normalize(`${skill.name} ${skill.description} ${skill.keywords}`).includes(term)));
+  $('#result-count').textContent=`${visible.length} ${visible.length===1?'skill':'skills'}`;
   $('#no-results').hidden=visible.length!==0;
   $('#catalogue').replaceChildren();
+  $('#catalogue').classList.toggle('single-result',visible.length===1);
   for(const skill of visible){
     const category=Object.keys(groups).find(name=>groups[name].includes(skill.name));
     const supported=route==='claude'||skill.name!=='nk-git-guardrail-hook';
     const article=document.createElement('article');
     article.className='skill';article.id=skill.name;
-    article.innerHTML=`<div class="skill-heading"><div class="skill-icon">${window.SKILL_ICONS[skill.name]}</div><div><h2><a href="${skill.source}">${skill.name}</a></h2><span class="skill-category">${labels[category]}</span></div></div><p class="skill-purpose"></p>${supported?'<div class="skill-command"><code></code><button class="icon-button" aria-label="Copy install command"></button></div>':'<p class="compatibility-warning">This hook requires Claude Code. Choose Claude Code for its install command.</p>'}<details><summary>Output and compatibility</summary><p class="skill-note"></p></details><div class="skill-links"><a href="${skill.source}">Documentation</a><a href="${skill.source}#compatibility">Test notes</a></div>`;
+    article.innerHTML=`<div class="skill-heading"><div class="skill-icon">${window.SKILL_ICONS[skill.name]}</div><div><h2><a href="${skill.source}">${skill.name}</a></h2><span class="skill-category">${labels[category]}</span></div></div><p class="skill-purpose"></p>${supported?'<div class="skill-command"><code></code><button class="icon-button" aria-label="Copy install command"></button></div>':'<p class="compatibility-warning">This hook requires Claude Code. Choose Claude Code for its install command.</p>'}<p class="command-status"></p><details><summary>Output and compatibility</summary><p class="skill-note"></p></details><div class="skill-links"><a href="${skill.source}">Documentation</a><a href="${skill.source}#compatibility">Test notes</a></div>`;
     article.querySelector('.skill-purpose').textContent=skill.description;
     article.querySelector('.skill-note').textContent=route==='codex'?skill.codex:'Read the recorded checks and limits before using this skill.';
+    const status=article.querySelector('.command-status');
+    status.append(document.createTextNode(route==='codex'?skill.codex:'Claude Code: recorded checks. '));
+    const notes=document.createElement('a'); notes.href=`${skill.source}#compatibility`; notes.textContent='Test notes'; status.append(' ',notes);
     if(supported){
       article.querySelector('code').textContent=installCommand(skill);
       const button=article.querySelector('.skill-command button');
@@ -114,7 +118,8 @@ document.querySelectorAll('[data-assistant]').forEach(button=>button.addEventLis
 }));
 document.querySelectorAll('[data-group]').forEach(button=>button.addEventListener('click',()=>{group=button.dataset.group;render();}));
 document.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key==='k'){event.preventDefault();$('#search').focus();}});
-$('#featured-cards').innerHTML=`<article class="featured-card"><div><h3>nk-data-story</h3><p>Monday share of paid sales</p><p>1,215 rows · 9 skipped<br>1 October–31 December 2025<br>Recorded synthetic example</p></div><figure class="specimen"><strong>3.5%</strong><div class="specimen-share" role="img" aria-label="Monday 3.5 percent, other days 96.5 percent"><span></span></div><small>of paid sales on Mondays</small></figure><div class="featured-install"><p>Install the skill behind this result</p><div class="skill-command"><code id="featured-code"></code><button id="featured-copy" class="icon-button" aria-label="Copy nk-data-story install command"></button></div></div></article>`;
+const featured=window.FEATURED_EVIDENCE, percent=(featured.result.value*100).toFixed(1);
+$('#featured-cards').innerHTML=`<article class="featured-card"><div><h3>nk-data-story</h3><p>Monday share of paid sales</p><p>${featured.result.n.toLocaleString()} rows · ${featured.result.skipped} skipped<br>${featured.window.from}–${featured.window.to}<br>Recorded synthetic example</p></div><figure class="specimen"><strong>${percent}%</strong><div class="specimen-share" role="img" aria-label="Monday ${percent} percent of paid sales"><span style="width:${percent}%"></span></div><small>of paid sales on Mondays</small></figure><div class="featured-install"><p>Install the skill behind this result</p><div class="skill-command"><code id="featured-code"></code><button id="featured-copy" class="icon-button" aria-label="Copy nk-data-story install command"></button></div></div><details class="featured-evidence"><summary>See the report and run evidence</summary><p>Fictional bakery input: <a href="assets/featured/bakery-2025.csv">synthetic CSV</a> and <a href="assets/featured/report.json">report specification</a>. The <a href="https://github.com/NickkkLian/nickkk-skills/blob/main/plugins/nk-data-story/skills/nk-data-story/scripts/render.py">render script</a> recomputed the figures and ran the report check: ${featured.check.toLowerCase()}${featured.warnings.length ? ` (${featured.warnings.length} ${featured.warnings.length===1?"warning":"warnings"})` : ''}. See the <a href="assets/featured/evidence.json">run record</a> and <a href="assets/featured/report.html">rendered report</a>.</p><a href="assets/featured/recorded-report.png"><img src="assets/featured/recorded-report.png" alt="Open the recorded synthetic bakery report image"></a></details></article>`;
 $('#featured-copy').innerHTML=ui.icons.copy;
 $('#featured-copy').addEventListener('click',()=>copy(installCommand(skills[0]),$('#featured-copy')));
 render();
