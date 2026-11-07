@@ -12,7 +12,8 @@ Rules:
   L01 SKILL.md exists                         L02 frontmatter parses; unknown keys -> W01 (warning only)
   L03 name == dir name, kebab-case, <= 64     L04 description 1..1024 chars and says when to use it
   L05 body <= 500 lines                        L06 a '## Provenance' section exists
-  L07 scripts referenced via ${CLAUDE_SKILL_DIR}, referenced scripts exist, shipped scripts are referenced
+  L07 scripts referenced via ${CLAUDE_SKILL_DIR} (or <skill-dir> in a Codex plugin),
+      referenced scripts exist, shipped scripts are referenced
   L08 every shipped script supports --selftest L09 no post-kit/ inside the skill dir (launch drafts do not ship)
   L10 license field present                    L11 no local absolute paths (macOS/Linux home dirs, a home Desktop, Windows user dirs)
   L12 a skill that uses ${CLAUDE_SKILL_DIR} carries a path note for other agents (the placeholder written as
@@ -88,14 +89,25 @@ def check_skill(d):
     if not re.search(r"^## Provenance", body, re.M):
         out.append(("L06", "no '## Provenance' section"))
     scripts_dir = os.path.join(d, "scripts")
-    shipped = sorted(f for f in os.listdir(scripts_dir) if f.endswith(SCRIPT_EXT)) if os.path.isdir(scripts_dir) else []
-    refs = re.findall(r"\$\{CLAUDE_SKILL_DIR\}/scripts/([\w.\-]+)", body)
+    shipped = sorted(f for f in os.listdir(scripts_dir) if f.endswith(SCRIPT_EXT) and
+                     os.path.isfile(os.path.join(scripts_dir, f))) if os.path.isdir(scripts_dir) else []
+    # Codex plugins put skills under <plugin>/skills/ and carry their own manifest.
+    # Other layouts retain the original Claude rule, including standalone skills.
+    plugin = os.path.dirname(os.path.dirname(d))
+    codex = (os.path.basename(os.path.dirname(d)) == "skills" and
+             os.path.isfile(os.path.join(plugin, ".codex-plugin", "plugin.json")))
+    prefix = "<skill-dir>" if codex else "${CLAUDE_SKILL_DIR}"
+    other = "${CLAUDE_SKILL_DIR}" if codex else "<skill-dir>"
+    refs = re.findall(re.escape(prefix) + r"/scripts/([\w.\-]+)", body)
+    wrong = re.findall(re.escape(other) + r"/scripts/([\w.\-]+)", body)
     bare = re.findall(r"(?<![\w/${}])scripts/([\w.\-]+\.(?:py|sh|mjs|js|zsh))", body)
-    for f in set(refs):
+    for f in sorted(set(refs)):
         if f not in shipped:
             out.append(("L07", f"referenced script not shipped: scripts/{f}"))
-    for f in set(bare) - set(refs):
-        out.append(("L07", f"script referenced without ${{CLAUDE_SKILL_DIR}}: scripts/{f}"))
+    for f in sorted(set(wrong)):
+        out.append(("L07", f"script uses {other} instead of {prefix}: scripts/{f}"))
+    for f in sorted(set(bare) - set(refs)):
+        out.append(("L07", f"script referenced without {prefix}: scripts/{f}"))
     for f in shipped:
         if f not in refs:
             out.append(("L07", f"shipped script never referenced from SKILL.md: scripts/{f}"))
@@ -166,6 +178,19 @@ def selftest():
         ("L12 path note after the first use", _mk(tmp, "late-note", body=CLEAN_BODY.replace(PATH_NOTE, "").replace("## Provenance", PATH_NOTE + "## Provenance")), {"L12"}),
         ("W01 unknown key", _mk(tmp, "odd-key", fm=CLEAN_FM.format(n="odd-key").replace("license: MIT\n", "license: MIT\nfoo: bar\n")), {"W01"}),
     ]
+    plugin = os.path.join(tmp, "codex-plugin")
+    os.makedirs(os.path.join(plugin, ".codex-plugin"))
+    open(os.path.join(plugin, ".codex-plugin", "plugin.json"), "w").write("{}")
+    skills = os.path.join(plugin, "skills")
+    codex_body = CLEAN_BODY.replace(PATH_NOTE, "> Paths: replace <skill-dir> with the skill folder's absolute path.\n\n").replace("${CLAUDE_SKILL_DIR}", "<skill-dir>")
+    cases.extend([
+        ("Codex clean control", _mk(skills, "codex-good", body=codex_body), set()),
+        ("Codex missing referenced script", _mk(skills, "codex-ghost", body=codex_body + "`<skill-dir>/scripts/ghost.py`\n"), {"L07"}),
+        ("Codex bare reference", _mk(skills, "codex-bare", body=codex_body.replace("<skill-dir>/scripts/tool.py", "scripts/ghost.py"), script=None), {"L07"}),
+        ("Codex unreferenced script", _mk(skills, "codex-unref", body=codex_body, extra=lambda d: open(os.path.join(d, "scripts", "extra.py"), "w").write(CLEAN_SCRIPT)), {"L07"}),
+        ("Codex wrong prefix", _mk(skills, "codex-wrong", body=codex_body + "`${CLAUDE_SKILL_DIR}/scripts/tool.py`\n"), {"L07", "L12"}),
+        ("Claude wrong prefix", _mk(tmp, "claude-wrong", body=CLEAN_BODY + "`<skill-dir>/scripts/tool.py`\n"), {"L07"}),
+    ])
     for label, d, want in cases:
         got = {c for c, _ in check_skill(d)}
         hit = got == want

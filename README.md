@@ -165,7 +165,8 @@ Each skill's README has its own row with what that run did.
 
 `tools/skill_lint.py <skill-dir>` checks a skill folder the way these were checked before publishing:
 frontmatter, name = folder, description length and a "when to use" clause, body length, a Provenance section,
-scripts referenced through `${CLAUDE_SKILL_DIR}` with a path note for agents that do not fill it in,
+scripts referenced through `${CLAUDE_SKILL_DIR}` with a path note for agents that do not fill it in, or
+through `<skill-dir>` in a Codex plugin (`<plugin>/skills/<skill>` with a `.codex-plugin/plugin.json`),
 every script with a `--selftest`, no local paths.
 It has its own `--selftest`.
 
@@ -173,7 +174,11 @@ It has its own `--selftest`.
 
 ```bash
 python3 tools/skill_lint.py --selftest
+python3 tools/skill_lint.py plugins/*/skills/*
 ```
+
+Both commands also run in the repository's CI on pushes and pull requests. The lint checks every shipped
+script, including helpers, and requires each to be referenced in `SKILL.md`.
 
 ## How these were built
 

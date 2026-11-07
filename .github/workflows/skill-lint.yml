@@ -1,0 +1,13 @@
+name: Skill lint
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test lint and check plugin skills
+        run: |
+          python3 tools/skill_lint.py --selftest
+          python3 tools/skill_lint.py plugins/*/skills/*
